@@ -10,6 +10,6 @@ def countScholixCitations(scholex_df):
     d = dups_dataset_df.set_index('datasetDOI')['citations'].to_dict()
 
     # map that dictionary of DOI - citation pairs to the datasetDOIs in  scholex_df
-    scholex_df['citations_dupsCount'] = scholex_df.datasetDOI.map(d)
+    scholex_df['citations_count'] = scholex_df.datasetDOI.map(d)
     
     return scholex_df

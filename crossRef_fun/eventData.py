@@ -4,7 +4,7 @@ import requests
 import json
 #from tenacity import retry, stop_after_attempt, wait_random_exponential
 try:
-    from mrced2.eventRecord import eventRecord
+    from crossRef_fun.eventRecord import eventRecord
 except:
     from crossRef_fun import eventRecord
 
