@@ -9,7 +9,7 @@ def convertCSVtoJSON(csv_file_path, json_file_path):
     with open(csv_file_path, "r", encoding="utf-8") as csvfile:
         csv_reader = csv.DictReader(csvfile)
         for row in csv_reader:
-            publisher = row["dataset_publisher_processed"]
+            publisher = row["data_Publisher"]
             if publisher not in data:
                 data[publisher] = []
             data[publisher].append(row)
