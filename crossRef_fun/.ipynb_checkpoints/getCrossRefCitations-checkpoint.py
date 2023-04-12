@@ -40,7 +40,14 @@ def getCrossRefCitations_byDates(email, prefix, start_date, end_date, results_fo
     
     
     
+    
 def getCrossRefCitations_byDOI(email, doi_list, results_folder_path_name):
+    import crossRef_fun
+    from crossRef_fun.eventData import eventData
+    from math import ceil
+    import json
+    import requests
+    import os
 
     # set up folder to result jsons into
     # results_folder = "NERC_EDS_events_from_doi_list_scholix"
@@ -53,7 +60,7 @@ def getCrossRefCitations_byDOI(email, doi_list, results_folder_path_name):
 
         # Set up the query
         # filename to save json event data to
-        filename = f"{results_folder}/event_data_{fileDoi}_{count}.json"
+        filename = f"{results_folder_path_name}/event_data_{fileDoi}_{count}.json"
         ed = eventData(email=email, outputFile=filename)
         ed.buildQuery({'obj-id': doi})
 
@@ -64,6 +71,6 @@ def getCrossRefCitations_byDOI(email, doi_list, results_folder_path_name):
         num_pages = ceil(ed.events.count()/1000)
 
         # find info from all the pages
-        ed.getAllPages(num_pages, {'rows': 1000, 'obj-id': doi}, fileprefix=f"{results_folder}/{fileDoi}_page{count}") # fileDoi to give each result json a unique name, otherwise it writes over previous results 
+        ed.getAllPages(num_pages, {'rows': 1000, 'obj-id': doi}, fileprefix=f"{results_folder_path_name}/{fileDoi}_page{count}") # fileDoi to give each result json a unique name, otherwise it writes over previous results 
 
     print('Done!')
