@@ -49,7 +49,7 @@ def getPublicationInfo(crossRef_df_gbif_filtered2_deduplicated):
                 pub_type = "Info not given"
 
             pub_info.append({
-                    'pub_doi': pubdoi,
+                    'pub_doi_url': pubdoi,
                     'pub_Title': title,
                     'pub_authors': authors,
                     'publisher': publisher,
@@ -59,15 +59,15 @@ def getPublicationInfo(crossRef_df_gbif_filtered2_deduplicated):
             })
 
             time.sleep(0.3) # wait for a bit, doing it too quickly may be overloading the server? often gives a 503 status error
-            if count % 50 == 0: # if count is a multiple of 10 wait for a bit longer
-                time.sleep(120)
+            if count % 40 == 0: # if count is a multiple of 10 wait for a bit longer
+                time.sleep(150)
         else:
             title = "not a doi"
             authors = "not a doi"
             publisher = "not a doi"
             pub_type = "not a doi"
             pub_info.append({
-                    'pub_doi': pubdoi,
+                    'pub_doi_url': pubdoi,
                     'pub_Title': title,
                     'pub_authors': authors,
                     'publisher': publisher,
@@ -82,7 +82,7 @@ def getPublicationInfo(crossRef_df_gbif_filtered2_deduplicated):
     # loop through new columns to be added to df
     for ii in pubInfo_df.columns[1:]:
         # create dictionary of doi, value pairs 
-        d = pubInfo_df.set_index('pub_doi')[ii].to_dict()
+        d = pubInfo_df.set_index('pub_doi_url')[ii].to_dict()
 
         # use the doi to map the dictionary to crossRef_df_gbif_filtered2_deduplicated
         crossRef_df_gbif_filtered2_deduplicated.loc[:,ii] = crossRef_df_gbif_filtered2_deduplicated.subj_id.map(d)

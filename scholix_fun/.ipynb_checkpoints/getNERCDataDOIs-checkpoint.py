@@ -100,6 +100,20 @@ def getNERCDataDOIs():
     #add processed title list to dataframe and delete unprocessed
     dataCite_df['title'] = title_lst
     dataCite_df = dataCite_df.drop(['title_unprocessed'], axis = 1)
+    
+    #process the authors column
+    datasetAuthors_processed = []
+    for authorList in dataCite_df['creators']:
+        datasetAuthorList = []
+        for individual in authorList:
+            name = individual['name']
+            datasetAuthorList.append(name)
+        datasetAuthors_processed.append(datasetAuthorList)
+    
+    #add processed author list to dataframe and delete unprocessed
+    dataCite_df['datasetAuthors_processed'] = datasetAuthors_processed
+    dataCite_df = dataCite_df.drop(['creators'], axis = 1)
+    
     print('Done!')
     
     return dataCite_df

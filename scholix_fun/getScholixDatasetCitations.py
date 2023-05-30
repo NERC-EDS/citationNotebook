@@ -13,7 +13,7 @@ def getScholixDatasetCitations(dataCite_df):
     dataDOIs = list(dataCite_df['datasetDOI_attribute'])
     dataPublisher = list(dataCite_df['publisher'])
     dataTitle = list(dataCite_df['title'])
-    dataAuthors = list(dataCite_df['creators'])
+    dataAuthors = list(dataCite_df['datasetAuthors_processed'])
     
     scholix_url = 'http://api.scholexplorer.openaire.eu/v2/Links?'
 
@@ -22,7 +22,7 @@ def getScholixDatasetCitations(dataCite_df):
         headers = {'sourcePid': doi}
         r = requests.get(scholix_url, headers)
         print(headers)
-        print('Status: ',  r.status_code, 'new3')
+        print('Status: ',  r.status_code)
                
         # scholex API holds no further info if no citations, therefore need a catcher to skip to the next record here
         if r.json()['totalLinks'] == 0:

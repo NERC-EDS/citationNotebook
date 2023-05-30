@@ -2,17 +2,17 @@
 
 def process_citation_results(dataCite_df, scholex_df):
     import pandas as pd
-    
-    #### Add the citation count collected from Scholex for each dataset to the DataCite dataframe
-    #create dictionary of dataset DOIs and citations for that DOI from scholex_df
-    d = scholex_df.set_index('datasetDOI')['citations'].to_dict()
+# removed as no longer counting citations before this stage    
+#     #### Add the citation count collected from Scholex for each dataset to the DataCite dataframe
+#     #create dictionary of dataset DOIs and citations for that DOI from scholex_df
+#     d = scholex_df.set_index('datasetDOI')['citations'].to_dict()
 
-    # map that dictionary of DOI - citation pairs to the DOIs in  dataCite_df
-    dataCite_df['citations'] = dataCite_df.datasetDOI_attribute.map(d)
+#     # map that dictionary of DOI - citation pairs to the DOIs in  dataCite_df
+#     dataCite_df['citations'] = dataCite_df.datasetDOI_attribute.map(d)
 
-    #convert nans to 0 and floats to intergers
-    dataCite_df['citations'] = dataCite_df['citations'].fillna(0)
-    dataCite_df['citations'] = dataCite_df['citations'].astype('int')
+#     #convert nans to 0 and floats to intergers
+#     dataCite_df['citations'] = dataCite_df['citations'].fillna(0)
+#     dataCite_df['citations'] = dataCite_df['citations'].astype('int')
     
     
     #### Process dataframes and tidy up some columns
@@ -72,12 +72,27 @@ def process_citation_results(dataCite_df, scholex_df):
     
     
     #  dataCite_df - re-order and rename old publisher column
-    dataCite_df = dataCite_df[['publisher_processed', 'title', 'citations',  'creators', 'datasetDOI_attribute', 'dates', 'page_number',
+    dataCite_df = dataCite_df[['publisher_processed', 'title',  'datasetAuthors_processed', 'datasetDOI_attribute', 'dates', 'page_number',
            'Page endpoint']]
     dataCite_df = dataCite_df.rename({'publisher_processed': 'publisher'}, axis=1)
 
     # scholex_df - remove old publisher column and rename new one
     scholex_df = scholex_df.drop(['datasetPublisher'], axis=1)
     scholex_df = scholex_df.rename({'publisher_processed': 'datasetPublisher'}, axis=1)
+    
+    
+    
+    # process pub authors
+    pubAuthors_processed = []
+    for authorList in scholex_df['pubAuthors']:
+        pubAuthorList = []
+        for individual in authorList:
+            name = individual['name']
+            pubAuthorList.append(name)
+        pubAuthors_processed.append(pubAuthorList)
+
+    scholex_df['pubAuthors_processed'] = pubAuthors_processed
+    scholex_df = scholex_df.drop(['pubAuthors'], axis = 1)
+    
     
     return dataCite_df, scholex_df

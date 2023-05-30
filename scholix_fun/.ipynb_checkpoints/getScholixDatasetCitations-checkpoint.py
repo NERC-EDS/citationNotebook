@@ -13,7 +13,7 @@ def getScholixDatasetCitations(dataCite_df):
     dataDOIs = list(dataCite_df['datasetDOI_attribute'])
     dataPublisher = list(dataCite_df['publisher'])
     dataTitle = list(dataCite_df['title'])
-    dataAuthors = list(dataCite_df['creators'])
+    dataAuthors = list(dataCite_df['datasetAuthors_processed'])
     
     scholix_url = 'http://api.scholexplorer.openaire.eu/v2/Links?'
 
@@ -29,24 +29,15 @@ def getScholixDatasetCitations(dataCite_df):
             continue
         else:
             numPages = np.arange(0,r.json()['totalPages']) # create an array from 0 to the total number of pages of results to loop through
-            count = 0
-            totalCount = 0
+
             for page in numPages:
-                scholix_url_pages = scholix_url + '?page=' + str(page)
+                scholix_url_pages = scholix_url + 'page=' + str(page)
                 r = requests.get(scholix_url_pages, headers)
-
-                numCitations = np.arange(0,(len(r.json()['result']))) # create an array from 0 to the total number of links (of all types) on this page to loop through
-
-                # loop through records on this page to count the number of IsReferencedBy citations
-                for citationNum in numCitations:
-                    if r.json()['result'][citationNum]['RelationshipType']['Name'] == "IsReferencedBy": # we only want to use this type of relationships
-                        count = count + 1 # counting the citations ('links') that are "IsReferencedBy"
-                    else:
-                        pass
-                totalCount = totalCount + count
-
+                pageRecords = range(len(r.json()['result']))
+                
                 # loop through records again to collect info this time - this needs to be a seperate block in order to add the completed citation count 
-                for citationNum in numCitations:
+                for citationNum in pageRecords:
+                    
                     # there can be multiple ID schemes so we only want DOI of the publication:
                     for IDinfo in r.json()['result'][citationNum]['target']['Identifier']: # for each ID type for this publication e.g. DOI, pubmed etc
                         if IDinfo['IDScheme'] == 'doi': # if its DOI, collect it and then skip to next part of code
@@ -55,8 +46,9 @@ def getScholixDatasetCitations(dataCite_df):
                         else: # if there's no DOI then collect all the ID (to be looked at manually later)
                             pubDOI =  r.json()['result'][citationNum]['target']['Identifier']
 
-                    if r.json()['result'][citationNum]['RelationshipType']['Name'] == "IsReferencedBy":    
-                        scholexInfo.append([totalCount,
+                    #only get certain relation types
+                    if r.json()['result'][citationNum]['RelationshipType']['Name'] == "IsReferencedBy" or r.json()['result'][citationNum]['RelationshipType']['Name'] == 'IsRelatedTo':   
+                        scholexInfo.append([
                                      r.json()['result'][citationNum]['RelationshipType']['Name'],
                                      r.json()['result'][citationNum]['target']['Title'],
                                      r.json()['result'][citationNum]['target']['PublicationDate'],
@@ -67,7 +59,7 @@ def getScholixDatasetCitations(dataCite_df):
                         continue
                     
     # put the collected info into a dataframe                
-    column_names = ["citations", "relationshipType", "pubTitle", "pubDate", "pubAuthors", "pubID", "datasetDOI", "datasetPublisher", "datasetTitle", "datasetAuthors"]
+    column_names = ["relationshipType", "pubTitle", "pubDate", "pubAuthors", "pubID", "datasetDOI", "datasetPublisher", "datasetTitle", "datasetAuthors"]
     scholex_df = pd.DataFrame(scholexInfo, columns = column_names) 
     print('Done!')
     return scholex_df

@@ -72,12 +72,27 @@ def process_citation_results(dataCite_df, scholex_df):
     
     
     #  dataCite_df - re-order and rename old publisher column
-    dataCite_df = dataCite_df[['publisher_processed', 'title',  'creators', 'datasetDOI_attribute', 'dates', 'page_number',
+    dataCite_df = dataCite_df[['publisher_processed', 'title',  'datasetAuthors_processed', 'datasetDOI_attribute', 'dates', 'page_number',
            'Page endpoint']]
     dataCite_df = dataCite_df.rename({'publisher_processed': 'publisher'}, axis=1)
 
     # scholex_df - remove old publisher column and rename new one
     scholex_df = scholex_df.drop(['datasetPublisher'], axis=1)
     scholex_df = scholex_df.rename({'publisher_processed': 'datasetPublisher'}, axis=1)
+    
+    
+    
+    # process pub authors
+    pubAuthors_processed = []
+    for authorList in scholex_df['pubAuthors']:
+        pubAuthorList = []
+        for individual in authorList:
+            name = individual['name']
+            pubAuthorList.append(name)
+        pubAuthors_processed.append(pubAuthorList)
+
+    scholex_df['pubAuthors_processed'] = pubAuthors_processed
+    scholex_df = scholex_df.drop(['pubAuthors'], axis = 1)
+    
     
     return dataCite_df, scholex_df

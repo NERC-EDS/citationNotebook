@@ -16,9 +16,9 @@ def getPublicationType(scholex_df):
         # add code to catch retries limit exceeded - might need to be in function itself?
         # e.g. https://stackoverflow.com/questions/23013220/max-retries-exceeded-with-url-in-requests
 
-        time.sleep(0.5)
-        if count % 200 == 0: # if count is a multiple of 200 wait for a bit
-                time.sleep(90)
+        time.sleep(0.2)
+        if count + 1 % 200 == 0: # if count is a multiple of 200 wait for a bit
+                time.sleep(61)
 
     print('Done!')
 
