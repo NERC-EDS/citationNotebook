@@ -12,3 +12,6 @@ crossRef_fun/__pycache__/
 dataCite_fun/__pycache__/
 scholix_fun/__pycache__/
 test/
+Results/NERC_EDS_events_from_doi_list_scholix/
+/Results/*/
+/Results/event_data*
