@@ -17,4 +17,5 @@ scholix_fun/__pycache__/
 test/
 Results/NERC_EDS_events_from_doi_list_scholix/
 /Results/*/
+!/Results/v1/
 /Results/event_data*

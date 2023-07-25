@@ -11,7 +11,7 @@ The harvested data is not an exhaustive list of all the citations, and still con
 Usage
 The code is written in Python in Jupyter notebooks. All the code has been compiled in one notebook nerc_dataset_citations_full_code.ipynb. Running the entire notebook takes several hours.
 The folders CrossRef_fun, Scholix_fun and Datacite_fun contain functions relevant to collecting and processing data from each API. 
-The Results folder contains the outputs of the code in csv and json format. The json is organised by each Data Centre as the top level keys.
+The Results/v1/ folder contains the outputs of the code in csv and json format. The json is organised by each Data Centre as the top level keys.
 
 The latest results are found in the file latest_results.json
 
