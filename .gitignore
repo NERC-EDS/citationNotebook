@@ -1,5 +1,7 @@
 *.csv
+*.pkl
 !dataCitations_allSourcesMerged_retrieved*.csv
+!latest_results.csv
 *.pyc
 /analyse_plot_citations.ipynb
 .ipynb_checkpoints/

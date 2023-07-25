@@ -10,14 +10,21 @@ def getPublicationType(scholex_df):
     pubTypeList = []
 
     for count, doi in enumerate(scholex_df['pubID']):
-        pubType = checkDOIpubType.checkDOIpubType(doi)
-        pubTypeList.append(pubType)
+        if '10.' in doi:
+            pubType = checkDOIpubType.checkDOIpubType(doi)
+            pubTypeList.append(pubType)
+
+        else:
+            pubTypeList.append(["not a doi", "not a doi"])
+            #its not a doi and can fill df cells with blanks for now - maybe find info on handles, pmids etc later
+
+       
 
         # add code to catch retries limit exceeded - might need to be in function itself?
         # e.g. https://stackoverflow.com/questions/23013220/max-retries-exceeded-with-url-in-requests
 
         time.sleep(0.2)
-        if count + 1 % 200 == 0: # if count is a multiple of 200 wait for a bit
+        if count + 1 % 150 == 0: # if count is a multiple of 200 wait for a bit
                 time.sleep(61)
 
     print('Done!')

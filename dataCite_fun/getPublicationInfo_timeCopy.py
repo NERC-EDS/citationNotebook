@@ -58,9 +58,9 @@ def getPublicationInfo(crossRef_df_gbif_filtered2_deduplicated):
                 # add publication date to this - in order to check if this is before the dataset publication date - could be a way to filter out dodgy results
             })
 
-            time.sleep(0.3) # wait for a bit, doing it too quickly may be overloading the server? often gives a 503 status error
+            time.sleep(1) # wait for a bit, doing it too quickly may be overloading the server? often gives a 503 status error
             if count % 40 == 0: # if count is a multiple of 10 wait for a bit longer
-                time.sleep(150)
+                time.sleep(180)
         else:
             title = "not a doi"
             authors = "not a doi"
