@@ -1,6 +1,7 @@
 name: Weekly Data Citations Notebook Run
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: "45 9 * * 3"  # Run every Tuesday at midnight
     
