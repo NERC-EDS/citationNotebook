@@ -3,7 +3,7 @@ name: Weekly Data Citations Notebook Run
 on:
   workflow_dispatch:
   schedule:
-    - cron: "45 9 * * 3"  # Run every Tuesday at midnight
+    - cron: "0 0 * * 4"  # Run every Tuesday at midnight
     
 jobs:
   run-notebook:
