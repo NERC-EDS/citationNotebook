@@ -2,7 +2,7 @@ name: Weekly Data Citations Notebook Run
 
 on:
   schedule:
-    - cron: "0 0 * * 2"  # Run every Tuesday at midnight
+    - cron: "45 9 * * 3"  # Run every Tuesday at midnight
     
 jobs:
   run-notebook:
@@ -10,10 +10,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: 3.7.16  # Choose the Python version you need
 
