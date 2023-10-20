@@ -67,6 +67,7 @@ def getNERCDataDOIs():
                          r.json()['data'][recordNumber]['attributes']['doi'],
                          r.json()['data'][recordNumber]['attributes']['titles'],       
                          r.json()['data'][recordNumber]['attributes']['dates'], # remove this? Or change to just one date?
+                                 r.json()['data'][recordNumber]['attributes']['publicationYear'],
                          r.json()['data'][recordNumber]['attributes']['creators'],
                          r.json()['meta']['page'],
                          r.json()['links']['self']])
@@ -86,7 +87,7 @@ def getNERCDataDOIs():
             continue
         
     # put the collected information into a pandas dataframe    
-    column_names = ["publisher", "datasetDOI_attribute", "title_unprocessed", "dates", "creators", "page_number", "Page endpoint"]
+    column_names = ["publisher", "datasetDOI_attribute", "title_unprocessed", "dates", "publication_yr", "creators", "page_number", "Page endpoint"]
     dataCite_df = pd.DataFrame(dataCiteInfo, columns = column_names)
     
     # process the title column
