@@ -32,7 +32,7 @@ def getCrossRefCitations_byDates(email, prefix, start_date, end_date, results_fo
     num_pages = ceil(ed.events.count()/1000)
 
     # set up folder to result jsons into
-    results_folder = results_folder_path + "NERC_EDS_events_from_" + start_date + "_up_to_" + end_date
+    results_folder = results_folder_path + "NERC_EDS_events_" + start_date + "_to_" + end_date
     os.mkdir(results_folder) # not able to overwrite folder of the same name - delete folder and re-write?, or, add a folder with a new name each time?
 
     # find info from all the pages

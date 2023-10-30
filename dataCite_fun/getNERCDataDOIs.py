@@ -10,8 +10,8 @@ def getNERCDataDOIs():
     dataCiteInfo = []  # create an empty list in which all the DataCite info will be placed
 
     # send a request to get initial info from DataCite
-    headers = {'client-id': 'bl.nerc', 'page': '1'} # defining this inside the request function doesn't work
-    r = requests.get('https://api.datacite.org/dois', headers)
+    uriParams = {'client-id': 'bl.nerc', 'page[size]': '250', 'page[number]': '1'}  # defining this inside the request function doesn't work
+    r = requests.get('https://api.datacite.org/dois', uriParams)
 
     # determine the total number of pages and dataset records
     totalPages = r.json()['meta']['totalPages']
@@ -27,16 +27,17 @@ def getNERCDataDOIs():
     #loop through pages
     for p in pages:
         if p == 1:
-            url = 'https://api.datacite.org/dois?page=1'
+            url = 'https://api.datacite.org/dois?client-id=bl.nerc&page%5Bsize%5D=250&page%5Bnumber%5D=1'
             # last page url number 130
             #url = 'https://api.datacite.org/dois?client-id=bl.nerc&page%5Bnumber%5D=130&page%5Bsize%5D=25&client-id=bl.nerc'
         else:
             url = next_url
 
         # make the API request and print the status code in case of an error
-        headers = {'client-id': 'bl.nerc'}
-        r = requests.get(url,headers)
-        print('Status: ', r.status_code)
+        params = {'client-id': 'bl.nerc', 'page[size]': '250'}
+        r = requests.get(url,params)
+        if r.status_code != 200:
+            print('Status: ', r.status_code)
         
         # determine status code, 
         if r.status_code == 200:
@@ -44,7 +45,7 @@ def getNERCDataDOIs():
         elif r.status_code == 503: # if 503 error the server is overloaded, wait a bit then try again
             print('Waiting 2 mins for server to recover...?')
             time.sleep(120)
-            r = requests.get(url, headers)
+            r = requests.get(url, params)
             print('Second attempt: ', r.status_code)
             if r.status_code == 503:
                 print("Server not recovered, try again later")
@@ -55,7 +56,7 @@ def getNERCDataDOIs():
             print("Something else has gone wrong!")
             break
 
-        print('Page: ', r.json()['meta']['page'])
+        print('Page ', r.json()['meta']['page'], ' - DONE')
 
         # determine number of dataset records on this page
         numRecords = np.arange(0,(len(r.json()['data'])))
@@ -115,6 +116,6 @@ def getNERCDataDOIs():
     dataCite_df['datasetAuthors_processed'] = datasetAuthors_processed
     dataCite_df = dataCite_df.drop(['creators'], axis = 1)
     
-    print('Done!')
+    print('Complete!')
     
     return dataCite_df
