@@ -2,9 +2,6 @@ name: Weekly Data Citations Notebook Run - part 2
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - split_notebook
   workflow_run:
     workflows: ["regular_data_citations_part1.yml"]
     types:
@@ -26,7 +23,7 @@ jobs:
         
       - name: Run Jupyter Notebook
         run: |
-          papermill nerc_dataset_citations_part2.ipynb
+          papermill nerc_dataset_citations_part2.ipynb nerc_dataset_citations_part2_executed.ipynb
 
       - name: Commit and push results
         run: |
