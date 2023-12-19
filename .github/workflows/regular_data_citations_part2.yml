@@ -29,7 +29,7 @@ jobs:
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
-          git add Results/v1/latest_results.json
+          git add Results/v2/latest_results.json
           git commit -m "Regular action, update latest_results JSON file"
           git push citationNotebook split_notebook
         env:
