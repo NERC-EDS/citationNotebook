@@ -24,7 +24,7 @@ jobs:
         
       - name: Run Jupyter Notebook
         run: |
-          papermill nerc_dataset_citations_full_code.ipynb nerc_dataset_citations_full_code_executed.ipynb # keep "_executed.ipynb" to see errors
+          papermill nerc_dataset_citations_part1.ipynb # keep "_executed.ipynb" to see errors
 
       - name: Commit and push results
         run: |
