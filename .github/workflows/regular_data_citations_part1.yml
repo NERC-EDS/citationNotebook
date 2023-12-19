@@ -4,9 +4,6 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "0 0 * * 4"  # Run every Tuesday at midnight
-  push:
-    branches:
-      - split_notebook
     
 jobs:
   run-notebook:
