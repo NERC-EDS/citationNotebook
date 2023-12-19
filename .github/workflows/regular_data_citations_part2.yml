@@ -2,9 +2,6 @@ name: Weekly Data Citations Notebook Run - part 2
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - split_notebook
   workflow_run:
     workflows: ["regular_data_citations_part1.yml"]
     types:
