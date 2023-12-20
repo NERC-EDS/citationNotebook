@@ -28,7 +28,7 @@ jobs:
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
           git add "Results/Intermediate data/latest_results_scholix.csv" "Results/Intermediate data/latest_results_crossRef.csv" "Results/Intermediate data/latest_results_dataCite.csv"
-          git commit -m "Regular action, updates "Results/Intermediate data/latest_results_{databaseName}.csv"
+          git commit -m "Regular action, updates Results/Intermediate data/latest_results_<databaseName>.csv"
           git push citationNotebook split_notebook
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
