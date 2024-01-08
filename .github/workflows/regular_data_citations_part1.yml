@@ -4,6 +4,9 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "0 0 * * 4"  # Run every Tuesday at midnight
+
+permissions:
+  contents: write
     
 jobs:
   run-notebook:
@@ -11,7 +14,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Set up Python
         uses: actions/setup-python@v3
@@ -29,6 +32,6 @@ jobs:
           git config --global user.name "GitHub Actions"
           git add "Results/Intermediate data/latest_results_scholix.csv" "Results/Intermediate data/latest_results_crossRef.csv" "Results/Intermediate data/latest_results_dataCite.csv"
           git commit -m "Regular action, updates Results/Intermediate data/latest_results_{databaseName}.csv"
-          git push citationNotebook split_notebook
+          git push https://github.com/NERC-EDS/citationNotebook.git split_notebook
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
