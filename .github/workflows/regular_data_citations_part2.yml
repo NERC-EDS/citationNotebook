@@ -7,13 +7,16 @@ on:
     types:
       - completed
     
+permissions:
+  contents: write
+
 jobs:
   run-notebook:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Set up Python
         uses: actions/setup-python@v3
@@ -23,7 +26,7 @@ jobs:
         
       - name: Run Jupyter Notebook
         run: |
-          papermill nerc_dataset_citations_part2.ipynb
+          papermill nerc_dataset_citations_part2.ipynb nerc_dataset_citations_part2_executed.ipynb
 
       - name: Commit and push results
         run: |
