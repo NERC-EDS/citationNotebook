@@ -25,6 +25,10 @@ jobs:
 
       - name: Commit and push results
         run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
           git add Results/v1/latest_results.json nerc_dataset_citations_full_code_executed.ipynb
           git commit -m "Regular action, update latest_results JSON file"
           git push
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

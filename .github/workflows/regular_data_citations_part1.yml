@@ -24,6 +24,7 @@ jobs:
         
       - name: Run Jupyter Notebook
         run: |
+
           papermill nerc_dataset_citations_part1.ipynb nerc_dataset_citations_part1_executed.ipynb # keep "_executed.ipynb" to see errors
 
       - name: Commit and push results
@@ -33,5 +34,6 @@ jobs:
           git add "Results/Intermediate data/latest_results_scholix.csv" "Results/Intermediate data/latest_results_crossRef.csv" "Results/Intermediate data/latest_results_dataCite.csv"
           git commit -m "Regular action, updates Results/Intermediate data/latest_results_{databaseName}.csv"
           git push https://github.com/NERC-EDS/citationNotebook.git split_notebook
+
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
