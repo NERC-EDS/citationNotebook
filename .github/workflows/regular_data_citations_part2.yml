@@ -6,7 +6,6 @@ on:
     workflows: ["regular_data_citations_part1.yml"]
     types:
       - completed
-    
 permissions:
   contents: write
 
@@ -34,6 +33,7 @@ jobs:
           git config --global user.name "GitHub Actions"
           git add Results/v2/latest_results.json
           git commit -m "Regular action, update latest_results JSON file"
-          git push citationNotebook split_notebook
+          git push https://github.com/NERC-EDS/citationNotebook.git split_notebook
+
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
