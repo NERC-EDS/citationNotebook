@@ -3,7 +3,7 @@ name: Weekly Data Citations Notebook Run - part 2
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: [".github/workflows/regular_data_citations_part1.yml"]
+    workflows: ["regular_data_citations_part1.yml"]
     types:
       - completed
 permissions:
