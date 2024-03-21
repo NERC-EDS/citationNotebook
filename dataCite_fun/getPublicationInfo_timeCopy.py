@@ -39,7 +39,7 @@ def getPublicationInfo(crossRef_df_gbif_filtered2_deduplicated):
                 authors = "Info not given"
 
             try:
-                publisher = r.json()['publisher']
+                publisher = r.json()['type'] # was ['publisher']
             except:
                 publisher = "Info not given"
                 
