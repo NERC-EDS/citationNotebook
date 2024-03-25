@@ -63,12 +63,19 @@ def getPublicationType(scholex_df):
                 # ask the Datacite API what type of publication
                 r = requests.get(('https://api.datacite.org/dois/' + pubDOI), headers = {'client-id': 'bl.nerc'})
                 print(r.status_code)
-                newPubTypeList.append(r.json()['data']['attributes']['types']['citeproc']) # is citeproc the correct one to use?
+                try:
+                    newPubTypeList.append(r.json()['data']['attributes']['types']['citeproc']) # is citeproc the correct one to use?
+                except:
+                    newPubTypeList.append(pubType)
 
             elif DOIregistry == 'Crossref':
                 r = requests.get(('https://api.crossref.org/works/'  + pubDOI), headers={"Accept": "application/json"})
                 print(r.status_code)
-                newPubTypeList.append(r.json()['message']['type']) # could also add 'subtype':r.json()['message']['subtype']
+                try:
+                    newPubTypeList.append(r.json()['message']['type']) # could also add 'subtype':r.json()['message']['subtype']
+                except:
+                    newPubTypeList.append(pubType)
+                    
             else:
                 print('Unknown DOI registry')
 
