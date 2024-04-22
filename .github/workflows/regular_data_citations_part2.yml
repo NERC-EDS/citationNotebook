@@ -3,7 +3,9 @@ name: Weekly Data Citations Notebook Run - part 2
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: ["regular_data_citations_part1.yml"]
+    workflows: 
+      - path: .github/workflows/regular_data_citations_part1.yml
+        branch: misc_updates_spring24
     types:
       - completed
 permissions:
