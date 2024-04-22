@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
   workflow_run:
     workflows: 
-      - path: .github/workflows/regular_data_citations_part1.yml
-        branch: misc_updates_spring24
+      - path: ".github/workflows/regular_data_citations_part1.yml"
+        branch: "misc_updates_spring24"
     types:
       - completed
 permissions:
