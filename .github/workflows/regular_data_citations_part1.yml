@@ -2,8 +2,8 @@ name: Weekly Data Citations Notebook Run - part 1
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "0 0 * * 0"  # Run every Sunday at midnight
+  # schedule:
+  #   - cron: "0 0 * * 0"  # Run every Sunday at midnight
 
 permissions:
   contents: write
