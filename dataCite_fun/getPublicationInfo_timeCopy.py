@@ -47,31 +47,45 @@ def getPublicationInfo(crossRef_df_gbif_filtered2_deduplicated):
                 pub_type = r.json()['type']
             except:
                 pub_type = "Info not given"
+                
+            try:
+                pub_date = r.json()['created']['date-parts']
+            except:
+                try:
+                    pub_date = r.json()['created']
+                except:
+                    try:
+                        pub_date = r.json()['published']
+                    except:
+                        pub_date = "Info not given"
 
             pub_info.append({
                     'pub_doi_url': pubdoi,
                     'pub_Title': title,
                     'pub_authors': authors,
                     'publisher': publisher,
-                    'pub_type': pub_type
+                    'pub_type': pub_type,
+                    'pub_date': pub_date
                 
                 # add publication date to this - in order to check if this is before the dataset publication date - could be a way to filter out dodgy results
             })
 
-            time.sleep(1) # wait for a bit, doing it too quickly may be overloading the server? often gives a 503 status error
-            if count % 40 == 0: # if count is a multiple of 10 wait for a bit longer
+            time.sleep(1.1) # wait for a bit, doing it too quickly may be overloading the server? often gives a 503 status error
+            if count % 30 == 0: # if count is a multiple of 10 wait for a bit longer
                 time.sleep(180)
         else:
             title = "not a doi"
             authors = "not a doi"
             publisher = "not a doi"
             pub_type = "not a doi"
+            pub_date = "Info not given"
             pub_info.append({
                     'pub_doi_url': pubdoi,
                     'pub_Title': title,
                     'pub_authors': authors,
                     'publisher': publisher,
-                    'pub_type': pub_type
+                    'pub_type': pub_type,
+                    'pub_date': pub_date
                 # add publication date to this - in order to check if this is before the dataset publication date - could be a way to filter out dodgy results
                 })
 
