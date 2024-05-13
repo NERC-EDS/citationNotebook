@@ -33,7 +33,7 @@ jobs:
           git config --global user.name "GitHub Actions"
           git add "Results/Intermediate data/latest_results_scholix.csv" "Results/Intermediate data/latest_results_crossRef.csv" "Results/Intermediate data/latest_results_dataCite.csv"
           git commit -m "Regular action, updates Results/Intermediate data/latest_results_{databaseName}.csv"
-          git push https://github.com/NERC-EDS/citationNotebook.git misc_updates_spring24
+          git push https://github.com/NERC-EDS/citationNotebook.git main
 
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
