@@ -6,6 +6,9 @@ on:
     workflows: ["regular_data_citations_part1.yml"]
     types:
       - completed
+  schedule:
+    - cron: "0 0 * * 1" # Run every Sunday at midnight (UTC)
+
 permissions:
   contents: write
 
