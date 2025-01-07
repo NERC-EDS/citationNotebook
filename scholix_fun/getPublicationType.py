@@ -55,8 +55,15 @@ def getPublicationType(scholex_df):
             # determine if crossref or datacite supplies the DOI
             print('Pub DOI: ', pubDOI)
             r = requests.get(('https://doi.org/doiRA/' + pubDOI), headers={"Accept": "application/json"})
-            DOIregistry = r.json()[0]['RA']
-            print(DOIregistry)
+            
+            try:
+                DOIregistry = r.json()[0]['RA']
+                print(DOIregistry)
+            except (IndexError, KeyError) as e:
+                print(f"Error accessing DOI registry: {e}")
+            except Exception as e:
+                print(f"Unexpected error: {e}")
+
 
             # query the crossref or datacite API
             if DOIregistry == 'DataCite':
@@ -78,6 +85,7 @@ def getPublicationType(scholex_df):
                     
             else:
                 print('Unknown DOI registry')
+                newPubTypeList.append(pubType)  # in the cases where the pubType is not unknown keep it the same
 
         else: 
             newPubTypeList.append(pubType) # in the cases where the pubType is not unknown keep it the same
