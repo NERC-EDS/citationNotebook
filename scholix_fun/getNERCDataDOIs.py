@@ -16,8 +16,8 @@ def getNERCDataDOIs():
     # determine the total number of pages and dataset records
     totalPages = r.json()['meta']['totalPages']
     totalRecords = r.json()['meta']['total']
-    print("Total records:", totalRecords)
-    print("Total pages:", totalPages)
+    # print("Total records:", totalRecords)
+    # print("Total pages:", totalPages)
 
     # create array from 1 to total number of pages to loop through
     pages = np.arange(1,totalPages+1)
@@ -64,13 +64,13 @@ def getNERCDataDOIs():
         for recordNumber in numRecords:
             # add info to dataCiteInfo list
             dataCiteInfo.append([r.json()['data'][recordNumber]['attributes']['publisher'],
-                         r.json()['data'][recordNumber]['attributes']['doi'],
-                         r.json()['data'][recordNumber]['attributes']['titles'],       
-                         r.json()['data'][recordNumber]['attributes']['dates'], # remove this? Or change to just one date?
-                                 r.json()['data'][recordNumber]['attributes']['publicationYear'],
-                         r.json()['data'][recordNumber]['attributes']['creators'],
-                         r.json()['meta']['page'],
-                         r.json()['links']['self']])
+                                r.json()['data'][recordNumber]['attributes']['doi'],
+                                r.json()['data'][recordNumber]['attributes']['titles'],       
+                                r.json()['data'][recordNumber]['attributes']['dates'], # remove this? Or change to just one date?
+                                        r.json()['data'][recordNumber]['attributes']['publicationYear'],
+                                r.json()['data'][recordNumber]['attributes']['creators'],
+                                r.json()['meta']['page'],
+                                r.json()['links']['self']])
 
         time.sleep(1) # wait for a bit, doing it too quickly may be overloading the server? often gives a 503 status error
         if p % 10 == 0: # if p is a multiple of 10 wait for a bit longer
