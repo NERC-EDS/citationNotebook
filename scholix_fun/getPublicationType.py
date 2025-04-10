@@ -57,8 +57,15 @@ def getPublicationType(scholex_df):
             r = requests.get(('https://doi.org/doiRA/' + pubDOI), headers={"Accept": "application/json"})
             
             try:
+                
+            try:
                 DOIregistry = r.json()[0]['RA']
-                print(DOIregistry)
+                    print(DOIregistry)
+            except (IndexError, KeyError) as e:
+                print(f"Error accessing DOI registry: {e}")
+            except Exception as e:
+                print(f"Unexpected error: {e}")
+
             except (IndexError, KeyError) as e:
                 print(f"Error accessing DOI registry: {e}")
             except Exception as e:
