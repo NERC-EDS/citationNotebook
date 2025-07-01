@@ -55,8 +55,6 @@ def getPublicationType(scholex_df):
             # determine if crossref or datacite supplies the DOI
             print('Pub DOI: ', pubDOI)
             r = requests.get(('https://doi.org/doiRA/' + pubDOI), headers={"Accept": "application/json"})
-            
-            try:
                 
             try:
                 DOIregistry = r.json()[0]['RA']
