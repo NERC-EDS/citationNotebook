@@ -8,7 +8,7 @@ import time
     
 def getDataCiteCitations_relationTypes(relation_type_id_list):
 
-    column_names = ["id", "subj-id", "obj-id", "source-id", "relation-type-id", "occurred-at", "Page endpoint"]
+    
     dataCite_info_relationTypes = []  # create an empty list in which all the DataCite info will be placed
     
     for relation_type_id in relation_type_id_list:
@@ -110,7 +110,22 @@ def getDataCiteCitations_relationTypes(relation_type_id_list):
 
     # flatten and put the collected information into a pandas dataframe    
     flat_list = [item for sublist in dataCite_info_relationTypes for item in sublist]
+    column_names = ["id", "subj-id", "obj-id", "source-id", "relation-type-id", "occurred-at", "Page endpoint"]
     dataCite_df = pd.DataFrame(flat_list, columns = column_names)
+
+
+    doi_list = []
+    for url in dataCite_df['subj-id']:
+        doi = url.replace('https://doi.org/','')
+        doi_list.append(doi)
+    dataCite_df['data_doi'] = doi_list
+    dataCite_df = dataCite_df.drop(['subj-id'], axis=1)
+    
+    dataCite_df = dataCite_df.rename(columns={"obj-id": "pub_doi_url"})
+
+    # drop the rows where the data_doi column value does not start with "10.5285"
+    dataCite_df = dataCite_df[dataCite_df['data_doi'].str.startswith('10.5285')]
+
 
     print('Done!')
     
