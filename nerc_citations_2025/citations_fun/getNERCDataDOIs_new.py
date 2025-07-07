@@ -28,6 +28,43 @@ def getNERCDataDOIs():
         return []
     
 
+
+    def process_publisher(publisher, doi):
+
+        if type(publisher) == float or publisher is None:
+            publisher_processed = publisher
+            print("Publisher is type float or None: ", publisher, doi)
+
+            return(publisher_processed)
+        else:
+            pass
+
+        dataCentreName_lower = publisher.lower() # make it all lowercase as 'in' operator used below is case sensitive
+
+        if 'polar' in dataCentreName_lower:
+            publisher_processed = 'Polar Data Centre (PDC)'
+        elif 'atmospheric' in dataCentreName_lower or 'badc' in dataCentreName_lower or 'earth' in dataCentreName_lower:
+            publisher_processed = 'Centre for Environmental Data Analysis (CEDA)'
+        elif 'oceanographic' in dataCentreName_lower:
+            publisher_processed = 'British Oceanographic Data Centre (BODC)'
+        elif 'geological' in dataCentreName_lower or 'geoscience' in dataCentreName_lower:
+            publisher_processed = 'National Geoscience Data Centre (NGDC)'
+        elif 'environmental information' in dataCentreName_lower:
+            publisher_processed = 'Environmental Information Data Centre (EIDC)'
+        elif 'environmental data' in dataCentreName_lower:
+            publisher_processed = 'Centre for Environmental Data Analysis (CEDA)'
+        else:
+            publisher_processed = publisher
+            print("Publisher text did not fit into expected categories: ",  publisher)
+
+        return publisher_processed
+    
+
+
+
+
+    
+
     # Setup a session with retries
     session = requests.Session()
     retries = Retry(
@@ -112,17 +149,19 @@ def getNERCDataDOIs():
 
             processed_title = extract_title(title_unprocessed)
             processed_creators = process_creators(creators)
+            processed_publisher = process_publisher(publisher, doi)
+
 
             record_dict = {
-                "publisher": publisher,
-                "datasetDOI_attribute": doi,
-                "title": processed_title,
-                "dates": dates, 
-                "publicationYear": publicationYear,
-                "authors": processed_creators,
-                "registered": registered,
-                "page_number": page_number,
-                "self_link": self_link
+                "data_publisher": processed_publisher,
+                "data_doi": doi,
+                "data_title": processed_title,
+                "data_dates": dates, 
+                "data_publication_year": publicationYear,
+                "data_authors": processed_creators,
+                "data_registered": registered,
+                "data_page_number": page_number,
+                "data_self_link": self_link
             }
             dataCiteInfo.append(record_dict)
         # Prepare the next_url for the upcoming page
@@ -137,6 +176,9 @@ def getNERCDataDOIs():
     # # put the collected information into a pandas dataframe    
     # column_names = ["publisher", "datasetDOI_attribute", "title_unprocessed", "dates", "publication_yr", "creators", "page_number", "Page endpoint"]
     # dataCite_df = pd.DataFrame(dataCiteInfo, columns = column_names)
+
+
+
 
 
 
