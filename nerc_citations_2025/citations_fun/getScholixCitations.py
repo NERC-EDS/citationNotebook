@@ -10,10 +10,10 @@ def getScholixCitations(dataCite_df):
     
     scholexInfo = [] # create an empty list in which all the Scholex info will be placed
     
-    dataDOIs = list(dataCite_df['datasetDOI_attribute'])
-    dataPublisher = list(dataCite_df['publisher'])
-    dataTitle = list(dataCite_df['title'])
-    dataAuthors = list(dataCite_df['datasetAuthors_processed'])
+    dataDOIs = list(dataCite_df['data_doi'])
+    dataPublisher = list(dataCite_df['data_publisher'])
+    dataTitle = list(dataCite_df['data_title'])
+    dataAuthors = list(dataCite_df['data_authors'])
     
     scholix_url = 'http://api.scholexplorer.openaire.eu/v2/Links?'
 
@@ -96,7 +96,7 @@ def getScholixCitations(dataCite_df):
                 
                     
     # put the collected info into a dataframe                
-    column_names = ["relationshipType", "pubTitle", "pubDate", "pubAuthors", "pubID", "datasetDOI", "datasetPublisher", "datasetTitle", "datasetAuthors"]
+    column_names = ["relationshipType", "pub_title", "pub_date", "pub_authors", "pub_doi", "data_doi", "data_publisher", "data_title", "data_authors"]
     scholex_df = pd.DataFrame(scholexInfo, columns = column_names) 
     print('Done!')
     return scholex_df
