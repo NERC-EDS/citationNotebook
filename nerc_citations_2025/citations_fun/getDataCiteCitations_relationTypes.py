@@ -121,7 +121,7 @@ def getDataCiteCitations_relationTypes(relation_type_id_list):
     dataCite_df['data_doi'] = doi_list
     dataCite_df = dataCite_df.drop(['subj-id'], axis=1)
     
-    dataCite_df = dataCite_df.rename(columns={"obj-id": "pub_doi_url"})
+    dataCite_df = dataCite_df.rename(columns={"obj-id": "pub_doi"})
 
     # drop the rows where the data_doi column value does not start with "10.5285"
     dataCite_df = dataCite_df[dataCite_df['data_doi'].str.startswith('10.5285')]
