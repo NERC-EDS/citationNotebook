@@ -1,12 +1,11 @@
 # functions to harvest nerc dataset citations from Overton
-
 import requests, time, json
 import pandas as pd
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
 
-def overton_api_request(doi):
+def overton_api_request(doi, session):
     url = "https://app.overton.io/documents.php"
     params ={
         "plain_dois_cited": doi,
@@ -37,7 +36,7 @@ def getOvertonCitations(nerc_datacite_dois_df):
         start = time.time()
 
         try:
-            data = overton_api_request(doi)
+            data = overton_api_request(doi, session)
             if data:
                 results.append(data)
         except requests.RequestException as e:
@@ -80,8 +79,23 @@ def processOvertonResults(results):
     cols = {"title":"pub_title", 'authors':'pub_authors', 'published_on':'pub_date', 'document_url':'pub_doi', 'type':'relation_type', 'doi':'data_doi'}
     overton_df_sub = overton_df_sub.rename(columns = cols)
 
-    # write to file
-    overton_df_sub.to_csv("results/latest_results_overton.csv", index= False )
+    # merge with nerc_datacite_dois_df before writing to latest_results_overton.csv
+    with open("results/nerc_datacite_dois.json") as f:
+        nerc_datacite_dois = json.load(f)
 
-    return overton_df_sub
+    nerc_datacite_dois_df = pd.DataFrame(nerc_datacite_dois)
+
+
+    overton_df_merged = overton_df_sub.merge(
+    nerc_datacite_dois_df,
+    left_on='data_doi',
+    right_on='data_doi',
+    how='left'
+)
+
+
+    # write to file
+    overton_df_merged.to_csv("results/latest_results_overton.csv", index= False )
+
+    return overton_df_merged
 
