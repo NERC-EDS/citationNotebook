@@ -80,13 +80,15 @@ def getDataCiteCitations_relationTypes(relation_type_id_list):
             # loop through records on this page - this could be a separate function to call
             for recordNumber in numRecords:
                 # add info to dataCiteInfo list
-                dataCite_info.append([r.json()['data'][recordNumber]['id'],
+                dataCite_info.append([
+                             # r.json()['data'][recordNumber]['id'],
                              r.json()['data'][recordNumber]['attributes']['subj-id'],
                              r.json()['data'][recordNumber]['attributes']['obj-id'],
                              r.json()['data'][recordNumber]['attributes']['source-id'],       
                              r.json()['data'][recordNumber]['attributes']['relation-type-id'], 
-                             r.json()['data'][recordNumber]['attributes']['occurred-at'],
-                             r.json()['links']['self']])
+                             r.json()['data'][recordNumber]['attributes']['occurred-at']
+                             # r.json()['links']['self']
+                             ])
             
             # print(dataCite_info)
 
@@ -110,7 +112,7 @@ def getDataCiteCitations_relationTypes(relation_type_id_list):
 
     # flatten and put the collected information into a pandas dataframe    
     flat_list = [item for sublist in dataCite_info_relationTypes for item in sublist]
-    column_names = ["id", "subj-id", "obj-id", "source-id", "relation-type-id", "occurred-at", "Page endpoint"]
+    column_names = ["subj-id", "obj-id", "source-id", "relation-type-id", "occurred-at"]
     dataCite_df = pd.DataFrame(flat_list, columns = column_names)
 
 

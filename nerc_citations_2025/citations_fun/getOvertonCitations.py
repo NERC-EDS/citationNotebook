@@ -59,7 +59,6 @@ def processOvertonResults(results):
     # extract columns we're interested in
     overton_df_sub = overton_df[['title', 'authors', 'published_on', 'document_url', 'highlights']]
 
-
     # extract relation type and data doi from highlights column dictionaries
     extracted = overton_df_sub["highlights"].apply(
         lambda x: {
@@ -91,11 +90,17 @@ def processOvertonResults(results):
     left_on='data_doi',
     right_on='data_doi',
     how='left'
-)
+    )
 
+    overton_df_merged = overton_df_merged.drop(['data_registered','data_page_number', 'data_self_link'], axis = 1)
+
+    overton_df_merged = overton_df_merged[[
+        'data_doi', 'data_publisher', 'data_title', 'data_dates', 'data_publication_year', 'data_authors',
+        'relation_type', 'pub_doi', 'pub_title', 'pub_date', 'pub_authors'
+    ]]
 
     # write to file
-    overton_df_merged.to_csv("results/latest_results_overton.csv", index= False )
+    overton_df_merged.to_csv("results/latest_results_overton.csv", index= False)
 
     return overton_df_merged
 
