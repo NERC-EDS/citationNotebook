@@ -58,10 +58,6 @@ def getNERCDataDOIs():
             print("Publisher text did not fit into expected categories: ",  publisher)
 
         return publisher_processed
-    
-
-
-
 
     
 
@@ -139,7 +135,7 @@ def getNERCDataDOIs():
             publisher = attributes.get('publisher', '')
             doi = attributes.get('doi', '')
             title_unprocessed = attributes.get('titles', [])
-            dates = attributes.get('dates', '')
+            # dates = attributes.get('dates', '')
             publicationYear = attributes.get('publicationYear', '')
             creators = attributes.get('creators', [])
             registered = attributes.get('registered', '') # is this correct? normally get it like this r.json()['data']['attributes']['registered'],
@@ -156,10 +152,10 @@ def getNERCDataDOIs():
                 "data_publisher": processed_publisher,
                 "data_doi": doi,
                 "data_title": processed_title,
-                "data_dates": dates, 
+                # "data_dates": dates, 
                 "data_publication_year": publicationYear,
                 "data_authors": processed_creators,
-                "data_registered": registered,
+                # "data_registered": registered,
                 "data_page_number": page_number,
                 "data_self_link": self_link
             }
@@ -176,10 +172,6 @@ def getNERCDataDOIs():
     # # put the collected information into a pandas dataframe    
     # column_names = ["publisher", "datasetDOI_attribute", "title_unprocessed", "dates", "publication_yr", "creators", "page_number", "Page endpoint"]
     # dataCite_df = pd.DataFrame(dataCiteInfo, columns = column_names)
-
-
-
-
 
 
 

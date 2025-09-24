@@ -11,14 +11,15 @@ def getScholixCitations(dataCite_df):
     scholexInfo = [] # create an empty list in which all the Scholex info will be placed
     
     dataDOIs = list(dataCite_df['data_doi'])
-    dataPublisher = list(dataCite_df['data_publisher'])
-    dataTitle = list(dataCite_df['data_title'])
-    dataAuthors = list(dataCite_df['data_authors'])
+    # dataPublisher = list(dataCite_df['data_publisher'])
+    # dataTitle = list(dataCite_df['data_title'])
+    # dataAuthors = list(dataCite_df['data_authors'])
     
     scholix_url = 'http://api.scholexplorer.openaire.eu/v2/Links?'
 
     # loop through info from the DataCite dataframe
-    for doi, publisher, title, authors in zip(dataDOIs, dataPublisher, dataTitle, dataAuthors):
+    # for doi, publisher, title, authors in zip(dataDOIs, dataPublisher, dataTitle, dataAuthors):
+    for doi in dataDOIs:
         headers = {'sourcePid': doi}
         r = requests.get(scholix_url, headers)
         print(headers)
@@ -83,20 +84,28 @@ def getScholixCitations(dataCite_df):
                                              r.json()['result'][citationNum]['target']['PublicationDate'],
                                              r.json()['result'][citationNum]['target']['Creator'],
                                              pubDOI, 
-                                             doi, publisher, title, authors]) # info from dataCite_df
+                                             doi]) # info from dataCite_df
                             else:
                                 continue
 
                 except:
                     # Handle the case when 'result' key is absent
                     print("No results found:", headers)
-                
-                
-                
-                
+   
                     
     # put the collected info into a dataframe                
-    column_names = ["relationshipType", "pub_title", "pub_date", "pub_authors", "pub_doi", "data_doi", "data_publisher", "data_title", "data_authors"]
+    column_names = ["relationshipType", "pub_title", "pub_date", "pub_authors", "pub_doi", "data_doi"]
     scholex_df = pd.DataFrame(scholexInfo, columns = column_names) 
+
+
+    # merge with dataCite_df
+
+    scholex_df_merged = scholex_df.merge(
+        dataCite_df,
+        left_on='data_doi',
+        right_on='data_doi',
+        how='left'
+    )
+
     print('Done!')
-    return scholex_df
+    return scholex_df_merged

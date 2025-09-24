@@ -66,6 +66,10 @@ def process_citation_results(scholex_df):
 # ideal columns
 # ['data_doi', 'data_publisher', 'data_title', 'data_dates', 'data_publication_year', 'data_authors', 'data_registered', 'relation_type', 'pub_doi', 'pub_title', 'pub_date', 'pub_authors']
 
-    
+
+    # add column source-id
+    source_id = ['scholex'] * len(scholex_df)
+    scholex_df['source-id'] = source_id
+        
     
     return scholex_df

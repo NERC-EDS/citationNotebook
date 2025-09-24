@@ -81,9 +81,7 @@ def processOvertonResults(results):
     # merge with nerc_datacite_dois_df before writing to latest_results_overton.csv
     with open("results/nerc_datacite_dois.json") as f:
         nerc_datacite_dois = json.load(f)
-
     nerc_datacite_dois_df = pd.DataFrame(nerc_datacite_dois)
-
 
     overton_df_merged = overton_df_sub.merge(
     nerc_datacite_dois_df,
@@ -94,10 +92,15 @@ def processOvertonResults(results):
 
     overton_df_merged = overton_df_merged.drop(['data_registered','data_page_number', 'data_self_link'], axis = 1)
 
+    # re-oder columns
     overton_df_merged = overton_df_merged[[
         'data_doi', 'data_publisher', 'data_title', 'data_dates', 'data_publication_year', 'data_authors',
         'relation_type', 'pub_doi', 'pub_title', 'pub_date', 'pub_authors'
     ]]
+
+    # add column source-id
+    source_id = ['overton'] * len(overton_df_merged)
+    overton_df_merged['source-id'] = source_id
 
     # write to file
     overton_df_merged.to_csv("results/latest_results_overton.csv", index= False)
