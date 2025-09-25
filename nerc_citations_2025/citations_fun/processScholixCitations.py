@@ -69,7 +69,15 @@ def process_citation_results(scholex_df):
 
     # add column source-id
     source_id = ['scholex'] * len(scholex_df)
-    scholex_df['source-id'] = source_id
-        
+    scholex_df['source_id'] = source_id
+
+    scholex_df_drop = scholex_df.drop(['data_page_number', 'data_self_link'], axis=1)
+
+    scholex_df_drop_names = scholex_df_drop[[
+        'data_doi', 'data_publisher', 'data_title', 'data_publication_year', 'data_authors',
+        'relation_type', 'pub_doi', 'pub_title', 'pub_date', 'pub_authors', 'source_id'
+    ]]   
+
+    scholex_df_drop_names.to_csv("results/latest_results_scholex.csv", index= False )
     
-    return scholex_df
+    return scholex_df_drop_names

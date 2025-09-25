@@ -112,7 +112,7 @@ def getDataCiteCitations_relationTypes(relation_type_id_list):
 
     # flatten and put the collected information into a pandas dataframe    
     flat_list = [item for sublist in dataCite_info_relationTypes for item in sublist]
-    column_names = ["subj-id", "obj-id", "source-id", "relation-type-id"]
+    column_names = ["subj-id", "obj-id", "source_id", "relation_type"]
     dataCite_df = pd.DataFrame(flat_list, columns = column_names)
 
 

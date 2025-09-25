@@ -94,7 +94,7 @@ def getScholixCitations(dataCite_df):
    
                     
     # put the collected info into a dataframe                
-    column_names = ["relationshipType", "pub_title", "pub_date", "pub_authors", "pub_doi", "data_doi"]
+    column_names = ["relation_type", "pub_title", "pub_date", "pub_authors", "pub_doi", "data_doi"]
     scholex_df = pd.DataFrame(scholexInfo, columns = column_names) 
 
 
