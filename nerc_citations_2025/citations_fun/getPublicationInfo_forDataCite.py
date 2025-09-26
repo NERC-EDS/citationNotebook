@@ -144,11 +144,19 @@ def getPublicationInfo(datacite_doi_events_df):
                         pub_date = data['published']
                     except:
                         pub_date = "Info not given"
+            
+            # format pub_date when its given as nested list [[]]
+            try:
+                pub_date_format  = f"{pub_date[0][2]}/{pub_date[0][1]}/{pub_date[0][0]}"
+            except:
+                pub_date_format = pub_date
+
+                
 
             pub_info.append({
                     'pub_doi': pubdoi,
                     'pub_title': title,
-                    'pub_date': pub_date,
+                    'pub_date': pub_date_format,
                     'pub_authors': authors,
                     'pub_publisher': publisher,
                     'pub_type': pub_type
