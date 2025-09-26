@@ -75,7 +75,7 @@ def process_citation_results(scholex_df):
 
     scholex_df_drop_names = scholex_df_drop[[
         'data_doi', 'data_publisher', 'data_title', 'data_publication_year', 'data_authors',
-        'relation_type', 'pub_doi', 'pub_title', 'pub_date', 'pub_authors', 'source_id'
+        'relation_type', 'pub_doi', 'pub_title', 'pub_date', 'pub_authors', "pub_type", "pub_publisher", 'source_id'
     ]]   
 
     scholex_df_drop_names.to_csv("results/latest_results_scholex.csv", index= False )

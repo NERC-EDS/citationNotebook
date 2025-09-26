@@ -83,6 +83,8 @@ def getScholixCitations(dataCite_df):
                                              r.json()['result'][citationNum]['target']['Title'],
                                              r.json()['result'][citationNum]['target']['PublicationDate'],
                                              r.json()['result'][citationNum]['target']['Creator'],
+                                             r.json()['result'][citationNum]['target']['Type'],
+                                             r.json()['result'][citationNum]['target']['Publisher'][0]['name'],
                                              pubDOI, 
                                              doi]) # info from dataCite_df
                             else:
@@ -94,7 +96,7 @@ def getScholixCitations(dataCite_df):
    
                     
     # put the collected info into a dataframe                
-    column_names = ["relation_type", "pub_title", "pub_date", "pub_authors", "pub_doi", "data_doi"]
+    column_names = ["relation_type", "pub_title", "pub_date", "pub_authors", "pub_type", "pub_publisher", "pub_doi", "data_doi"]
     scholex_df = pd.DataFrame(scholexInfo, columns = column_names) 
 
 
