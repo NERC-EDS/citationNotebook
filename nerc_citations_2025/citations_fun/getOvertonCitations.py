@@ -57,25 +57,30 @@ def processOvertonResults(results):
     # overton_df.to_csv("results/overton_list.csv", index= False )
 
     # extract columns we're interested in
-    overton_df_sub = overton_df[['title', 'authors', 'published_on', 'document_url', 'highlights']]
+    overton_df_sub = overton_df[['title', 'authors', 'published_on', 'document_url', 'highlights', 'source', 'overton_policy_document_series']]
+
 
     # extract relation type and data doi from highlights column dictionaries
-    extracted = overton_df_sub["highlights"].apply(
+    extracted_highlights = overton_df_sub["highlights"].apply(
         lambda x: {
             "type": x[0]["type"] if isinstance(x, list) and len(x) > 0 else None,
             "doi": x[0]["doi"] if isinstance(x, list) and len(x) > 0 else None,
         }
     )
-
     # Turn the Series of dicts into a DataFrame and join to the original
-    extracted_df = pd.DataFrame(extracted.tolist())
-    overton_df_sub = overton_df_sub.join(extracted_df)
+    extracted_highlights_df = pd.DataFrame(extracted_highlights.tolist())
+    overton_df_sub = overton_df_sub.join(extracted_highlights_df)
 
-    # drop highlights column - no longer needed
-    overton_df_sub = overton_df_sub.drop('highlights', axis = 1)
+    # extract title from source dictionary to get pub_publisher
+    overton_df_sub["pub_publisher"] = overton_df_sub["source"].apply(
+        lambda x: x.get("title") if isinstance(x, dict) else None
+    )
+
+    # drop highlights and source columns - no longer needed
+    overton_df_sub = overton_df_sub.drop(['highlights', 'source'], axis = 1)
 
     # rename columns
-    cols = {"title":"pub_title", 'authors':'pub_authors', 'published_on':'pub_date', 'document_url':'pub_doi', 'type':'relation_type', 'doi':'data_doi'}
+    cols = {"title":"pub_title", 'authors':'pub_authors', 'published_on':'pub_date', 'document_url':'pub_doi', 'type':'relation_type', 'doi':'data_doi', 'overton_policy_document_series':'pub_type'}
     overton_df_sub = overton_df_sub.rename(columns = cols)
 
     # merge with nerc_datacite_dois_df before writing to latest_results_overton.csv
@@ -99,7 +104,7 @@ def processOvertonResults(results):
     # re-oder columns
     overton_df_merged = overton_df_merged[[
         'data_doi', 'data_publisher', 'data_title', 'data_publication_year', 'data_authors',
-        'relation_type', 'pub_doi', 'pub_title', 'pub_date', 'pub_authors', 'source_id'
+        'relation_type', 'pub_doi', 'pub_title', 'pub_date', 'pub_authors', 'pub_type', 'pub_publisher', 'source_id'
     ]]
 
 
