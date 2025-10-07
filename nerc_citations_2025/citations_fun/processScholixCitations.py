@@ -36,6 +36,11 @@ def process_citation_results(scholex_df):
     scholex_df = scholex_df.drop(['data_publisher'], axis=1)
     scholex_df['data_publisher'] = newPublisherLst
 
+    # remove leading url bit from pub_doi if present
+    scholex_df['pub_doi'] = scholex_df['pub_doi'].str.replace(
+        'https://doi.org/', '', regex=False
+    )
+
     # process pub authors
     pub_authors_processed = []
     for authorList in scholex_df['pub_authors']:

@@ -212,6 +212,13 @@ def getPublicationInfo(datacite_doi_events_df):
         suffixes=('', '_pubInfo')  # to disambiguate duplicate column names like 'publisher'
     )
 
+    # remove leading url bit from pub_doi if present
+    merged_df['pub_doi'] = merged_df['pub_doi'].str.replace(
+        'https://doi.org/', '', regex=False
+    )
+
+
+
     print("Done!")
     # return datacite_json_pubInfo
     # return crossRef_df_gbif_filtered2_deduplicated
