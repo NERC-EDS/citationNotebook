@@ -2,6 +2,8 @@
 
 # df_list = [dataCite_df, scholex_df, overton_df] # list of dataframes to merge
 
+import pandas as pd
+
 def merge_citation_dfs(df_list):
 
     combined_df = pd.concat(df_list, ignore_index=True)

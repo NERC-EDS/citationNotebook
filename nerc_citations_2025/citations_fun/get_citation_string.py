@@ -3,6 +3,7 @@ from requests.adapters import HTTPAdapter
 from requests.exceptions import ConnectionError, Timeout
 from urllib3.util.retry import Retry
 import time
+import pandas as pd
 
 def get_citation_str(nerc_citations_df):
 
