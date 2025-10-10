@@ -22,7 +22,7 @@ def get_citation_str(nerc_citations_df):
     adapter = HTTPAdapter(max_retries=retry_strategy)  # Apply the retry strategy
     session.mount('https://', adapter)
 
-    for pubDOI in nerc_citations_df['pub_doi_stripped']:
+    for pubDOI in nerc_citations_df['pub_doi']:
         time.sleep(0.1)
         if pubDOI.startswith('10.'):
             print(pubDOI)
