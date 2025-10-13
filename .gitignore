@@ -29,3 +29,5 @@ Results/NERC_EDS_events_from_doi_list_scholix/
 
 nerc_citations_2025/results/*/
 !nerc_citations_2025/results/*
+
+development_code.ipynb

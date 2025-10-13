@@ -128,5 +128,37 @@ def getPublicationType(scholex_df):
     # tidy up scholex_df so we only have newPubTypeList
     scholex_df = scholex_df.drop(['publicationType', 'publicationType1', 'publicationSubType'], axis=1) # remove uneccessary columns
     scholex_df = scholex_df.rename(columns={"newPubTypeList": "PubType"})
+
+    scholex_df['pub_type_merged'] = [merge_publication_types(a, b) for a, b in zip(scholex_df['pub_type'], scholex_df['PubType'])]
+
+    scholex_df = scholex_df.drop(['PubType', 'pub_type'], axis = 1 )
+    scholex_df = scholex_df.rename(columns={"pub_type_merged": "pub_type"})
     
     return scholex_df
+
+# decision function to choose between publication type from original Scholex call and getPublicationType function
+def merge_publication_types(t1, t2):
+    # identical
+    if t1 == t2:
+        return t1
+
+    # handle unknown / not a doi
+    if t1 in ("unknown", "not a doi"):
+        return t2
+    if t2 in ("unknown", "not a doi"):
+        return t1
+
+    # literature with a more specific type
+    if t1 == "literature":
+        return t2
+    if t2 == "literature":
+        return t1
+
+    # dataset with a more specific type
+    if t1 == "dataset":
+        return t2
+    if t2 == "dataset":
+        return t1
+
+    # default
+    return t2
