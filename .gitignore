@@ -1,33 +1,12 @@
 venv/
 .venv/
-*.csv
-*.pkl
-!dataCitations_allSourcesMerged_retrieved*.csv
-!latest_results.csv
-*.pyc
-/analyse_plot_citations.ipynb
-.ipynb_checkpoints/
-_pycache_/
-Results/.ipynb_checkpoints/
-crossRef_fun/.ipynb_checkpoints/
-dataCite_fun/.ipynb_checkpoints/
-scholix_fun/.ipynb_checkpoints/
-Results/__pycache__/
-crossRef_fun/__pycache__/
-dataCite_fun/__pycache__/
-scholix_fun/__pycache__/
-test/
-Results/NERC_EDS_events_from_doi_list_scholix/
-/Results/*/
-!Results/v1/
-!Results/v2/
-!Results/Intermediate data/
-/Results/event_data*
-!Results/Intermediate data/latest_results_crossRef.csv
-!Results/Intermediate data/latest_results_dataCite.csv
-!Results/Intermediate data/latest_results_scholix.csv
 
-nerc_citations_2025/results/*/
-!nerc_citations_2025/results/*
+*.pkl
+_pycache_/
+results/
+
+Results/.ipynb_checkpoints/
+Results/__pycache__/
+
 
 development_code.ipynb
