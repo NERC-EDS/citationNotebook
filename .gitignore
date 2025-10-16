@@ -7,6 +7,7 @@ results/
 
 Results/.ipynb_checkpoints/
 Results/__pycache__/
+citations_fun/__pycache__/
 
 
 development_code.ipynb
