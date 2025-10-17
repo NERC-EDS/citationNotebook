@@ -3,7 +3,7 @@ name: Merge citation results, get citation string and final processing
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 12 * * 0"  # Run every Sunday at midday (UTC)
+    - cron: "0 23 * * 0"  # Run every Sunday at 11pm (UTC)
 
 permissions:
   contents: write
