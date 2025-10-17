@@ -146,6 +146,10 @@ def getNERCDataDOIs():
             processed_title = extract_title(title_unprocessed)
             processed_creators = process_creators(creators)
             processed_publisher = process_publisher(publisher, doi)
+            try:
+                publicationYear = int(publicationYear)
+            except:
+                pass
 
 
             record_dict = {

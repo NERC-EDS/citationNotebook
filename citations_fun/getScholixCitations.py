@@ -42,26 +42,27 @@ def getScholixCitations(dataCite_df):
                     # loop through records again to collect info this time - this needs to be a seperate block in order to add the completed citation count 
                     for citationNum in pageRecords:
                         
-                        if "10.15468" in r.json()['result'][citationNum]['target']['Identifier'][0]['ID']: # skip the gbif records
-                            print('Skip GBif')
-                            continue
-                        else:
-                            for IDinfo in r.json()['result'][citationNum]['target']['Identifier']: # for each ID type for this publication e.g. DOI, pubmed etc
-                                pubDOI = None
+                        ### move this gbif skip to the filter section in merge results ###
+                        # if "10.15468" in r.json()['result'][citationNum]['target']['Identifier'][0]['ID']: # skip the gbif records
+                        #     print('Skip GBif')
+                        #     continue
+                        # else:
+                        for IDinfo in r.json()['result'][citationNum]['target']['Identifier']: # for each ID type for this publication e.g. DOI, pubmed etc
+                            pubDOI = None
 
-                                if IDinfo['IDScheme'] == 'doi':
-                                    pubDOI =  IDinfo['ID']
-                                    break
-                                if IDinfo['IDScheme'] == 'handle':
-                                    pubDOI =  IDinfo['ID']
-                                    break
-                                elif IDinfo['IDScheme'] == 'pmid':
-                                    pubDOI =  IDinfo['ID']
-                                elif IDinfo['IDScheme'] == 'pmc':
-                                    pubDOI =  IDinfo['ID']
-                                else:
-                                    print('Unknown or new ID type:', IDinfo)
-                                    pubDOI = str(IDinfo) # it must be someother ID scheme
+                            if IDinfo['IDScheme'] == 'doi':
+                                pubDOI =  IDinfo['ID']
+                                break
+                            if IDinfo['IDScheme'] == 'handle':
+                                pubDOI =  IDinfo['ID']
+                                break
+                            elif IDinfo['IDScheme'] == 'pmid':
+                                pubDOI =  IDinfo['ID']
+                            elif IDinfo['IDScheme'] == 'pmc':
+                                pubDOI =  IDinfo['ID']
+                            else:
+                                print('Unknown or new ID type:', IDinfo)
+                                pubDOI = str(IDinfo) # it must be someother ID scheme
 
 #                             # there can be multiple ID schemes so we only want DOI of the publication:
 #                             for IDinfo in r.json()['result'][citationNum]['target']['Identifier']: # for each ID type for this publication e.g. DOI, pubmed etc
@@ -72,23 +73,23 @@ def getScholixCitations(dataCite_df):
 #                                     pubDOI =  IDinfo['ID']
 #                                 elif IDinfo['IDScheme'] == 'pmc':
 #                                     pubDOI =  IDinfo['ID']
-                                    
+                                
 #                                 else: # if there's no DOI then collect all the ID (to be looked at manually later)
 #                                     pubDOI =  r.json()['result'][citationNum]['target']['Identifier']
 
-                            #only get certain relation types
-                            if r.json()['result'][citationNum]['RelationshipType']['Name'] == "IsReferencedBy" or r.json()['result'][citationNum]['RelationshipType']['Name'] == 'IsRelatedTo':   
-                                scholexInfo.append([
-                                             r.json()['result'][citationNum]['RelationshipType']['Name'],
-                                             r.json()['result'][citationNum]['target']['Title'],
-                                             r.json()['result'][citationNum]['target']['PublicationDate'],
-                                             r.json()['result'][citationNum]['target']['Creator'],
-                                             r.json()['result'][citationNum]['target']['Type'],
-                                             r.json()['result'][citationNum]['target']['Publisher'][0]['name'],
-                                             pubDOI, 
-                                             doi]) # info from dataCite_df
-                            else:
-                                continue
+                        #only get certain relation types
+                        if r.json()['result'][citationNum]['RelationshipType']['Name'] == "IsReferencedBy" or r.json()['result'][citationNum]['RelationshipType']['Name'] == 'IsRelatedTo':   
+                            scholexInfo.append([
+                                            r.json()['result'][citationNum]['RelationshipType']['Name'],
+                                            r.json()['result'][citationNum]['target']['Title'],
+                                            r.json()['result'][citationNum]['target']['PublicationDate'],
+                                            r.json()['result'][citationNum]['target']['Creator'],
+                                            r.json()['result'][citationNum]['target']['Type'],
+                                            r.json()['result'][citationNum]['target']['Publisher'][0]['name'],
+                                            pubDOI, 
+                                            doi]) # info from dataCite_df
+                        else:
+                            continue
 
                 except:
                     # Handle the case when 'result' key is absent
