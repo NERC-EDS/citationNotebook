@@ -11,7 +11,7 @@ def filterCitations(nerc_citations_df):
 
 
     # if pub_doi contians:
-    #  "egusphere" - always a conference abstract
+    # "egusphere" - always a conference abstract
     # "10.15468" - gbif dataset downloads
     # define list of strings to look for and join with or | statements
     pub_doi_filter_list = ("egusphere", "10.15468")
