@@ -83,6 +83,6 @@ def process_citation_results(scholex_df):
         'relation_type', 'pub_doi', 'pub_title', 'pub_date', 'pub_authors', "pub_type", "pub_publisher", 'source_id'
     ]]   
 
-    scholex_df_drop_names.to_csv("results/latest_results_scholex.csv", index= False )
+    scholex_df_drop_names.to_csv("Results/intermediate_data/latest_results_scholex.csv", index= False )
     
     return scholex_df_drop_names
