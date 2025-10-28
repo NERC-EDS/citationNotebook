@@ -3,7 +3,7 @@ name: Get citations from Overton
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 6 * * 0"  # Run every Sunday at 6am (UTC)
+    - cron: "0 12 * * 0"  # Run every Sunday at 6am (UTC)
 
 permissions:
   contents: write
