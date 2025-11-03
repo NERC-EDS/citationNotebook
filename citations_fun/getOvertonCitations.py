@@ -109,6 +109,8 @@ def processOvertonResults(results):
 
     # write to file
     overton_df_merged.to_csv("Results/intermediate_data/latest_results_overton.csv", index= False)
+    overton_df_merged.to_pickle("Results/intermediate_data/latest_results_overton.pkl", index= False)
+
 
     return overton_df_merged
 
