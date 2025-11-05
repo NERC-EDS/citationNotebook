@@ -2,7 +2,6 @@ venv/
 .venv/
 *.pyc
 *.cpython-312.pyc
-*.pkl
 _pycache_/
 results/
 
