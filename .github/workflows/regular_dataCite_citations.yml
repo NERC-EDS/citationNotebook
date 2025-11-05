@@ -32,7 +32,7 @@ jobs:
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
-          git add "Results/intermediate_data/latest_results_dataCite.csv" "nerc_dataset_citations_dataCite.ipynb" "executed_notebooks/nerc_dataset_citations_dataCite_executed.ipynb"
+          git add "Results/intermediate_data/latest_results_dataCite.csv" "Results/intermediate_data/latest_results_dataCite.pkl" "nerc_dataset_citations_dataCite.ipynb" "executed_notebooks/nerc_dataset_citations_dataCite_executed.ipynb"
           git commit -m "Regular action, updates latest_results_dataCite.csv"
           git push https://github.com/NERC-EDS/citationNotebook.git main
 
