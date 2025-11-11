@@ -10,6 +10,12 @@ def filterCitations(nerc_citations_df):
     nerc_citations_df_filtered = nerc_citations_df[~nerc_citations_df['pub_title'].str.startswith(pub_title_filter_list)]
 
 
+    # publication.types ="peer-review"
+    pub_type_filter_list = ("peer-review")
+    filtered_out_df = nerc_citations_df[nerc_citations_df['pub_type'].str.startswith(pub_type_filter_list)]
+    nerc_citations_df_filtered = nerc_citations_df[~nerc_citations_df['pub_type'].str.startswith(pub_type_filter_list)]
+
+
     # if pub_doi contians:
     # "egusphere" - always a conference abstract
     # "10.15468" - gbif dataset downloads
