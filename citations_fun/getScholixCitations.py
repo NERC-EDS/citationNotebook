@@ -78,7 +78,7 @@ def getScholixCitations(dataCite_df):
 #                                     pubDOI =  r.json()['result'][citationNum]['target']['Identifier']
 
                         #only get certain relation types
-                        if r.json()['result'][citationNum]['RelationshipType']['Name'] == "IsReferencedBy" or r.json()['result'][citationNum]['RelationshipType']['Name'] == 'IsRelatedTo':   
+                        if r.json()['result'][citationNum]['RelationshipType']['Name'] == "IsReferencedBy": # or r.json()['result'][citationNum]['RelationshipType']['Name'] == 'IsRelatedTo':   
                             scholexInfo.append([
                                             r.json()['result'][citationNum]['RelationshipType']['Name'],
                                             r.json()['result'][citationNum]['target']['Title'],
