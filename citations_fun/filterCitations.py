@@ -25,9 +25,17 @@ def filterCitations(nerc_citations_df):
     nerc_citations_df_filtered = nerc_citations_df_filtered[~nerc_citations_df_filtered['pub_doi'].str.contains(pattern, na=False)]
 
     # remove results where the data is published after the publication - the data must be citing the publication
-    result = nerc_citations_df_filtered[nerc_citations_df_filtered['publicationYear'].astype('float') < nerc_citations_df_filtered['data_publication_year'].astype('float')]
+
+    # find the rows where api request failed and the year is a string
+    temp_API_failed = nerc_citations_df_filtered[nerc_citations_df_filtered['publicationYear'] == "API request failed"]
+    # find the rest of the rows where publicationYear is a number
+    temp_pub_year_ok = nerc_citations_df_filtered[nerc_citations_df_filtered['publicationYear'] != "API request failed"]
+    # find rows where publicationYear is BEFORE data were published and add to filtered_out_df
+    result = temp_pub_year_ok[temp_pub_year_ok['publicationYear'].astype('float') < temp_pub_year_ok['data_publication_year'].astype('float')]
     filtered_out_df = pd.concat([filtered_out_df, result], ignore_index=True)
-    nerc_citations_df_filtered = nerc_citations_df_filtered[nerc_citations_df_filtered['publicationYear'].astype('float') >= nerc_citations_df_filtered['data_publication_year'].astype('float')]
-    
+    # find rows where publicationYear is AFTER data were published and add to filtered_out_df using the number only df
+    nerc_citations_df_filtered = temp_pub_year_ok[temp_pub_year_ok['publicationYear'].astype('float') >= temp_pub_year_ok['data_publication_year'].astype('float')]
+    # add back in the rows where publicationYear is 'api request failed'
+    nerc_citations_df_filtered = pd.concat([nerc_citations_df_filtered, temp_API_failed], ignore_index=True)
 
     return (nerc_citations_df_filtered, filtered_out_df)
