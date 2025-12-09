@@ -3,18 +3,16 @@ import pandas as pd
 
 def filterCitations(nerc_citations_df):
 
-
     # comments on pre-prints, begin with: "Comment on" "Reply on" "Reply to comment by" "final response"
     pub_title_filter_list = ("Comment on", "Reply on", "Reply to comment by", "final response")
     filtered_out_df = nerc_citations_df[nerc_citations_df['pub_title'].str.startswith(pub_title_filter_list)]
     nerc_citations_df_filtered = nerc_citations_df[~nerc_citations_df['pub_title'].str.startswith(pub_title_filter_list)]
 
-
     # publication.types ="peer-review"
     pub_type_filter_list = ("peer-review")
-    filtered_out_df = nerc_citations_df[nerc_citations_df['pub_type'].str.startswith(pub_type_filter_list)]
+    result = nerc_citations_df[nerc_citations_df['pub_type'].str.startswith(pub_type_filter_list)]
+    filtered_out_df = pd.concat([filtered_out_df, result], ignore_index=True)
     nerc_citations_df_filtered = nerc_citations_df[~nerc_citations_df['pub_type'].str.startswith(pub_type_filter_list)]
-
 
     # if pub_doi contians:
     # "egusphere" - always a conference abstract
@@ -26,6 +24,10 @@ def filterCitations(nerc_citations_df):
     filtered_out_df = pd.concat([filtered_out_df, result], ignore_index=True)
     nerc_citations_df_filtered = nerc_citations_df_filtered[~nerc_citations_df_filtered['pub_doi'].str.contains(pattern, na=False)]
 
+    # remove results where the data is published after the publication - the data must be citing the publication
+    result = nerc_citations_df_filtered[nerc_citations_df_filtered['publicationYear'].astype('float') < nerc_citations_df_filtered['data_publication_year'].astype('float')]
+    filtered_out_df = pd.concat([filtered_out_df, result], ignore_index=True)
+    nerc_citations_df_filtered = nerc_citations_df_filtered[nerc_citations_df_filtered['publicationYear'].astype('float') >= nerc_citations_df_filtered['data_publication_year'].astype('float')]
     
 
     return (nerc_citations_df_filtered, filtered_out_df)
