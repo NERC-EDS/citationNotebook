@@ -21,7 +21,7 @@ def getDataCiteCitations_relationTypes(relation_type_id_list):
         'page[size]': '1000',
         'relation-type-id': relation_type_id
         }
-        r = requests.get('https://api.datacite.org/events', headers)
+        r = requests.get('https://api.datacite.org/events', headers,  timeout=30)
         
         print(relation_type_id)
 
@@ -69,7 +69,7 @@ def getDataCiteCitations_relationTypes(relation_type_id_list):
             elif r.status_code == 503: # if 503 error the server is overloaded, wait a bit then try again
                 print('Waiting 2 mins for server to recover...?')
                 time.sleep(120)
-                r = requests.get(url, headers)
+                r = requests.get(url, headers, timeout=30)
                 print('Second attempt: ', r.status_code)
                 if r.status_code == 503:
                     print("Server not recovered, try again later")
