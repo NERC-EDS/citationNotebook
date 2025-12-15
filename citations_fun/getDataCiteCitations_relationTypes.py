@@ -31,17 +31,25 @@ def getDataCiteCitations_relationTypes(relation_type_id_list):
         print("Total records:", totalRecords)
         print("Total pages:", totalPages)
 
+        if totalRecords == 0:
+            print(f"No records for {relation_type_id}, skipping")
+            continue
+
         # create array from 1 to total number of pages to loop through
         pages = np.arange(1,totalPages+1)
         # set next page url
         if totalPages > 1:
             next_url = r.json()['links']['next']
         else:
-            pass
-            
+            pass            
 
         #loop through pages
         for p in pages:
+
+            MAX_PAGES = 1000
+            if p > MAX_PAGES:
+                raise RuntimeError("Pagination exceeded safety limit")
+            
             if p == 1:
                 url = 'https://api.datacite.org/events?page[cursor]=1'
             else:
@@ -52,7 +60,7 @@ def getDataCiteCitations_relationTypes(relation_type_id_list):
                        'page[size]': '1000',
                       'relation-type-id': relation_type_id
                       }
-            r = requests.get(url,headers)
+            r = requests.get(url,headers, timeout=30)
             print('Status: ', r.status_code)
 
             # determine status code, 
