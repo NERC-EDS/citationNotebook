@@ -20,7 +20,7 @@ jobs:
         uses: actions/setup-python@v3
 
       - name: Install dependencies
-        run: pip install papermill ipython ipykernel pandas requests numpy
+        run: pip install papermill ipython ipykernel pandas==2.3.3 requests numpy
         
       - name: Run Jupyter Notebook
         run: |
