@@ -34,7 +34,7 @@ jobs:
           git config --global user.name "GitHub Actions"
           git add "Results/intermediate_data/nerc_datacite_dois.json" "nerc_dataset_DOIs.ipynb" "executed_notebooks/nerc_dataset_DOIs_executed.ipynb"
           git commit -m "Regular action, updates nerc_datacite_dois.json"
-          git push https://github.com/NERC-EDS/citationNotebook.git main
+          git push origin HEAD
 
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
