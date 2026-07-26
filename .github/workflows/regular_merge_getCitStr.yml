@@ -34,7 +34,7 @@ jobs:
           git config --global user.name "GitHub Actions"
           git add "Results/v3/latest_results.csv" "Results/v3/filtered_out_df.csv" "Results/v3/latest_results.json" "nerc_dataset_citations_merge_results.ipynb" "executed_notebooks/nerc_dataset_citations_merge_results_executed.ipynb"
           git commit -m "Regular action, updates latest_results_nerc_citations csv and json files"
-          git push https://github.com/NERC-EDS/citationNotebook.git main
+          git push origin HEAD
 
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
