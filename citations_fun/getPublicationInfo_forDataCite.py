@@ -68,7 +68,7 @@ def getPublicationInfo(datacite_doi_events_df):
                     authors = "Info not given"
 
             try:
-                publisher = data['type'] # was ['publisher']
+                publisher = data['publisher']
             except:
                 publisher = "Info not given"
                 
