@@ -1,3 +1,4 @@
+import requests
 
 # Check publication type 
 def checkDOIpubType(publicationDOI):
