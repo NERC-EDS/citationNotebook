@@ -1,0 +1,318 @@
+diff --git a/citations_fun/getNERCDataDOIs.py b/citations_fun/getNERCDataDOIs.py
+index 795ba60..e26a74d 100644
+--- a/citations_fun/getNERCDataDOIs.py
++++ b/citations_fun/getNERCDataDOIs.py
+@@ -7,6 +7,8 @@ from requests.adapters import HTTPAdapter
+ from requests.packages.urllib3.util.retry import Retry
+ from pathlib import Path
+ 
++from citations_fun.stable_output import write_json_records
++
+ 
+ 
+ def getNERCDataDOIs():
+@@ -179,15 +181,19 @@ def getNERCDataDOIs():
+ 
+ 
+ 
+-    # Write the collected data to a JSON file
++    # Write the collected data to a JSON file.
++    #
++    # Written through write_json_records so the file is a pure function of the
++    # data: records sorted by DOI, exact duplicates dropped, pagination-only
++    # fields (data_page_number / data_self_link) removed, keys sorted, LF
++    # endings. DataCite does not return pages in a stable order, so without
++    # this the whole file re-shuffles every run (measured: 2,205 added /
++    # 2,172 deleted lines for a net gain of two records).
+     output_file = Path("Results/intermediate_data/nerc_datacite_dois.json")
+-    output_file.parent.mkdir(parents=True, exist_ok=True)
+-
+ 
+     try:
+-        with open(output_file, 'w') as f:
+-            json.dump(dataCiteInfo, f, indent=4)
+-        print(f"Data written to {output_file}")
++        written = write_json_records(dataCiteInfo, output_file, sort_by=("data_doi",))
++        print(f"Data written to {output_file} ({len(written)} records)")
+     except IOError as e:
+         print(f"Error writing to file: {e}")
+     
+diff --git a/citations_fun/getOvertonCitations.py b/citations_fun/getOvertonCitations.py
+index fa71655..49467e2 100644
+--- a/citations_fun/getOvertonCitations.py
++++ b/citations_fun/getOvertonCitations.py
+@@ -4,6 +4,8 @@ import pandas as pd
+ from requests.adapters import HTTPAdapter
+ from urllib3.util.retry import Retry
+ 
++from citations_fun.stable_output import SOURCE_COLUMNS, write_csv
++
+ def getOvertonCitations(nerc_datacite_dois_df):
+     api_key = "3c7b1a-849d90-77f9da"
+     
+@@ -134,11 +136,16 @@ def processOvertonResults(results):
+         'relation_type', 'pub_doi', 'pub_title', 'pub_date', 'pub_authors', 'pub_type', 'pub_publisher', 'source_id'
+     ]]
+ 
+-    # Sort rows to minimize git diffs and reset the index
+-    overton_df_merged = overton_df_merged.sort_values(by=['data_doi', 'pub_doi']).reset_index(drop=True)
+-    
+-    # write to file
+-    overton_df_merged.to_csv("Results/intermediate_data/latest_results_overton.csv", index= False)
++    # Deterministic write: same canonical frame to both the CSV and the pickle
++    # the merge step reads, so they can never drift apart. This supersedes the
++    # earlier inline sort_values - write_csv sorts, dedupes, pins the column
++    # order and forces LF endings.
++    overton_df_merged = write_csv(
++        overton_df_merged,
++        "Results/intermediate_data/latest_results_overton.csv",
++        sort_by=["data_doi", "pub_doi"],
++        columns=SOURCE_COLUMNS,
++    )
+     overton_df_merged.to_pickle("Results/intermediate_data/latest_results_overton.pkl")
+ 
+ 
+diff --git a/citations_fun/getPublicationInfo_forDataCite.py b/citations_fun/getPublicationInfo_forDataCite.py
+index ae839a3..67c2f58 100644
+--- a/citations_fun/getPublicationInfo_forDataCite.py
++++ b/citations_fun/getPublicationInfo_forDataCite.py
+@@ -19,8 +19,23 @@ def getPublicationInfo(datacite_doi_events_df):
+     session.mount("http://", adapter)
+ 
+     
++    # Fetch each DOI once, not once per row.
++    #
++    # 'pub_doi' repeats across rows (the same publication cites several
++    # datasets, and the same pair arrives under several relation types). The
++    # previous version built one pub_info entry per ROW and then merged on
++    # pub_doi, which is a many-to-many join: a DOI appearing n times produced
++    # n * n rows. Measured on the committed output that turned 2,936 real rows
++    # into 16,424 (82% exact duplicates, 9.2 MB instead of 1.8 MB) and made
++    # 16,424 HTTP requests where 1,464 would do.
++    #
++    # Because duplicate fetches of the same DOI could disagree, which value
++    # landed on which row was also arbitrary - a second source of git churn.
++    unique_pub_dois = list(dict.fromkeys(datacite_doi_events_df['pub_doi']))
++    print(f"{len(datacite_doi_events_df)} rows -> {len(unique_pub_dois)} unique publication DOIs to fetch")
++
+     pub_info = []
+-    for count, pubdoi in enumerate(datacite_doi_events_df['pub_doi']):
++    for count, pubdoi in enumerate(unique_pub_dois):
+         
+         #if not a doi.org - skip?
+         if pubdoi.startswith('https://doi.org/'):
+diff --git a/citations_fun/processScholixCitations.py b/citations_fun/processScholixCitations.py
+index 4ae73ad..d6c381a 100644
+--- a/citations_fun/processScholixCitations.py
++++ b/citations_fun/processScholixCitations.py
+@@ -1,5 +1,7 @@
+ # function to process the citation results from getScholixDatasetCitations
+ 
++from citations_fun.stable_output import SOURCE_COLUMNS, write_csv
++
+ def process_citation_results(scholex_df):
+ 
+     # filter out gbif registrant code prefix 10.15468
+@@ -83,6 +85,14 @@ def process_citation_results(scholex_df):
+         'relation_type', 'pub_doi', 'pub_title', 'pub_date', 'pub_authors', "pub_type", "pub_publisher", 'source_id'
+     ]]   
+ 
+-    scholex_df_drop_names.to_csv("Results/intermediate_data/latest_results_scholex.csv", index= False )
+-    
++    # Deterministic write: fixed column order, exact duplicates dropped, sorted
++    # by (data_doi, pub_doi), LF endings. Scholix does not guarantee result
++    # order, so without the sort the file re-shuffles between runs.
++    scholex_df_drop_names = write_csv(
++        scholex_df_drop_names,
++        "Results/intermediate_data/latest_results_scholex.csv",
++        sort_by=["data_doi", "pub_doi"],
++        columns=SOURCE_COLUMNS,
++    )
++
+     return scholex_df_drop_names
+\ No newline at end of file
+diff --git a/nerc_dataset_citations_dataCite.ipynb b/nerc_dataset_citations_dataCite.ipynb
+index a0fd01c..853bfbd 100644
+--- a/nerc_dataset_citations_dataCite.ipynb
++++ b/nerc_dataset_citations_dataCite.ipynb
+@@ -2613,8 +2613,19 @@
+    "metadata": {},
+    "outputs": [],
+    "source": [
+-    "dataCite_df_pubInfo_names.to_csv(\"Results/intermediate_data/latest_results_dataCite.csv\", index= False)\n",
+-    "dataCite_df_pubInfo_names.to_pickle(\"Results/intermediate_data/latest_results_dataCite.pkl\")"
++    "from citations_fun.stable_output import SOURCE_COLUMNS, write_csv\n",
++    "\n",
++    "# Deterministic write: exact duplicates dropped, sorted by (data_doi, pub_doi),\n",
++    "# fixed column order, LF endings. The same canonical frame goes to the pickle\n",
++    "# that the merge workflow reads, so the two can't drift apart.\n",
++    "dataCite_df_pubInfo_names = write_csv(\n",
++    "    dataCite_df_pubInfo_names,\n",
++    "    \"Results/intermediate_data/latest_results_dataCite.csv\",\n",
++    "    sort_by=[\"data_doi\", \"pub_doi\"],\n",
++    "    columns=SOURCE_COLUMNS,\n",
++    ")\n",
++    "dataCite_df_pubInfo_names.to_pickle(\"Results/intermediate_data/latest_results_dataCite.pkl\")\n",
++    "print(f\"Wrote {len(dataCite_df_pubInfo_names)} rows\")"
+    ]
+   }
+  ],
+@@ -2639,4 +2650,4 @@
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+-}
++}
+\ No newline at end of file
+diff --git a/nerc_dataset_citations_merge_results.ipynb b/nerc_dataset_citations_merge_results.ipynb
+index c4ba8fd..53ae3f6 100644
+--- a/nerc_dataset_citations_merge_results.ipynb
++++ b/nerc_dataset_citations_merge_results.ipynb
+@@ -103,20 +103,26 @@
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": 6,
++   "execution_count": null,
+    "id": "882ffd8c",
+    "metadata": {},
+    "outputs": [],
+    "source": [
+     "# filtering - keep the results that are filtered out for later checks\n",
+     "\n",
++    "from citations_fun.stable_output import write_csv\n",
++    "\n",
+     "# returns list of 2 dataframes, first is the main df, second is everything that has been filtered out\n",
+     "results = filterCitations(nerc_citations_df)\n",
+     "nerc_citations_df_filtered = results[0]\n",
+     "filtered_out_df = results[1]\n",
+     "\n",
+-    "# write to file for a record\n",
+-    "filtered_out_df.to_csv(\"Results/v3/filtered_out_df.csv\", index= False)"
++    "# write to file for a record - sorted so the diff only shows real changes\n",
++    "write_csv(\n",
++    "    filtered_out_df,\n",
++    "    \"Results/v3/filtered_out_df.csv\",\n",
++    "    sort_by=[\"data_doi\", \"pub_doi\"],\n",
++    ")"
+    ]
+   },
+   {
+@@ -17270,45 +17276,47 @@
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": 11,
++   "execution_count": null,
+    "id": "ede09708",
+    "metadata": {},
+-   "outputs": [
+-    {
+-     "name": "stderr",
+-     "output_type": "stream",
+-     "text": [
+-      "/tmp/ipykernel_9782/1122557546.py:13: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.\n",
+-      "  nested_dict = nerc_citations_df_renamed.groupby('data_publisher').apply(\n"
+-     ]
+-    }
+-   ],
++   "outputs": [],
+    "source": [
+     "# write to csv and json file\n",
++    "\n",
++    "from citations_fun.stable_output import stable_frame, write_json\n",
++    "\n",
+     "results_folder_path = \"Results/v3/\"\n",
+-    "#Results/v3\n",
+-    "#/home/matnic/Projects/citationNotebook/Results/v3\n",
++    "SORT_KEYS = [\"data_doi\", \"publication_doi\"]\n",
+     "\n",
++    "# Canonical row order for BOTH outputs, so the CSV and the JSON always agree\n",
++    "# and a rerun with no new citations produces a byte-identical file.\n",
++    "nerc_citations_df_renamed = stable_frame(\n",
++    "    nerc_citations_df_renamed,\n",
++    "    sort_by=SORT_KEYS,\n",
++    "    dedupe=False,   # rows are already deduped on (data_doi, pub_doi) in merge_citation_dfs\n",
++    ")\n",
++    "\n",
++    "# utf-8-sig is kept deliberately: the BOM is what makes Excel open this\n",
++    "# correctly. lineterminator pins LF so a Windows run matches the Actions run.\n",
+     "latest_file_name_csv = results_folder_path + 'latest_results.csv'\n",
+-    "nerc_citations_df_renamed.to_csv(latest_file_name_csv, index= False, encoding=\"utf-8-sig\")\n",
++    "nerc_citations_df_renamed.to_csv(\n",
++    "    latest_file_name_csv, index=False, encoding=\"utf-8-sig\", lineterminator=\"\\n\"\n",
++    ")\n",
+     "\n",
+     "# write data to 'latest_results' json file with data publisher as top level key\n",
+     "latest_file_name_json = results_folder_path + 'latest_results.json'\n",
+     "\n",
+-    "# Group by 'data_Publisher' and convert the DataFrame to a nested dictionary\n",
+-    "nested_dict = nerc_citations_df_renamed.groupby('data_publisher').apply(\n",
+-    "    lambda x: x.drop('data_publisher', axis=1).to_dict(orient='records')\n",
+-    ").to_dict()\n",
+-    "\n",
+-    "# Convert the nested dictionary to a JSON object\n",
+-    "import json\n",
+-    "json_object = json.dumps(nested_dict, ensure_ascii=False)\n",
++    "# Group by 'data_publisher' and convert the DataFrame to a nested dictionary\n",
++    "nested_dict = {\n",
++    "    publisher: group.drop('data_publisher', axis=1).to_dict(orient='records')\n",
++    "    for publisher, group in nerc_citations_df_renamed.groupby('data_publisher', sort=True)\n",
++    "}\n",
+     "\n",
+-    "# Save the JSON object to a file\n",
+-    "with open(latest_file_name_json, 'w', encoding='utf-8') as f:\n",
+-    "    f.write(json_object)\n",
++    "# Pretty-printed and key-sorted. Previously this was written as a single 2 MB\n",
++    "# line, so every commit replaced the entire blob and the diff was unreadable.\n",
++    "write_json(nested_dict, latest_file_name_json)\n",
+     "\n",
+-    "    "
++    "print(f\"Wrote {len(nerc_citations_df_renamed)} rows to {latest_file_name_csv} and {latest_file_name_json}\")"
+    ]
+   },
+   {
+@@ -17444,4 +17452,4 @@
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+-}
++}
+\ No newline at end of file
+diff --git a/nerc_dataset_citations_scholix.ipynb b/nerc_dataset_citations_scholix.ipynb
+index ea3bcfe..800c138 100644
+--- a/nerc_dataset_citations_scholix.ipynb
++++ b/nerc_dataset_citations_scholix.ipynb
+@@ -11559,13 +11559,22 @@
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": 19,
++   "execution_count": null,
+    "id": "eabbbe4e",
+    "metadata": {},
+    "outputs": [],
+    "source": [
+-    "scholex_df_processed_pubType.to_csv(\"Results/intermediate_data/latest_results_scholex.csv\", index= False)\n",
+-    "scholex_df_processed_pubType.to_pickle(\"Results/intermediate_data/latest_results_scholex.pkl\")"
++    "from citations_fun.stable_output import SOURCE_COLUMNS, write_csv\n",
++    "\n",
++    "# Deterministic write (see citations_fun/stable_output.py).\n",
++    "scholex_df_processed_pubType = write_csv(\n",
++    "    scholex_df_processed_pubType,\n",
++    "    \"Results/intermediate_data/latest_results_scholex.csv\",\n",
++    "    sort_by=[\"data_doi\", \"pub_doi\"],\n",
++    "    columns=SOURCE_COLUMNS,\n",
++    ")\n",
++    "scholex_df_processed_pubType.to_pickle(\"Results/intermediate_data/latest_results_scholex.pkl\")\n",
++    "print(f\"Wrote {len(scholex_df_processed_pubType)} rows\")"
+    ]
+   },
+   {
+@@ -11626,4 +11635,4 @@
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+-}
++}
+\ No newline at end of file
