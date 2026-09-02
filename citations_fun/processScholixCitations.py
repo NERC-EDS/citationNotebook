@@ -1,5 +1,7 @@
 # function to process the citation results from getScholixDatasetCitations
 
+from citations_fun.stable_output import SOURCE_COLUMNS, write_csv
+
 def process_citation_results(scholex_df):
 
     # filter out gbif registrant code prefix 10.15468
@@ -83,6 +85,14 @@ def process_citation_results(scholex_df):
         'relation_type', 'pub_doi', 'pub_title', 'pub_date', 'pub_authors', "pub_type", "pub_publisher", 'source_id'
     ]]   
 
-    scholex_df_drop_names.to_csv("Results/intermediate_data/latest_results_scholex.csv", index= False )
-    
+    # Deterministic write: fixed column order, exact duplicates dropped, sorted
+    # by (data_doi, pub_doi), LF endings. Scholix does not guarantee result
+    # order, so without the sort the file re-shuffles between runs.
+    scholex_df_drop_names = write_csv(
+        scholex_df_drop_names,
+        "Results/intermediate_data/latest_results_scholex.csv",
+        sort_by=["data_doi", "pub_doi"],
+        columns=SOURCE_COLUMNS,
+    )
+
     return scholex_df_drop_names
