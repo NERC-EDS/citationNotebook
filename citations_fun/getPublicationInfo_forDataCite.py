@@ -19,8 +19,23 @@ def getPublicationInfo(datacite_doi_events_df):
     session.mount("http://", adapter)
 
     
+    # Fetch each DOI once, not once per row.
+    #
+    # 'pub_doi' repeats across rows (the same publication cites several
+    # datasets, and the same pair arrives under several relation types). The
+    # previous version built one pub_info entry per ROW and then merged on
+    # pub_doi, which is a many-to-many join: a DOI appearing n times produced
+    # n * n rows. Measured on the committed output that turned 2,936 real rows
+    # into 16,424 (82% exact duplicates, 9.2 MB instead of 1.8 MB) and made
+    # 16,424 HTTP requests where 1,464 would do.
+    #
+    # Because duplicate fetches of the same DOI could disagree, which value
+    # landed on which row was also arbitrary - a second source of git churn.
+    unique_pub_dois = list(dict.fromkeys(datacite_doi_events_df['pub_doi']))
+    print(f"{len(datacite_doi_events_df)} rows -> {len(unique_pub_dois)} unique publication DOIs to fetch")
+
     pub_info = []
-    for count, pubdoi in enumerate(datacite_doi_events_df['pub_doi']):
+    for count, pubdoi in enumerate(unique_pub_dois):
         
         #if not a doi.org - skip?
         if pubdoi.startswith('https://doi.org/'):
