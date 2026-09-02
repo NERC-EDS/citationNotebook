@@ -4,52 +4,79 @@ import pandas as pd
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-
-def overton_api_request(doi, session):
-    url = "https://app.overton.io/documents.php"
-    params ={
-        "plain_dois_cited": doi,
-        "format": "json",
-        "api_key": "3c7b1a-849d90-77f9da",
-    }
-    r = session.get(url, params=params, timeout=30)
-    print(r.status_code, "DOI: ", doi)
-    r.raise_for_status()
-    return r.json().get('results', [])
-
-
 def getOvertonCitations(nerc_datacite_dois_df):
-
+    api_key = "3c7b1a-849d90-77f9da"
+    
     session = requests.Session()
     retries = Retry(
         total=5,
         backoff_factor=1,
         status_forcelist=[429, 500, 502, 503, 504],
-        allowed_methods=["GET"]
+        allowed_methods=["GET", "POST"] # Added POST to allowed methods for retries
     )
     session.mount("https://", HTTPAdapter(max_retries=retries))
 
+    # 1. Extract DOIs and generate the set
+    dois_list = nerc_datacite_dois_df['data_doi'].dropna().tolist()
+    dois_payload = "\n".join(dois_list)
+    
+    set_url = f"https://app.overton.io/generate_id_set.php?format=json&api_key={api_key}"
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    
+    print("Generating Overton DOI set...")
+    try:
+        set_response = session.post(set_url, headers=headers, data={'dois': dois_payload}, timeout=30)
+        set_response.raise_for_status()
+        set_data = set_response.json()
+    except requests.RequestException as e:
+        print(f"Failed to generate set: {e}")
+        return []
 
+    if 'set' not in set_data:
+        print(f"Error generating set: {set_data.get('error', 'Unknown error')}")
+        if 'warnings' in set_data:
+            print(f"Warnings: {set_data['warnings']}")
+        return []
+
+    overton_set_id = set_data['set']
+    print(f"Successfully generated set ID: {overton_set_id}")
+
+    # 2. Fetch the paginated results using the generated set_id
     results = []
-
-    for doi in nerc_datacite_dois_df.data_doi:
+    search_url = f"https://app.overton.io/documents.php?plain_dois_cited={overton_set_id}&format=json&api_key={api_key}"
+    
+    while search_url:
         start = time.time()
-
+        
         try:
-            data = overton_api_request(doi, session)
-            if data:
-                results.append(data)
+            r = session.get(search_url, timeout=30)
+            r.raise_for_status()
+            page_data = r.json()
+            
+            page_results = page_data.get('results', [])
+            if page_results:
+                # Appending the list of results keeps the nested list structure 
+                # required by processOvertonResults (list of lists)
+                results.append(page_results)
+                
+            current_page = page_data.get('query', {}).get('current_page', 'Unknown')
+            total_pages = page_data.get('query', {}).get('pages', 'Unknown')
+            print(f"Processed page {current_page} of {total_pages}")
+            
+            search_url = page_data.get('query', {}).get('next_page_url')
+            
         except requests.RequestException as e:
-            print(f"Error on {doi}: {e}")
-            continue
+            print(f"Error fetching page data: {e}")
+            break
 
         elapsed = time.time() - start
-        # enforce at least 1s between requests
+        
+        # Enforce at least 1s between requests to respect the rate limit
         if elapsed < 1:
             time.sleep(1.05 - elapsed)
-        
-    
+            
     return results
+
 
 def processOvertonResults(results):
     flat_results = [d for sublist in results for d in sublist]
@@ -107,10 +134,12 @@ def processOvertonResults(results):
         'relation_type', 'pub_doi', 'pub_title', 'pub_date', 'pub_authors', 'pub_type', 'pub_publisher', 'source_id'
     ]]
 
+    # Sort rows to minimize git diffs and reset the index
+    overton_df_merged = overton_df_merged.sort_values(by=['data_doi', 'pub_doi']).reset_index(drop=True)
+
     # write to file
     overton_df_merged.to_csv("Results/intermediate_data/latest_results_overton.csv", index= False)
     overton_df_merged.to_pickle("Results/intermediate_data/latest_results_overton.pkl")
 
 
     return overton_df_merged
-
