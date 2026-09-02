@@ -23,9 +23,11 @@ jobs:
         run: pip install papermill ipython ipykernel pandas==2.3.3 requests numpy
         
       - name: Run Jupyter Notebook
+        env:
+          PYTHONUNBUFFERED: "1" # Forces Python to print immediately without buffering
         run: |
 
-          papermill nerc_dataset_citations_dataCite.ipynb executed_notebooks/nerc_dataset_citations_dataCite_executed.ipynb # nerc_dataset_citations_part1_executed.ipynb # keep "_executed.ipynb" to see errors
+          papermill nerc_dataset_citations_dataCite.ipynb executed_notebooks/nerc_dataset_citations_dataCite_executed.ipynb --log-output --log-level INFO # nerc_dataset_citations_part1_executed.ipynb # keep "_executed.ipynb" to see errors
 
 
       - name: Commit and push results
