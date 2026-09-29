@@ -27,11 +27,28 @@ COLUMN_NAMES = ["relation_type", "pub_title", "pub_date", "pub_authors",
                 "pub_type", "pub_publisher", "pub_doi", "data_doi"]
 
 
-def _first_doi(identifiers):
-    """Return the first DOI from a Scholix Identifier list, else None."""
-    for idinfo in identifiers or []:
-        if idinfo.get("IDScheme") == "doi" and idinfo.get("ID"):
-            return idinfo["ID"]
+# Preferred identifier schemes for the citing work, best first. Not every citing
+# work has a DOI (some only carry a PMID, PMC or handle); like the v2 code we fall
+# back to those rather than leaving pub_doi empty, because downstream steps
+# (getPublicationType, merge dedup on data_doi/pub_doi, publication_doi_url)
+# expect a string there.
+ID_SCHEME_PREFERENCE = ("doi", "handle", "pmid", "pmc")
+
+
+def _best_identifier(identifiers):
+    """
+    Return the best ID from a Scholix Identifier list: a DOI if present, else a
+    handle/PMID/PMC, else the first other ID (or its URL). None if there is none.
+    """
+    ids = [i for i in identifiers or [] if isinstance(i, dict)]
+    for scheme in ID_SCHEME_PREFERENCE:
+        for idinfo in ids:
+            if (idinfo.get("IDScheme") or "").lower() == scheme and idinfo.get("ID"):
+                return str(idinfo["ID"])
+    for idinfo in ids:
+        value = idinfo.get("ID") or idinfo.get("IDURL")
+        if value:
+            return str(value)
     return None
 
 
@@ -102,6 +119,11 @@ def getScholixCitations(dataCite_df, scholix_base=SCHOLIX_V3_BASE, relation=None
                         continue
 
                     source = link.get("source") or {}        # the citing work
+                    pub_id = _best_identifier(source.get("Identifier"))
+                    if pub_id is None:
+                        # Can't be looked up or deduplicated without an ID.
+                        print(f"Skipping record with no identifier for {doi}: {source.get('Title')}")
+                        continue
                     publishers = source.get("Publisher") or []
                     rel_str = "/".join(x for x in (rel.get("Name"), rel.get("SubType")) if x)
 
@@ -112,7 +134,7 @@ def getScholixCitations(dataCite_df, scholix_base=SCHOLIX_V3_BASE, relation=None
                         source.get("Creator") or [],          # list of {name, ...}
                         source.get("Type"),
                         publishers[0].get("name") if publishers else None,
-                        _first_doi(source.get("Identifier")),
+                        pub_id,
                         doi,                                   # the dataset we queried
                     ])
                 except Exception as e:
