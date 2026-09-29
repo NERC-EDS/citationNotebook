@@ -39,7 +39,7 @@ def getPublicationType(scholex_df):
     pubTypeList = []
 
     for count, doi in enumerate(scholex_df['pub_doi']):
-        if '10.' in doi:
+        if isinstance(doi, str) and '10.' in doi: # pub_doi can be missing (None/NaN)
             pubType = checkDOIpubType(doi)
             pubTypeList.append(pubType)
 
@@ -82,16 +82,12 @@ def getPublicationType(scholex_df):
 
             # determine if crossref or datacite supplies the DOI
             print('Pub DOI: ', pubDOI)
-            r = requests.get(('https://doi.org/doiRA/' + pubDOI), headers={"Accept": "application/json"})
-            
+            DOIregistry = None # reset so a failed lookup can't reuse the previous record's registry (or be undefined)
+
             try:
+                r = requests.get(('https://doi.org/doiRA/' + pubDOI), headers={"Accept": "application/json"})
                 DOIregistry = r.json()[0]['RA']
                 print(DOIregistry)
-            except (IndexError, KeyError) as e:
-                print(f"Error accessing DOI registry: {e}")
-            except Exception as e:
-                print(f"Unexpected error: {e}")
-
             except (IndexError, KeyError) as e:
                 print(f"Error accessing DOI registry: {e}")
             except Exception as e:
