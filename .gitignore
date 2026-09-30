@@ -1,17 +1,14 @@
+# Python
+__pycache__/
+*.pyc
 venv/
 .venv/
-*.pyc
-*.cpython-312.pyc
-_pycache_/
-results/
 
-Results/.ipynb_checkpoints/
-Results/__pycache__/
-citations_fun/__pycache__/
+# Jupyter
+.ipynb_checkpoints/
 
+# Local scratch notebooks and plots
 development_code.ipynb
 summarise_results.ipynb
-
-Summary plots/
-
 racs.ipynb
+Summary plots/
