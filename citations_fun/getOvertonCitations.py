@@ -4,6 +4,8 @@ import pandas as pd
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
+from citations_fun.stable_output import SOURCE_COLUMNS, write_csv
+
 def getOvertonCitations(nerc_datacite_dois_df):
     api_key = "3c7b1a-849d90-77f9da"
     
@@ -122,7 +124,7 @@ def processOvertonResults(results):
         how='left'
     )
 
-    overton_df_merged = overton_df_merged.drop(['data_page_number', 'data_self_link'], axis = 1)
+    overton_df_merged = overton_df_merged.drop(['data_page_number', 'data_self_link'], axis = 1, errors='ignore')
 
     # add column source-id
     source_id = ['overton'] * len(overton_df_merged)
@@ -134,11 +136,16 @@ def processOvertonResults(results):
         'relation_type', 'pub_doi', 'pub_title', 'pub_date', 'pub_authors', 'pub_type', 'pub_publisher', 'source_id'
     ]]
 
-    # Sort rows to minimize git diffs and reset the index
-    overton_df_merged = overton_df_merged.sort_values(by=['data_doi', 'pub_doi']).reset_index(drop=True)
-    
-    # write to file
-    overton_df_merged.to_csv("Results/intermediate_data/latest_results_overton.csv", index= False)
+    # Deterministic write: same canonical frame to both the CSV and the pickle
+    # the merge step reads, so they can never drift apart. This supersedes the
+    # earlier inline sort_values - write_csv sorts, dedupes, pins the column
+    # order and forces LF endings.
+    overton_df_merged = write_csv(
+        overton_df_merged,
+        "Results/intermediate_data/latest_results_overton.csv",
+        sort_by=["data_doi", "pub_doi"],
+        columns=SOURCE_COLUMNS,
+    )
     overton_df_merged.to_pickle("Results/intermediate_data/latest_results_overton.pkl")
 
 
