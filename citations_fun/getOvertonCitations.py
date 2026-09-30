@@ -124,7 +124,7 @@ def processOvertonResults(results):
         how='left'
     )
 
-    overton_df_merged = overton_df_merged.drop(['data_page_number', 'data_self_link'], axis = 1)
+    overton_df_merged = overton_df_merged.drop(['data_page_number', 'data_self_link'], axis = 1, errors='ignore')
 
     # add column source-id
     source_id = ['overton'] * len(overton_df_merged)

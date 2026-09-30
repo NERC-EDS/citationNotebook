@@ -60,9 +60,9 @@ SOURCE_COLUMNS = [
     "pub_title",
     "pub_date",
     "pub_authors",
-    "pub_type",
-    "pub_publisher",
     "source_id",
+    "pub_publisher",
+    "pub_type",
 ]
 
 
