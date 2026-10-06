@@ -3,6 +3,10 @@
 For each row this produces `pub_citation_str`, which ends up as
 `PubCitationStr` in Results/v3 and as `citationText` in the EDS citation API.
 
+Every string is stored as plain text (see plain_text): no HTML entities,
+inline markup or line breaks, which broke CSV viewers and showed up as literal
+"<i>" and "&amp;" in the widget.
+
 Order of preference for each row:
   1. A formatted citation from DOI content negotiation (only for real DOIs,
      only an HTTP 200 whose body isn't a known error message).
@@ -25,6 +29,7 @@ end, are there so that can't happen silently again.
 """
 
 import ast
+import html
 import re
 import time
 from urllib.parse import unquote, urlsplit
@@ -58,6 +63,60 @@ PLACEHOLDERS = {
     "", "not a doi", "info not given", "unknown repository", "unknown",
     "nan", "none", "null", "n/a", "error occurred",
 }
+
+
+# Inline formatting the formatters and publisher metadata put into text:
+# DataCite's formatter italicises titles (<i>...</i>, &amp;), Crossref titles
+# carry JATS markup (<i>, <scp>, <sub>, <sup>, mml:*) and stray line breaks.
+# Only these tags are removed, so a title like "<S1-11> Effect of ..." survives.
+_INLINE_TAG = re.compile(
+    r"</?\s*(?:i|b|u|em|strong|sc|scp|span|sup|sub|small|"
+    r"(?:mml|jats|ns\d*):[\w.-]+|math)\b[^>]*/?>",
+    re.IGNORECASE,
+)
+_BREAK_TAG = re.compile(r"</?\s*(?:br|p)\b[^>]*/?>", re.IGNORECASE)
+# <sub>/<sup> with the whitespace around them and the next character, so the
+# replacement can decide which side the script attaches to.
+_SUP_SUB = re.compile(r"(\s*)<\s*(sup|sub)\b[^>]*>(.*?)<\s*/\s*\2\s*>(\s*)(?=(.?))",
+                      re.IGNORECASE | re.DOTALL)
+_SUP_CHARS, _SUB_CHARS = "0123456789+-−=()n", "0123456789+-−=()"
+_SUP_MAP = str.maketrans(_SUP_CHARS, "⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁻⁼⁽⁾ⁿ")
+_SUB_MAP = str.maketrans(_SUB_CHARS, "₀₁₂₃₄₅₆₇₈₉₊₋₋₌₍₎")
+
+
+def _script(match):
+    before, kind, inner, after, following = match.groups()
+    kind, inner = kind.lower(), re.sub(r"\s+", "", inner)
+    table, allowed = (_SUP_MAP, _SUP_CHARS) if kind == "sup" else (_SUB_MAP, _SUB_CHARS)
+    # Unicode sub/superscript where one exists (N₂O, ¹³⁷Cs, m²); otherwise plain text.
+    out = inner.translate(table) if inner and all(c in allowed for c in inner) else inner
+    if kind == "sup" and following[:1].isupper():
+        # Isotope before an element symbol: "using <sup>137</sup>Cs" -> "using ¹³⁷Cs".
+        return f"{before}{out}"
+    # Otherwise the script belongs to what precedes it ("N <sub>2</sub> O" ->
+    # "N₂O", "m <sup>2</sup>" -> "m²"); keep a following space only before a
+    # new word, not before the rest of a formula.
+    joins_formula = following[:1].isupper() or following[:1].isdigit() or following[:1] == "("
+    return out + ("" if joins_formula or not after else " ")
+
+
+def plain_text(value):
+    """Citation or title as clean plain text: entities decoded, inline markup
+    removed, whitespace (including line breaks) collapsed to single spaces."""
+    if value is None or (isinstance(value, float) and pd.isna(value)):
+        return ""
+    text = str(value)
+    for _ in range(2):  # also undo double escaping such as &amp;amp;
+        # Crossref title-casing produces "&Amp;": entity names are case-sensitive.
+        decoded = html.unescape(re.sub(r"&([A-Za-z]+);", lambda m: f"&{m.group(1).lower()};", text))
+        if decoded == text:
+            break
+        text = decoded
+    text = _BREAK_TAG.sub(" ", text)
+    text = _SUP_SUB.sub(_script, text)
+    text = _INLINE_TAG.sub("", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    return re.sub(r" ([.,;:)\]])", r"\1", text).replace("( ", "(")
 
 
 def _clean(value):
@@ -247,7 +306,7 @@ def get_citation_str(
         if not text:
             text = fallback_citation(row, doi)
             stats["fallback" if text else "empty"] += 1
-        strings.append(text)
+        strings.append(plain_text(text))
 
     nerc_citations_df["pub_citation_str"] = strings
     print(f"Citation strings: {stats}")

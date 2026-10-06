@@ -174,3 +174,49 @@ def test_style_not_found_falls_back_even_with_http_200(monkeypatch):
     out = gcs.get_citation_str(frame([("10.5285/d", "10.1111/x", "Ants", "['Griffiths, H.']", "2017", "", "Wiley")]),
                                min_success_rate=None, pause=0)
     assert out["pub_citation_str"].iloc[0] == "Griffiths, H. (2017). Ants. Wiley. https://doi.org/10.1111/x"
+
+
+# --- plain text: markup, entities and line breaks (Oct 2026 results) -----------------
+
+@pytest.mark.parametrize("raw, expected", [
+    # Crossref title with JATS italics and line breaks (broke CSV viewers)
+    ("Absence of\n                    <i>Wolbachia</i>\n                    in <i>Eretmoptera murphyi</i>\n"
+     "                    (Diptera: Chironomidae). Antarctic Science",
+     "Absence of Wolbachia in Eretmoptera murphyi (Diptera: Chironomidae). Antarctic Science"),
+    # DataCite formatter output: italic title and &amp;
+    ("Jones, J., &amp; Hubbard, B. (2019). <i>Point cloud data</i> (Version 1.0) [Data set].",
+     "Jones, J., & Hubbard, B. (2019). Point cloud data (Version 1.0) [Data set]."),
+    ("Environmental Science &Amp; Technology", "Environmental Science & Technology"),  # Crossref title-casing
+    ("A &amp;amp; B", "A & B"),                                                          # double-escaped
+    ("soil N <sub>2</sub> O emission", "soil N₂O emission"),
+    ("CO <sub>2</sub> emissions", "CO₂ emissions"),
+    ("using <sup>137</sup>Cs to", "using ¹³⁷Cs to"),
+    ("Ca<sup>2+</sup> ions", "Ca²⁺ ions"),
+    ("an area of 5 m <sup>2</sup>.", "an area of 5 m²."),
+    ("Has <scp>S</scp>cots pine", "Has Scots pine"),
+    ("p &lt; 0.05", "p < 0.05"),
+    ("<S1-11> Effect of through-fall exclusion", "<S1-11> Effect of through-fall exclusion"),  # not markup
+    ("x<sup>a</sup> note", "xa note"),
+    (None, ""),
+])
+def test_plain_text(raw, expected):
+    assert gcs.plain_text(raw) == expected
+
+
+def test_every_output_is_plain_text(monkeypatch):
+    marked_up = "Kamintzis, J., &amp; Hubbard, B. (2019). <i>Point cloud data\n of a channel</i>. NERC EDS."
+
+    class Session:
+        def get(self, url, headers=None, timeout=None):
+            return FakeResponse(200, marked_up)
+
+    monkeypatch.setattr(gcs, "_session", lambda: Session())
+    df = frame([
+        ("10.5285/d", "10.5285/fetched", "T", "[]", "2019", "", "P"),                 # formatted
+        ("10.5285/d", "10.5285/reused", "T", "[]", "2019", "", "P"),                  # reused from last run
+        ("10.5285/d", "https://x.org/r", "Fish (<i>Salmo</i>)\n study", "[]", "2020", "", "Agency"),  # fallback
+    ])
+    previous = pd.DataFrame({"publication_doi": ["10.5285/reused"], "PubCitationStr": [marked_up]})
+    out = gcs.get_citation_str(df, previous_results=previous, min_success_rate=None, pause=0)
+    clean = "Kamintzis, J., & Hubbard, B. (2019). Point cloud data of a channel. NERC EDS."
+    assert out["pub_citation_str"].tolist() == [clean, clean, "(2020). Fish (Salmo) study. Agency."]
