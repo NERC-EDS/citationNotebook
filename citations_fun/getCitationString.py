@@ -8,10 +8,13 @@ inline markup or line breaks, which broke CSV viewers and showed up as literal
 "<i>" and "&amp;" in the widget.
 
 Order of preference for each row:
-  1. A formatted citation from DOI content negotiation (only for real DOIs,
-     only an HTTP 200 whose body isn't a known error message).
-  2. The string from the previous run's results for the same publication,
+  1. The string from the previous run's results for the same publication,
      if that was a real citation (saves time, survives a formatter outage).
+     A DOI with a reused string is not fetched again, so changing `style` or
+     `locale` only affects publications new to this run; to reformat
+     everything, call get_citation_str without previous_results.
+  2. A formatted citation from DOI content negotiation (only for real DOIs,
+     only an HTTP 200 whose body isn't a known error message).
   3. A citation built from the row's own metadata (authors, year, title,
      publisher), so URL-identified works and formatter failures still get a
      readable string. Never a placeholder such as "not a doi" or an error
@@ -30,6 +33,7 @@ end, are there so that can't happen silently again.
 
 import ast
 import html
+import html.entities
 import re
 import time
 from urllib.parse import unquote, urlsplit
@@ -100,6 +104,22 @@ def _script(match):
     return out + ("" if joins_formula or not after else " ")
 
 
+def _fix_entity_case(match):
+    """Undo title-casing of an entity name without touching real capitals.
+
+    Title-casing turns "&amp;" into "&Amp;" (not an entity, so html.unescape
+    leaves it alone) and "caf&eacute;" into "caf&Eacute;" (a valid entity, but
+    the wrong letter). Lowercase the name when it isn't a valid entity, or when
+    it sits mid-word after a lowercase letter. "&Aacute;lvarez" and
+    "&Ouml;sterreich" keep their capitals.
+    """
+    name = match.group(1)
+    previous = match.string[match.start() - 1:match.start()]
+    if (name + ";") not in html.entities.html5 or previous.islower():
+        return f"&{name.lower()};"
+    return match.group(0)
+
+
 def plain_text(value):
     """Citation or title as clean plain text: entities decoded, inline markup
     removed, whitespace (including line breaks) collapsed to single spaces."""
@@ -108,7 +128,7 @@ def plain_text(value):
     text = str(value)
     for _ in range(2):  # also undo double escaping such as &amp;amp;
         # Crossref title-casing produces "&Amp;": entity names are case-sensitive.
-        decoded = html.unescape(re.sub(r"&([A-Za-z]+);", lambda m: f"&{m.group(1).lower()};", text))
+        decoded = html.unescape(re.sub(r"&([A-Za-z]+);", _fix_entity_case, text))
         if decoded == text:
             break
         text = decoded
@@ -116,7 +136,7 @@ def plain_text(value):
     text = _SUP_SUB.sub(_script, text)
     text = _INLINE_TAG.sub("", text)
     text = re.sub(r"\s+", " ", text).strip()
-    return re.sub(r" ([.,;:)\]])", r"\1", text).replace("( ", "(")
+    return re.sub(r" ([.,;:)\]])", r"\1", text).replace("( ", "(").replace("[ ", "[")
 
 
 def _clean(value):
@@ -150,7 +170,16 @@ def normalise_doi(value, data_doi=None):
     inner = DOI_RE.findall(doi[3:])
     if inner and doi.split("/", 1)[1].startswith("10."):
         doi = inner[-1]
-    doi = doi.rstrip(".,;)")
+    # Trailing punctuation from surrounding text. A ")" is stripped only when
+    # unbalanced, so "10.1000/xyz(4)" keeps its own and
+    # "(see 10.1016/S0140-6736(20)30183-5)." loses only the outer one.
+    while True:
+        stripped = doi.rstrip(".,;")
+        if stripped.endswith(")") and stripped.count(")") > stripped.count("("):
+            stripped = stripped[:-1]
+        if stripped == doi:
+            break
+        doi = stripped
     if data_doi and doi.lower() == str(data_doi).strip().lower():
         return None
     return doi
