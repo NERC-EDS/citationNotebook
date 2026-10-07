@@ -1,0 +1,129 @@
+{
+  "schema": "nerc-eds-citations/v4",
+  "generated_at": "2026-10-07T19:40:13Z",
+  "code_version": "4.0.0",
+  "git_commit": "ef72314b6284fc5c36cdcdbe0c2f1923741a669f",
+  "client_id": "bl.nerc",
+  "settings": {
+    "predates_tolerance_years": 2,
+    "max_source_age_days": 8,
+    "max_row_drop": 0.2,
+    "reconcile_threshold": 0.05
+  },
+  "sources": {
+    "inventory": {
+      "required": true,
+      "latest_status": "success",
+      "latest_run_id": 1,
+      "latest_message": null,
+      "good_run_id": 1,
+      "good_finished_at": "2026-10-07T15:02:18Z",
+      "good_rows": 6366,
+      "age_days": 0.19,
+      "stale": false
+    },
+    "datacite": {
+      "required": true,
+      "latest_status": "success",
+      "latest_run_id": 2,
+      "latest_message": null,
+      "good_run_id": 2,
+      "good_finished_at": "2026-10-07T15:15:32Z",
+      "good_rows": 13267,
+      "age_days": 0.18,
+      "stale": false
+    },
+    "scholexplorer": {
+      "required": true,
+      "latest_status": "success",
+      "latest_run_id": 3,
+      "latest_message": null,
+      "good_run_id": 3,
+      "good_finished_at": "2026-10-07T15:28:32Z",
+      "good_rows": 20834,
+      "age_days": 0.17,
+      "stale": false
+    },
+    "overton": {
+      "required": false,
+      "latest_status": "success",
+      "latest_run_id": 4,
+      "latest_message": null,
+      "good_run_id": 4,
+      "good_finished_at": "2026-10-07T15:29:46Z",
+      "good_rows": 301,
+      "age_days": 0.17,
+      "stale": false
+    },
+    "crossref": {
+      "required": false,
+      "latest_status": "success",
+      "latest_run_id": 5,
+      "latest_message": null,
+      "good_run_id": 5,
+      "good_finished_at": "2026-10-07T16:08:13Z",
+      "good_rows": 3499,
+      "age_days": 0.15,
+      "stale": false
+    }
+  },
+  "counts": {
+    "datasets": 6366,
+    "datasets_by_centre": {
+      "BODC": 878,
+      "CEDA": 1431,
+      "EIDC": 2307,
+      "NGDC": 670,
+      "PDC": 1074,
+      "unknown": 6
+    },
+    "datasets_cited": 2127,
+    "links": 28000,
+    "counted_links": 8204,
+    "links_by_class": {
+      "citation": 13091,
+      "dataset-link": 1883,
+      "documentation": 2284,
+      "other": 2,
+      "similarity": 8457,
+      "supplement": 178,
+      "version-or-part": 2105
+    },
+    "links_by_status": {
+      "excluded": 5153,
+      "included": 22847
+    },
+    "exclusions": {
+      "comment": 272,
+      "conference-abstract": 202,
+      "gbif-download": 4379,
+      "peer-review": 7,
+      "predates-data": 293
+    },
+    "links_by_source": {
+      "crossref": 2572,
+      "datacite": 10919,
+      "overton": 301,
+      "scholexplorer": 20608
+    },
+    "works": 15849
+  },
+  "reconciliation": {
+    "datacite_cited_datasets": 1654,
+    "datacite_citations": 5957,
+    "datacite_links_harvested": 5720,
+    "incomplete_datasets": 43,
+    "incomplete_share": 0.026,
+    "pipeline_counted_citations": 8204,
+    "pipeline_cited_datasets": 2127
+  },
+  "guards": {
+    "problems": [],
+    "warnings": [],
+    "forced": false
+  },
+  "v3_compat": {
+    "latest_results_rows": 8204,
+    "filtered_out_rows": 5153
+  }
+}
