@@ -1,7 +1,0 @@
-# Dependencies for running the notebooks locally (the Actions install the same set)
-papermill
-ipython
-ipykernel
-pandas==2.3.3
-requests
-numpy

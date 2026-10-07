@@ -12,3 +12,13 @@ development_code.ipynb
 summarise_results.ipynb
 racs.ipynb
 Summary plots/
+
+# Pipeline working store (carried between runs in the Actions cache, not committed)
+data/
+*.sqlite
+*.sqlite-journal
+
+# Packaging / tests
+*.egg-info/
+build/
+.pytest_cache/
