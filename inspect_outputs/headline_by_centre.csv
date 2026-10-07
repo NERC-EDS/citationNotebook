@@ -1,0 +1,8 @@
+data_centre,datasets,cited (counted),counted citations,related links,excluded,% datasets cited
+BODC,288,131,995,490,530,45.5%
+CEDA,550,240,891,2354,891,43.6%
+EIDC,1158,925,3231,2599,1398,79.9%
+NGDC,136,68,102,147,205,50.0%
+PDC,727,335,532,2198,470,46.1%
+unknown,1,0,0,11,0,0.0%
+All,2860,1699,5751,7799,3494,59.4%

@@ -1,0 +1,19 @@
+id,check,status,n,note
+V3-C3,data_publisher is not blank,WARN,11,
+V3-C4,data_title is not blank,WARN,11,
+V3-C5,PubCitationStr is not blank,WARN,185,
+V3-C7,No placeholder values in publication fields,WARN,8296,
+V3-D2,One row per dataset × citing work (after normalising identifiers),WARN,64,
+V3-D3,No self-links,WARN,9,
+V3-P1,Every CSV row is in the JSON,WARN,11,legacy v3 dropped rows with no data_publisher from the JSON
+V3-T2,publication_date is parseable or empty,WARN,1,
+V3-R1,No similarity links,INFO,5943,Scholexplorer HasAmongTopNSimilarDocuments
+V3-R2,No dataset-to-dataset rows,INFO,7087,
+V3-T1,publication_date is ISO 8601,INFO,1453,legacy v3 wrote Crossref 'created' dates as D/M/YYYY
+V3-C1,data_doi is not blank,PASS,0,
+V3-C2,publication_doi is not blank,PASS,0,
+V3-C6,No formatter error messages in PubCitationStr,PASS,0,
+V3-D1,data_doi is a NERC 10.5285 DOI,PASS,0,
+V3-F1,No rows the v4 exclusion rules would remove,PASS,0,"comment, peer review, EGUsphere, GBIF, or 2+ years before the data"
+V3-P2,Every JSON row is in the CSV,PASS,0,
+V3-S1,"latest_results.csv has the 18 v3 columns, in order",PASS,0,
