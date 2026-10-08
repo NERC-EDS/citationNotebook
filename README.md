@@ -121,7 +121,7 @@ erDiagram
     MANIFEST ||--|{ DATASET : "describes the run of"
 
     DATASET {
-        string doi PK "bl.nerc DOI, lower case"
+        string doi PK "bl.nerc DOI - lower case"
         string data_centre "BODC CEDA EIDC NGDC PDC or empty"
         string title
         int publication_year
@@ -137,7 +137,7 @@ erDiagram
         string link_id PK "sha1 of data_doi and citing_id"
         string data_doi FK
         string citing_id FK
-        string relation_type "DataCite, dataset side"
+        string relation_type "DataCite - dataset side"
         string relation_class "citation supplement documentation other dataset-link version-or-part similarity"
         bool counted "included citation or supplement"
         string status "included or excluded"
@@ -148,7 +148,7 @@ erDiagram
         date last_seen
     }
     WORK {
-        string citing_id PK "DOI, URL, pmid, pmc or hdl"
+        string citing_id PK "DOI/URL/pmid/pmc/hdl"
         string citing_id_type
         string title
         string work_type "CSL type"
