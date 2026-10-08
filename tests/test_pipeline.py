@@ -205,6 +205,13 @@ def test_full_run(con, settings):
     assert manifest["counts"]["counted_links"] == 5
     assert manifest["reconciliation"]["incomplete_datasets"] == 0
     assert manifest["guards"]["problems"] == []
+    # Readers fetch the files one by one; the hashes let them check they got one consistent set.
+    import hashlib
+    assert set(manifest["files"]) == {"datasets.csv", "datasets.json", "links.csv", "links.jsonl", "works.csv",
+                                      "works.json", "reconciliation.csv"}
+    for name, info in manifest["files"].items():
+        data = (settings.v4_dir / name).read_bytes()
+        assert info == {"sha256": hashlib.sha256(data).hexdigest(), "bytes": len(data)}
 
     # v3 compatibility: the same 18 columns, counted links only, JSON grouped by data centre.
     v3 = read_csv(settings.v3_dir / "latest_results.csv", encoding="utf-8-sig")

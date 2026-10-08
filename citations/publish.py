@@ -8,6 +8,7 @@ files are flat arrays carrying data_centre, not grouped by data centre.
 from __future__ import annotations
 
 import csv
+import hashlib
 import json
 import logging
 import os
@@ -73,7 +74,7 @@ def _cell(value):
 
 def write_csv(path: Path, columns: list[str], rows: list[dict], cell=_cell, encoding: str = "utf-8"):
     def write(handle):
-        writer = csv.writer(handle)
+        writer = csv.writer(handle, lineterminator="\n")   # LF, as v3 wrote it; nothing for git to normalise
         writer.writerow(columns)
         for row in rows:
             writer.writerow([cell(row.get(c)) for c in columns])
@@ -89,6 +90,24 @@ def write_json(path: Path, data, lines: bool = False):
             json.dump(data, handle, ensure_ascii=False, indent=None if isinstance(data, list) else 2)
             handle.write("\n")
     _atomic(path, write)
+
+
+V4_FILES = ("datasets.csv", "datasets.json", "links.csv", "links.jsonl", "works.csv", "works.json",
+            "reconciliation.csv")
+
+
+def file_hashes(folder: Path, names=V4_FILES) -> dict:
+    """sha256 and size of each published file, recorded in the manifest.
+
+    The files are fetched one by one (raw.githubusercontent.com caches each for a
+    few minutes), so a reader can be handed a new manifest with an old links.csv.
+    Checking the hashes tells it the set is consistent before it uses it.
+    """
+    out = {}
+    for name in names:
+        data = (folder / name).read_bytes()
+        out[name] = {"sha256": hashlib.sha256(data).hexdigest(), "bytes": len(data)}
+    return out
 
 
 # -- building rows ------------------------------------------------------------
@@ -280,6 +299,7 @@ def run_publish(con, settings, force: bool = False) -> str:
             "reconciliation": rec_summary,
             "guards": {"problems": problems, "warnings": warnings, "forced": bool(problems and force)},
             "v3_compat": {"latest_results_rows": v3_counts[0], "filtered_out_rows": v3_counts[1]} if v3_counts else None,
+            "files": file_hashes(v4),
         }
         write_json(v4 / "manifest.json", manifest)
         db.finish_run(con, run_id, "success", rows=len(data["links"]),

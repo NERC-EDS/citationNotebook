@@ -57,6 +57,15 @@ GitHub only starts scheduled and manual runs from a repository's default branch.
 
 Upstream needs none of these variables: the workflow runs on the default branch, and pushes do not start it.
 
+## Checking the results
+
+`inspect_results.ipynb` validates and summarises what has been published. It calls no citation API. Install with `pip install -e ".[notebook]"`, open it, and in the Settings cell choose a `Results` folder or this repository on GitHub at a branch, tag or commit, and optionally a second version to compare with.
+
+- **Validation** (PASS / WARN / FAIL / INFO, with the failing rows written to `inspect_outputs/`): `Results/v4` against the format below, its integrity, the counting rules, the manifest and the reconciliation; `Results/v3` for CSV–JSON parity and data quality, and, when v4 is present, that it holds exactly v4's counted links.
+- **Overview**: counted citations and related links per data centre, sources and how often they agree, exclusions, metadata completeness, the most-cited datasets, citations by UK fiscal year, and links new since a date.
+- **One dataset**: `show_dataset(doi)`.
+- **Comparison** with the other version: per-dataset changes, and `compare_dataset(doi)` for new, gone and unchanged citing works. A legacy v3 version is classified with the v4 rules first, so counts compare like for like.
+
 ## Counting rules
 
 A **link** is one dataset and one citing work, with every source that reported it. Relations are stored in the DataCite vocabulary *from the dataset's side*: `IsCitedBy` means the other work cites the dataset. Relations where the dataset is the one citing or deriving (`References`, `Cites`, `IsDerivedFrom`, `IsCompiledBy` …) are not links to the dataset and are dropped at harvest.
@@ -96,7 +105,77 @@ Bare lower-case DOIs; ISO 8601 dates; empty means null (no "Info not given"); li
 | `links.csv`, `links.jsonl` | dataset × citing work, excluded links included |
 | `works.csv`, `works.json` | citing work |
 | `reconciliation.csv` | dataset cited by DataCite or by the pipeline |
-| `manifest.json` | run: sources and their status and age, counts, guard results, reconciliation summary |
+| `manifest.json` | run: sources and their status and age, counts, guard results, reconciliation summary, and the sha256 and size of every other v4 file, so a reader can check it fetched one consistent set |
+
+How the files fit together: a link joins one dataset to one citing work, and every link, work
+and reconciliation row comes from the same run, which the manifest describes. When the citing
+work is itself a NERC dataset, its `citing_id` is that dataset's DOI and the link is a
+`dataset-link`.
+
+```mermaid
+erDiagram
+    DATASET ||--o{ LINK : "data_doi"
+    WORK ||--|{ LINK : "citing_id"
+    DATASET |o--o{ LINK : "citing_id, for dataset-link"
+    DATASET ||--o| RECONCILIATION : "doi"
+    MANIFEST ||--|{ DATASET : "describes the run of"
+
+    DATASET {
+        string doi PK "bl.nerc DOI, lower case"
+        string data_centre "BODC CEDA EIDC NGDC PDC or empty"
+        string title
+        int publication_year
+        string resource_type_general
+        json authors
+        int counted_citations "from links"
+        int related_links "from links"
+        int excluded_links "from links"
+        int datacite_citation_count
+        date first_cited
+    }
+    LINK {
+        string link_id PK "sha1 of data_doi and citing_id"
+        string data_doi FK
+        string citing_id FK
+        string relation_type "DataCite, dataset side"
+        string relation_class "citation supplement documentation other dataset-link version-or-part similarity"
+        bool counted "included citation or supplement"
+        string status "included or excluded"
+        string exclusion_reason
+        json sources
+        json source_relations
+        date first_seen
+        date last_seen
+    }
+    WORK {
+        string citing_id PK "DOI, URL, pmid, pmc or hdl"
+        string citing_id_type
+        string title
+        string work_type "CSL type"
+        string container_title
+        date issued
+        string issued_precision "year month or day"
+        json authors
+        string citation_text
+        string metadata_source
+    }
+    RECONCILIATION {
+        string doi PK
+        int datacite_citation_count
+        int datacite_links_harvested
+        int missing_vs_datacite
+        int pipeline_counted
+        bool complete
+    }
+    MANIFEST {
+        string schema "nerc-eds-citations/v4"
+        datetime generated_at
+        json sources "status and age of each harvest"
+        json counts
+        json guards
+        json files "sha256 and size of each file"
+    }
+```
 
 **links**
 
