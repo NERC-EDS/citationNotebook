@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nerc-eds-citations"
+version = "4.0.0"
+description = "Harvests, classifies and publishes citations of NERC EDS datasets (DataCite client bl.nerc)."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "NERC Environmental Data Service" }]
+dependencies = [
+    "requests>=2.31",
+    "urllib3>=2.0",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[project.scripts]
+citations = "citations.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["citations*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

@@ -1,0 +1,161 @@
+name: Weekly citations
+
+# One job, in order: inventory -> sources -> works -> merge -> publish.
+# The SQLite store (data/citations.sqlite) is carried between runs in the Actions
+# cache; if the cache has been evicted the run rebuilds it from scratch, taking
+# first-seen dates from the published Results/v4/links.csv.
+#
+# Which branch it runs on: the repository variable CITATIONS_BRANCH, or the
+# default branch when that is not set. GitHub only starts scheduled and manual
+# runs from the default branch, so on a fork testing another branch (for example
+# CITATIONS_BRANCH=v4) the run is started by pushing a code change to that
+# branch, or by re-running an earlier run. Upstream needs no variable.
+#
+# Optional repository variables:
+#   CITATIONS_BRANCH          branch the pipeline runs on (default: the default branch)
+#   CITATIONS_COMMIT_RESULTS  "false" to keep results out of git (uploaded as an artifact only)
+#   CITATIONS_MAILTO          contact email for the Crossref/DataCite polite pools
+# Secret: OVERTON_API_KEY (Overton is skipped without it).
+
+on:
+  schedule:
+    - cron: "17 1 * * 0"     # Sundays 01:17 UTC
+  push:
+    branches-ignore: [main, master]   # pushes only start a run on CITATIONS_BRANCH (see the job condition)
+    paths:
+      - "citations/**"
+      - "pyproject.toml"
+      - ".github/workflows/citations.yml"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Publish even if a guard fails (recorded in manifest.json)"
+        type: boolean
+        default: false
+      skip:
+        description: "Sources to skip this run, space separated: datacite scholexplorer overton crossref"
+        type: string
+        default: ""
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: weekly-citations
+  cancel-in-progress: false
+
+jobs:
+  citations:
+    # Pushes run only on CITATIONS_BRANCH, and only when it is set (a test fork).
+    # Scheduled and manual runs run only on CITATIONS_BRANCH, else the default branch,
+    # so a manual run on a pull-request branch cannot commit results to it.
+    if: >-
+      (github.event_name == 'push' && vars.CITATIONS_BRANCH != '' && github.ref_name == vars.CITATIONS_BRANCH) ||
+      (github.event_name != 'push' && github.ref_name == (vars.CITATIONS_BRANCH || github.event.repository.default_branch))
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    env:
+      PYTHONUNBUFFERED: "1"
+      CITATIONS_MAILTO: ${{ vars.CITATIONS_MAILTO }}
+      OVERTON_API_KEY: ${{ secrets.OVERTON_API_KEY }}
+      FORCE: ${{ inputs.force }}
+      SKIP: ${{ inputs.skip }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: pip install -e ".[test]"
+
+      - name: Test
+        run: pytest
+
+      - name: Restore the SQLite store
+        uses: actions/cache/restore@v4
+        with:
+          path: data/citations.sqlite
+          key: citations-db-${{ github.run_id }}
+          restore-keys: citations-db-
+
+      - name: Run the pipeline
+        run: |
+          args=(all --save-snapshot data/datacite_snapshot.json.gz)
+          if [ "$FORCE" = "true" ]; then args+=(--force); fi
+          if [ -n "$SKIP" ]; then
+            if ! [[ "$SKIP" =~ ^[a-z\ ]+$ ]]; then echo "::error::Invalid skip list"; exit 1; fi
+            read -r -a skip <<< "$SKIP"
+            args+=(--skip "${skip[@]}")
+          fi
+          set +e
+          python -m citations "${args[@]}"
+          code=$?
+          set -e
+          python -m citations status | tee -a "$GITHUB_STEP_SUMMARY"
+          exit $code
+
+      - name: Save the SQLite store
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: data/citations.sqlite
+          key: citations-db-${{ github.run_id }}
+
+      - name: Keep the store and DataCite snapshot for inspection
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: citations-store-${{ github.run_id }}
+          path: |
+            data/citations.sqlite
+            data/datacite_snapshot.json.gz
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: Keep the results for inspection
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: citations-results-${{ github.run_id }}
+          path: |
+            Results/v4
+            Results/v3
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: Commit results
+        if: vars.CITATIONS_COMMIT_RESULTS != 'false'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Results/v4 Results/v3
+          if git diff --cached --quiet; then
+            echo "No changes to the results."
+            exit 0
+          fi
+          counted=$(python -c "import json; print(json.load(open('Results/v4/manifest.json'))['counts']['counted_links'])")
+          git commit -m "Weekly citations: ${counted} counted links"
+          # The run takes a while; take in anything pushed to the branch meanwhile.
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
+
+      - name: Report a failed or blocked run
+        if: failure()
+        continue-on-error: true      # forks have Issues turned off by default
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create citations-pipeline --color B60205 --description "Weekly citations run" --force
+          run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          body=$(printf 'The weekly citations run failed or publishing was blocked by a guard. The previous results were kept.\n\nRun: %s\n\n```\n%s\n```\n' "$run_url" "$(python -m citations status 2>&1 | tail -40)")
+          open=$(gh issue list --label citations-pipeline --state open --json number --jq '.[0].number')
+          if [ -n "$open" ]; then
+            gh issue comment "$open" --body "$body"
+          else
+            gh issue create --label citations-pipeline --title "Weekly citations run failed" --body "$body"
+          fi
