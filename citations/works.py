@@ -210,8 +210,9 @@ def run_works(con, client, settings) -> str:
         due, rows = [], {}
         for citing_id, kind in kinds.items():
             old = existing.get(citing_id)
+            age = db.age_days(old["fetched_at"]) if old is not None else None
             fresh = old is not None and old["metadata_source"] is not None \
-                and (db.age_days(old["fetched_at"]) or 1e9) < settings.works_refresh_days
+                and age is not None and age < settings.works_refresh_days
             if fresh:
                 continue
             if citing_id in inventory:
@@ -225,11 +226,13 @@ def run_works(con, client, settings) -> str:
 
         log.info("works: %d known, %d to fetch, %d from inventory or source hints", len(existing), len(due), len(rows))
         errors = not_found = 0
+        retry = set()   # lookups that failed: stored without fetched_at, so the next run tries again
         for i, (doi, meta, error) in enumerate(client.map(lambda d: fetch_doi(client, d), due), 1):
             if error is not None:
                 errors += 1
                 if doi in existing:
                     continue  # keep what we had; retried next run
+                retry.add(doi)  # use the source's hint for now, but don't treat it as fetched
             if meta is None:
                 not_found += error is None
                 meta = from_hint(hints[doi][2], hints[doi][1]) if doi in hints else {"metadata_source": None}
@@ -253,7 +256,8 @@ def run_works(con, client, settings) -> str:
                      meta.get("publisher"), meta.get("issued"), meta.get("issued_precision"),
                      json.dumps(meta.get("authors") or [], ensure_ascii=False),
                      old["citation_text"] if old else None, old["citation_source"] if old else None,
-                     meta.get("metadata_source"), now, old["citation_fetched_at"] if old else None),
+                     meta.get("metadata_source"), None if citing_id in retry else now,
+                     old["citation_fetched_at"] if old else None),
                 )
 
         # Citation strings for works that have none yet, or only a fallback built before metadata arrived.

@@ -73,8 +73,13 @@ def check(con, settings, previous_manifest: dict | None, reconciliation: dict | 
         new = current.get(source, 0)
         if old and new < old * (1 - settings.max_row_drop):
             message = (f"{source}: {new} links against {old} in the last published results "
-                       f"(a drop of more than {settings.max_row_drop:.0%}).")
-            (problems if source in REQUIRED_SOURCES else warnings).append(message)
+                       f"(a drop of more than {settings.max_row_drop:.0%})")
+            if source in settings.accept_drop:
+                warnings.append(f"{message}, accepted with --accept-drop.")
+            elif source in REQUIRED_SOURCES:
+                problems.append(f"{message}. If the drop is real, run again with --accept-drop {source}.")
+            else:
+                warnings.append(f"{message}.")
 
     if reconciliation and reconciliation.get("datacite_cited_datasets"):
         share = reconciliation["incomplete_share"]

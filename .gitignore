@@ -22,3 +22,6 @@ data/
 *.egg-info/
 build/
 .pytest_cache/
+
+# inspect_results.ipynb output (written fresh each time the notebook runs)
+inspect_outputs/

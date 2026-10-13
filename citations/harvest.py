@@ -170,9 +170,16 @@ def run_harvest(ctx: Context, source: str, resume: bool = True) -> str:
         message = (f"{total_errors} of {total_items} requests failed ({error_rate:.1%}); "
                    "the next run resumes and retries them. Previous good harvest kept.")
     elif good is not None and good["rows"] and rows < good["rows"] * (1 - settings.max_row_drop):
-        status = "rejected"
-        message = (f"{rows} links against {good['rows']} in the last good harvest "
-                   f"(a drop of more than {settings.max_row_drop:.0%}). Previous good harvest kept.")
+        drop = (f"{rows} links against {good['rows']} in the last good harvest "
+                f"(a drop of more than {settings.max_row_drop:.0%})")
+        if source in settings.accept_drop:
+            status = "success"
+            message = f"{drop}, accepted with --accept-drop."
+            details["accepted_drop"] = {"previous_rows": good["rows"], "rows": rows}
+        else:
+            status = "rejected"
+            message = (f"{drop}. Previous good harvest kept. If the drop is real, "
+                       f"run again with --accept-drop {source}.")
     else:
         status = "success"
         message = None
@@ -183,7 +190,7 @@ def run_harvest(ctx: Context, source: str, resume: bool = True) -> str:
             db.prune_harvests(con, source, run_id)
     db.finish_run(con, run_id, status, rows=rows, items=total_items, errors=total_errors, message=message,
                   details=details)
-    (log.info if status == "success" else log.error)(
-        "%s: %s, %d links from %d requests (%d errors)%s", source, status, rows, total_items, total_errors,
-        f": {message}" if message else "")
+    level = logging.ERROR if status != "success" else logging.WARNING if message else logging.INFO
+    log.log(level, "%s: %s, %d links from %d requests (%d errors)%s", source, status, rows, total_items,
+            total_errors, f": {message}" if message else "")
     return status
