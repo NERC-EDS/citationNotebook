@@ -18,3 +18,17 @@ def test_publish_without_any_harvest_is_blocked(tmp_path):
     code = cli.main(["--db", str(tmp_path / "s.sqlite"), "--results", str(tmp_path / "Results"), "publish"])
     assert code == 2
     assert not (tmp_path / "Results" / "v4").exists()
+
+
+def test_unknown_source_is_rejected():
+    import pytest
+    with pytest.raises(SystemExit):
+        cli.build_parser().parse_args(["harvest", "scopus"])
+
+
+def test_accept_drop_option():
+    parser = cli.build_parser()
+    for command in (["all"], ["harvest", "scholexplorer"], ["publish"]):
+        args = parser.parse_args(command + ["--accept-drop", "scholexplorer", "datacite"])
+        assert args.accept_drop == ["scholexplorer", "datacite"]
+    assert parser.parse_args(["harvest", "scholexplorer"]).accept_drop == []

@@ -33,10 +33,10 @@ Stages can be run separately. Each one reads and writes the store at `data/citat
 | Command | Does |
 | --- | --- |
 | `inventory [--snapshot F] [--save-snapshot F]` | Every DOI of `bl.nerc`, checked against DataCite's total. `--snapshot` rebuilds from a saved download. |
-| `harvest [datacite scholexplorer overton crossref] [--no-resume]` | Harvests the sources. An interrupted or partial harvest resumes and retries only what failed. |
+| `harvest [datacite scholexplorer overton crossref] [--no-resume] [--accept-drop S …]` | Harvests the sources. A harvest that was interrupted or partial, and started in the last 8 days, resumes and retries only what failed, so the next weekly run picks it up. `--accept-drop`: see [Guards](#guards). |
 | `works` | Metadata and a plain-text citation string for each citing work, cached and refreshed every 90 days. |
 | `merge` | One link per dataset × citing work from each source's latest good harvest, classified and filtered. |
-| `publish [--force] [--no-v3]` | Writes `Results/v4` and `Results/v3` if the guards pass. `--force` publishes anyway and records that in the manifest. |
+| `publish [--force] [--no-v3] [--accept-drop S …]` | Writes `Results/v4` and `Results/v3` if the guards pass. `--force` publishes anyway and records that in the manifest. |
 | `reconcile` | Compares each dataset with DataCite's `citationCount`. |
 
 Exit codes: 0 success, 1 a stage failed, 2 publishing was blocked by a guard.
@@ -46,6 +46,8 @@ Exit codes: 0 success, 1 a stage failed, 2 publishing was blocked by a guard.
 `.github/workflows/citations.yml` runs every Sunday: tests, then `python -m citations all`, then it commits `Results/v4` and `Results/v3`. The SQLite store is carried between runs in the Actions cache. If the cache has been evicted, the run rebuilds it from scratch, which takes longer, and first-seen dates come from the published `links.csv`. The store and the DataCite snapshot are also kept as a 30-day run artifact. A failed or blocked run opens or updates an issue labelled `citations-pipeline`, and the previous results stay as they were.
 
 Set the repository secret `OVERTON_API_KEY` and the variable `CITATIONS_MAILTO`.
+
+A manual run ("Run workflow") takes three optional inputs: `force` (publish even if a guard fails), `skip` (sources not to harvest) and `accept_drop` (sources whose drop in links is real; see [Guards](#guards)).
 
 #### Testing on a fork before a pull request
 
@@ -191,7 +193,7 @@ erDiagram
 | `source_relations` | the raw relation each source reported, for audit |
 | `first_seen`, `last_seen` | replace `date_added`; seeded from v3's `date_added` on the first run |
 
-**works**: `citing_id`, `citing_id_type`, `title`, `work_type` (CSL type where known), `container_title`, `publisher`, `issued`, `issued_precision` (`year`, `month`, `day`), `authors` (array of `{given, family, name, orcid}`), `citation_text`, `metadata_source` (`crossref`, `datacite`, `inventory`, or the harvesting source when no DOI metadata exists), `fetched_at`.
+**works**: `citing_id`, `citing_id_type`, `title`, `work_type` (CSL type where known), `container_title`, `publisher`, `issued`, `issued_precision` (`year`, `month`, `day`), `authors` (array of `{given, family, name, orcid}`), `citation_text`, `metadata_source` (`crossref`, `datacite`, `inventory`, or the harvesting source when no DOI metadata exists), `fetched_at` (empty when the Crossref or DataCite lookup failed: the source's own metadata is used until the next run retries it).
 
 **datasets**: `doi`, `data_centre`, `data_centre_name`, `publisher`, `title`, `publication_year`, `resource_type_general`, `registered`, `authors`, `counted_citations`, `related_links`, `excluded_links`, `datacite_citation_count`, `first_cited` (issued date of the earliest counted citing work).
 
@@ -202,7 +204,10 @@ erDiagram
 Still written each run, from v4: included, counted links only, in the same 18 columns, with `date_added` taken from `first_seen`. Differences consumers may notice:
 
 - **Fewer, more accurate rows.** Similarity, dataset-to-dataset and version links are no longer in it.
-- `publication_date` is ISO 8601.
+- `publication_date` is ISO 8601 at the precision known: `YYYY-MM-DD`, `YYYY-MM` or `YYYY` (was D/M/YYYY).
+- `publication_authors` is a list of `"Family, Given"` strings for every source (DataCite rows were a list of `[given, family]` pairs).
+- `data_publication_year` is an integer (`2012`, was `2012.0`).
+- Missing values are empty cells instead of placeholders such as `Info not given` or `not a doi` (`publication_authors` is `[]`).
 - `relation_type_id` is the dataset-side relation in kebab case (`is-cited-by`).
 - `citation_event_source` is one of `datacite`, `scholex`, `overton`, `crossref`.
 - `filtered_out_df.csv` gains an `exclusion_reason` column.
@@ -219,6 +224,8 @@ Publishing is refused (exit code 2, previous results kept, an issue opened) when
 - reconciliation with DataCite is incomplete for more than 5% of DataCite-cited datasets.
 
 Overton and Crossref are optional: their failures produce warnings in the manifest, and their last good harvest is used.
+
+**When a drop is real.** If a source really has lost links (for example Scholexplorer stops serving similarity links), every harvest of it would be rejected and, after 8 days, publishing blocked. Once you have checked the drop, run with `--accept-drop SOURCE` (`python -m citations all --accept-drop scholexplorer`, or the workflow's `accept_drop` input). That harvest becomes the source's good harvest and publishing is not blocked by the drop. Both are recorded: in the harvest run's details and as a warning in `manifest.json`. Unlike `--force`, it only waives the drop check, and only for the sources named.
 
 ## Development
 

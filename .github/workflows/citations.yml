@@ -36,6 +36,10 @@ on:
         description: "Sources to skip this run, space separated: datacite scholexplorer overton crossref"
         type: string
         default: ""
+      accept_drop:
+        description: "Sources whose drop of more than 20% in links is real and should be accepted, space separated"
+        type: string
+        default: ""
 
 permissions:
   contents: write
@@ -61,6 +65,7 @@ jobs:
       OVERTON_API_KEY: ${{ secrets.OVERTON_API_KEY }}
       FORCE: ${{ inputs.force }}
       SKIP: ${{ inputs.skip }}
+      ACCEPT_DROP: ${{ inputs.accept_drop }}
 
     steps:
       - uses: actions/checkout@v4
@@ -91,6 +96,11 @@ jobs:
             if ! [[ "$SKIP" =~ ^[a-z\ ]+$ ]]; then echo "::error::Invalid skip list"; exit 1; fi
             read -r -a skip <<< "$SKIP"
             args+=(--skip "${skip[@]}")
+          fi
+          if [ -n "$ACCEPT_DROP" ]; then
+            if ! [[ "$ACCEPT_DROP" =~ ^[a-z\ ]+$ ]]; then echo "::error::Invalid accept_drop list"; exit 1; fi
+            read -r -a accept <<< "$ACCEPT_DROP"
+            args+=(--accept-drop "${accept[@]}")
           fi
           set +e
           python -m citations "${args[@]}"

@@ -54,6 +54,20 @@ def _common(suppress: bool) -> argparse.ArgumentParser:
     return common
 
 
+def _source(value: str) -> str:
+    # Checked here rather than with choices=: before Python 3.12 argparse also checks the
+    # empty default of an nargs="*" positional against choices, so `harvest` alone failed.
+    if value not in ALL_SOURCES:
+        raise argparse.ArgumentTypeError(f"invalid choice: {value!r} (choose from {', '.join(ALL_SOURCES)})")
+    return value
+
+
+def _accept_drop(parser: argparse.ArgumentParser):
+    parser.add_argument("--accept-drop", nargs="+", default=[], choices=ALL_SOURCES, metavar="SOURCE",
+                        help="accept a drop of more than 20%% in these sources' links (when it is real): "
+                             "the harvest is not rejected and publishing is not blocked for it")
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="citations", description=__doc__, parents=[_common(False)],
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -67,21 +81,24 @@ def build_parser() -> argparse.ArgumentParser:
     p_all.add_argument("--save-snapshot", type=Path, help="save the DataCite records the inventory downloads")
     p_all.add_argument("--force", action="store_true", help="publish even if a guard fails (recorded in the manifest)")
     p_all.add_argument("--no-resume", action="store_true", help="start every harvest afresh")
+    _accept_drop(p_all)
 
     p_inv = sub.add_parser("inventory", help="every DOI of the DataCite client")
     p_inv.add_argument("--snapshot", type=Path)
     p_inv.add_argument("--save-snapshot", type=Path)
 
     p_h = sub.add_parser("harvest", help="harvest sources")
-    p_h.add_argument("sources", nargs="*", choices=ALL_SOURCES, metavar="SOURCE",
+    p_h.add_argument("sources", nargs="*", type=_source, metavar="SOURCE",
                      help=f"default: all of {', '.join(ALL_SOURCES)}")
     p_h.add_argument("--no-resume", action="store_true")
+    _accept_drop(p_h)
 
     sub.add_parser("works", help="metadata and citation strings for citing works")
     sub.add_parser("merge", help="combine harvests into classified links")
     p_pub = sub.add_parser("publish", help="write Results/v4 and Results/v3")
     p_pub.add_argument("--force", action="store_true")
     p_pub.add_argument("--no-v3", action="store_true", help="do not write the v3-compatible files")
+    _accept_drop(p_pub)
     sub.add_parser("reconcile", help="compare with DataCite's citationCount")
     sub.add_parser("status", help="latest run of every stage")
     return parser
@@ -104,7 +121,8 @@ def main(argv=None) -> int:
     args = build_parser().parse_args(argv)
     logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO,
                         format="%(asctime)s %(levelname)s %(name)s: %(message)s")
-    settings = Settings(db_path=args.db, results_dir=args.results, workers=args.workers)
+    settings = Settings(db_path=args.db, results_dir=args.results, workers=args.workers,
+                        accept_drop=frozenset(getattr(args, "accept_drop", [])))
     if args.mailto:
         settings.mailto = args.mailto
     con = db.connect(settings.db_path)

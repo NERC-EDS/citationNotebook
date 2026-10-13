@@ -49,6 +49,7 @@ class World:
         self.total = 3
         self.scholix_fail = set()
         self.scholix_empty = False
+        self.crossref_fail = set()
 
     # DataCite REST
     def dois(self, path, params):
@@ -120,6 +121,8 @@ class World:
 
     def crossref_works(self, path, params):
         doi = path[len("/works/"):].lower()
+        if doi in self.crossref_fail:
+            raise HttpError("HTTP 503")
         known = {"10.1234/article-x": [2021, 5, 1], "10.1234/meta-paper": [2020], "10.1234/article-z": [2022, 2],
                  "10.1234/old-paper": [2015]}
         if doi not in known:
@@ -268,6 +271,60 @@ def test_a_harvest_that_loses_most_rows_is_rejected(con, settings):
     assert run_harvest(make_ctx(con, world.client(), settings), "scholexplorer") == "rejected"
     assert db.good_run(con, "scholexplorer")["good_run_id"] == good       # the previous harvest is still used
     assert run_publish(con, settings) == "blocked"
+
+
+def test_a_real_drop_can_be_accepted(con, settings):
+    world = World()
+    run_all(con, settings, world)
+    world.scholix_empty = True
+    ctx = make_ctx(con, world.client(), settings)
+    assert run_harvest(ctx, "scholexplorer") == "rejected"
+
+    settings.accept_drop = frozenset({"scholexplorer"})
+    assert run_harvest(ctx, "scholexplorer") == "success"
+    latest = db.latest_run(con, "harvest", "scholexplorer")
+    assert db.good_run(con, "scholexplorer")["good_run_id"] == latest["run_id"]
+    assert json.loads(latest["details"])["accepted_drop"]["rows"] == 0
+    assert run_works(con, world.client(), settings) == "success"
+    assert run_merge(con, settings) == "success"
+
+    # The published links fell too; that is accepted for this source only.
+    settings.accept_drop = frozenset()
+    assert run_publish(con, settings) == "blocked"
+    assert "--accept-drop scholexplorer" in db.latest_run(con, "publish")["message"]
+    settings.accept_drop = frozenset({"scholexplorer"})
+    assert run_publish(con, settings) == "success"
+    manifest = json.loads((settings.v4_dir / "manifest.json").read_text())
+    assert any("scholexplorer" in w and "accepted" in w for w in manifest["guards"]["warnings"])
+    assert not manifest["guards"]["forced"]
+
+
+def test_a_partial_harvest_is_resumed_by_next_weeks_run(con, settings):
+    world = World()
+    run_all(con, settings, world)
+    world.scholix_fail = {A, B, C}
+    assert run_harvest(make_ctx(con, world.client(), settings), "scholexplorer") == "partial"
+    partial_run = db.latest_run(con, "harvest", "scholexplorer")["run_id"]
+    con.execute("UPDATE runs SET started_at=strftime('%Y-%m-%dT%H:%M:%SZ', 'now', '-7 days') WHERE run_id=?",
+                (partial_run,))
+    con.commit()
+    world.scholix_fail = set()
+    assert run_harvest(make_ctx(con, world.client(), settings), "scholexplorer") == "success"
+    assert db.good_run(con, "scholexplorer")["good_run_id"] == partial_run
+
+
+def test_a_failed_metadata_lookup_is_retried_next_run(con, settings):
+    world = World()
+    world.crossref_fail = {"10.1234/article-x"}
+    run_all(con, settings, world)
+    work = con.execute("SELECT * FROM works WHERE citing_id='10.1234/article-x'").fetchone()
+    assert work["metadata_source"] == "scholexplorer" and work["fetched_at"] is None   # the hint, for now
+
+    world.crossref_fail = set()
+    assert run_works(con, world.client(), settings) == "success"
+    work = con.execute("SELECT * FROM works WHERE citing_id='10.1234/article-x'").fetchone()
+    assert work["metadata_source"] == "crossref" and work["issued"] == "2021-05-01"
+    assert work["fetched_at"] is not None
 
 
 def test_incomplete_inventory_is_not_used(con, settings):

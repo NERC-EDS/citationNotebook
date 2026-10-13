@@ -64,10 +64,15 @@ class Settings:
     max_row_drop: float = 0.20          # a harvest losing more than this share of rows is rejected
     max_error_rate: float = 0.02        # share of failed per-DOI requests that makes a harvest partial
     reconcile_threshold: float = 0.05   # share of DataCite-cited datasets allowed to be incomplete
+    # Sources whose drop in links is accepted this run (--accept-drop), for when the
+    # drop is real: the harvest is not rejected and publishing is not blocked for it.
+    accept_drop: frozenset = frozenset()
     # Classification
     predates_tolerance_years: int = 2   # exclude a work published this many years or more before the dataset
     # Caching / resume
-    resume_window_days: float = 6       # an unfinished harvest younger than this is resumed, not restarted
+    # An unfinished (interrupted or partial) harvest younger than this is resumed, not
+    # restarted. Longer than the weekly schedule, so the next Sunday run picks it up.
+    resume_window_days: float = 8
     works_refresh_days: float = 90      # re-fetch citing-work metadata after this long
     min_citation_success_rate: float = 0.5
     write_v3: bool = True

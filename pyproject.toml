@@ -8,7 +8,6 @@ version = "4.0.0"
 description = "Harvests, classifies and publishes citations of NERC EDS datasets (DataCite client bl.nerc)."
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "MIT" }
 authors = [{ name = "NERC Environmental Data Service" }]
 dependencies = [
     "requests>=2.31",
@@ -17,6 +16,8 @@ dependencies = [
 
 [project.optional-dependencies]
 test = ["pytest>=8"]
+# inspect_results.ipynb
+notebook = ["pandas>=2.0", "numpy", "matplotlib", "jupyterlab"]
 
 [project.scripts]
 citations = "citations.cli:main"
