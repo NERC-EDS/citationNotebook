@@ -7,6 +7,8 @@ from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 from pathlib import Path
 
+from citations_fun.stable_output import write_json_records
+
 
 
 def getNERCDataDOIs():
@@ -179,15 +181,19 @@ def getNERCDataDOIs():
 
 
 
-    # Write the collected data to a JSON file
+    # Write the collected data to a JSON file.
+    #
+    # Written through write_json_records so the file is a pure function of the
+    # data: records sorted by DOI, exact duplicates dropped, pagination-only
+    # fields (data_page_number / data_self_link) removed, keys sorted, LF
+    # endings. DataCite does not return pages in a stable order, so without
+    # this the whole file re-shuffles every run (measured: 2,205 added /
+    # 2,172 deleted lines for a net gain of two records).
     output_file = Path("Results/intermediate_data/nerc_datacite_dois.json")
-    output_file.parent.mkdir(parents=True, exist_ok=True)
-
 
     try:
-        with open(output_file, 'w') as f:
-            json.dump(dataCiteInfo, f, indent=4)
-        print(f"Data written to {output_file}")
+        written = write_json_records(dataCiteInfo, output_file, sort_by=("data_doi",))
+        print(f"Data written to {output_file} ({len(written)} records)")
     except IOError as e:
         print(f"Error writing to file: {e}")
     
