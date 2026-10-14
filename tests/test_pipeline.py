@@ -202,6 +202,14 @@ def test_full_run(con, settings):
     assert works["10.1234/article-x"]["issued"] == "2021-05-01" and works["10.1234/article-x"]["issued_precision"] == "day"
     assert works[C]["metadata_source"] == "inventory"
     assert works["https://gov.example/policy.pdf"]["title"] == "A policy"
+    # One vocabulary: Crossref's. Overton policy documents are reports.
+    assert works["10.1234/article-x"]["work_type"] == "journal-article"
+    assert works["https://gov.example/policy.pdf"]["work_type"] == "report"
+    assert works[C]["work_type"] == "dataset"
+    # A web page with no metadata gets its link as the citation, not an empty one.
+    docs = works["https://example.org/docs/a.zip"]
+    assert docs["title"] == "" and docs["citation_text"] == "https://example.org/docs/a.zip"
+    assert all(w["citation_text"] for w in works.values())
     assert all("Info not given" not in json.dumps(w) for w in works.values())
 
     manifest = json.loads((settings.v4_dir / "manifest.json").read_text())

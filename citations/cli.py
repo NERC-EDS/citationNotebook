@@ -22,7 +22,7 @@ from pathlib import Path
 
 from . import db
 from .config import ALL_SOURCES, REQUIRED_SOURCES, Settings
-from .harvest import Context, run_harvest
+from .harvest import Context, NoInventory, run_harvest
 from .http import HttpClient
 from .inventory import run_inventory
 from .merge import run_merge
@@ -143,7 +143,11 @@ def main(argv=None) -> int:
     if args.command == "inventory":
         return 0 if run_inventory(con, client, settings.client_id, args.snapshot, args.save_snapshot) == "success" else 1
     if args.command == "harvest":
-        statuses = {s: run_harvest(ctx, s, resume=not args.no_resume) for s in (args.sources or ALL_SOURCES)}
+        try:
+            statuses = {s: run_harvest(ctx, s, resume=not args.no_resume) for s in (args.sources or ALL_SOURCES)}
+        except NoInventory as error:
+            log.error("%s", error)
+            return 1
         return 0 if all(v in ("success", "skipped") for v in statuses.values()) else 1
     if args.command == "works":
         return 0 if run_works(con, client, settings) in ("success", "partial") else 1

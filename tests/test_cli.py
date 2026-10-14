@@ -32,3 +32,8 @@ def test_accept_drop_option():
         args = parser.parse_args(command + ["--accept-drop", "scholexplorer", "datacite"])
         assert args.accept_drop == ["scholexplorer", "datacite"]
     assert parser.parse_args(["harvest", "scholexplorer"]).accept_drop == []
+
+
+def test_harvest_without_an_inventory_is_an_error_not_a_traceback(tmp_path, caplog):
+    assert cli.main(["--db", str(tmp_path / "s.sqlite"), "harvest", "scholexplorer"]) == 1
+    assert "inventory" in caplog.text
