@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 
@@ -97,7 +98,17 @@ def done_keys(con, source: str, run_id: int) -> set:
     return {row["key"] for row in rows}
 
 
-def per_key(ctx: Context, source: str, run_id: int, keys, fetch_one, log_every: int = 200):
+PROGRESS_SECONDS = 60   # how often each source logs its progress
+
+
+def _duration(seconds: float) -> str:
+    if seconds < 60:
+        return "under a minute"
+    minutes = round(seconds / 60)
+    return f"about {minutes // 60}h{minutes % 60:02d}m" if minutes >= 60 else f"about {minutes}m"
+
+
+def per_key(ctx: Context, source: str, run_id: int, keys, fetch_one):
     """Fetch each key in worker threads and store its links as it arrives.
 
     fetch_one(key) -> list[RawLink]. Keys already fetched in this run are skipped,
@@ -105,9 +116,25 @@ def per_key(ctx: Context, source: str, run_id: int, keys, fetch_one, log_every: 
     the other sources are being harvested at the same time, so no source holds
     the store's write lock while it waits on the network. Returns (items, errors).
     """
-    keys = [k for k in keys if k not in done_keys(ctx.con, source, run_id)]
+    from .sources import MODULES
+
+    done = done_keys(ctx.con, source, run_id)
+    remaining = [k for k in keys if k not in done]
+    resumed = len(keys) - len(remaining)
+    keys = remaining
+    log.info("%s: %d to fetch%s", source, len(keys), f" ({resumed} already fetched in this run)" if resumed else "")
     items = errors = 0
     first_errors = []
+    started = last_report = time.monotonic()
+    throttled_at_start = _throttled(ctx.client, MODULES[source])
+
+    def report(i):
+        elapsed = time.monotonic() - started
+        rate = i / elapsed if elapsed else 0.0
+        left = f", {_duration((len(keys) - i) / rate)} left" if rate and i < len(keys) else ""
+        log.info("%s: %d/%d, %.1f a second, %d errors, %d rate-limited (429)%s", source, i, len(keys), rate,
+                 errors, _throttled(ctx.client, MODULES[source]) - throttled_at_start, left)
+
     for i, (key, links, error) in enumerate(ctx.client.map(fetch_one, keys), 1):
         items += 1
         if error is not None:
@@ -119,8 +146,11 @@ def per_key(ctx: Context, source: str, run_id: int, keys, fetch_one, log_every: 
             write_links(ctx.con, source, run_id, links)
             log_fetch(ctx.con, source, run_id, key, "ok", n=len(links))
         ctx.con.commit()
-        if i % log_every == 0:
-            log.info("%s: %d/%d keys, %d errors", source, i, len(keys), errors)
+        if time.monotonic() - last_report >= PROGRESS_SECONDS:
+            report(i)
+            last_report = time.monotonic()
+    if keys:
+        report(items)
     for message in first_errors:
         log.warning("%s: %s", source, message)
     return items, errors
