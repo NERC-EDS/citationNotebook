@@ -17,7 +17,10 @@ import html
 import html.entities
 import re
 import logging
+import threading
 import time
+from concurrent.futures import ThreadPoolExecutor
+from contextlib import nullcontext
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -218,8 +221,11 @@ def _session():
     return session
 
 
-def fetch_formatted(session, doi, style, locale, timeout=15):
-    """Formatted citation for `doi`, or None if the formatter didn't give one."""
+def fetch_formatted(session, doi, style, locale, timeout=15, observe=None):
+    """Formatted citation for `doi`, or None if the formatter didn't give one.
+
+    observe(response), if given, sees every response (the caller counts 429s with it).
+    """
     try:
         response = session.get(
             CONTENT_NEGOTIATION_URL.format(doi=doi),
@@ -232,6 +238,8 @@ def fetch_formatted(session, doi, style, locale, timeout=15):
     except requests.RequestException as error:
         log.debug("%s: request failed (%s)", doi, error)
         return None
+    if observe:
+        observe(response)
     response.encoding = "utf-8"
     text = response.text.strip()
     if response.status_code != 200 or not is_real_citation(text):
@@ -248,6 +256,8 @@ def format_citations(
     min_success_rate=0.5,
     pause=0.1,
     session=None,
+    workers=1,
+    limiter=None,
 ):
     """A plain-text citation string for each row (dicts with the v3 keys).
 
@@ -259,14 +269,45 @@ def format_citations(
         formatted citation (and at least 20 were tried), raise RuntimeError
         instead of returning degraded strings. None disables the check.
 
+    workers: DOIs fetched at once. limiter: optional, such as the HttpClient, with
+    limited(bucket), a context manager that waits for a turn in the rate limit named
+    by the row's "bucket" key and is held while the request runs (pause is then not
+    used), and observe(bucket, response), which counts 429s.
+
     Returns (strings, sources, stats): sources says per row whether the string
     was "reused", "formatter" or "fallback" ("" when there is none).
     """
     reuse = {k.lower(): v for k, v in (reuse or {}).items() if is_real_citation(v)}
-    session = session or _session()
-    fetched = {}  # this call's lookups, so each DOI is fetched once
     stats = {"formatted": 0, "reused": 0, "fallback": 0, "empty": 0, "tried": 0, "succeeded": 0}
     strings, sources = [], []
+
+    # Each DOI that isn't reused is looked up once, `workers` at a time.
+    todo = {}
+    for row in rows:
+        doi = normalise_doi(row.get("pub_doi"), row.get("data_doi"))
+        if doi and doi.lower() not in reuse:
+            todo.setdefault(doi.lower(), (doi, row.get("bucket")))
+    local = threading.local()
+
+    def lookup(item):
+        doi, bucket = item
+        own = session or getattr(local, "session", None)
+        if own is None:
+            own = local.session = _session()
+        with (limiter.limited(bucket) if limiter else nullcontext()):
+            text = fetch_formatted(own, doi, style, locale,
+                                   observe=(lambda r: limiter.observe(bucket, r)) if limiter else None)
+        if pause and not limiter:
+            time.sleep(pause)
+        return text
+
+    if workers > 1 and len(todo) > 1:
+        with ThreadPoolExecutor(max_workers=workers, thread_name_prefix="citations") as pool:
+            fetched = dict(zip(todo, pool.map(lookup, todo.values())))
+    else:
+        fetched = {key: lookup(item) for key, item in todo.items()}
+    stats["tried"] = len(fetched)
+    stats["succeeded"] = sum(text is not None for text in fetched.values())
 
     for row in rows:
         doi = normalise_doi(row.get("pub_doi"), row.get("data_doi"))
@@ -277,12 +318,6 @@ def format_citations(
                 text, origin = reuse[key], "reused"
                 stats["reused"] += 1
             else:
-                if key not in fetched:
-                    stats["tried"] += 1
-                    fetched[key] = fetch_formatted(session, doi, style, locale)
-                    stats["succeeded"] += fetched[key] is not None
-                    if pause:
-                        time.sleep(pause)
                 text = fetched[key]
                 if text is not None:
                     origin = "formatter"

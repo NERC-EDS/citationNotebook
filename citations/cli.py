@@ -22,7 +22,7 @@ from pathlib import Path
 
 from . import db
 from .config import ALL_SOURCES, REQUIRED_SOURCES, Settings
-from .harvest import Context, NoInventory, run_harvest
+from .harvest import NoInventory, run_harvests
 from .http import HttpClient
 from .inventory import run_inventory
 from .merge import run_merge
@@ -110,8 +110,10 @@ def _status(con) -> int:
         "GROUP BY stage, COALESCE(source, '')) x ON r.run_id = x.m ORDER BY r.run_id").fetchall()
     for r in rows:
         name = f"{r['stage']}{':' + r['source'] if r['source'] else ''}"
-        print(f"{name:24} run {r['run_id']:<5} {r['status']:9} {r['started_at']}  rows={r['rows']}  "
-              f"errors={r['errors']}  {r['message'] or ''}")
+        throttled = (db.loads(r["details"], {}) or {}).get("throttled_429")
+        print(f"{name:24} run {r['run_id']:<5} {r['status']:9} {r['started_at']} -> {r['finished_at'] or '…'}  "
+              f"rows={r['rows']}  errors={r['errors']}"
+              f"{f'  429s={throttled}' if throttled is not None else ''}  {r['message'] or ''}")
     for s in con.execute("SELECT * FROM source_state ORDER BY source"):
         print(f"good {s['source']:19} run {s['good_run_id']:<5} {s['good_finished_at']}  rows={s['rows']}")
     return 0
@@ -127,7 +129,6 @@ def main(argv=None) -> int:
         settings.mailto = args.mailto
     con = db.connect(settings.db_path)
     client = HttpClient(mailto=settings.mailto, workers=settings.workers)
-    ctx = Context(con=con, client=client, settings=settings)
 
     if args.command == "status":
         return _status(con)
@@ -144,7 +145,7 @@ def main(argv=None) -> int:
         return 0 if run_inventory(con, client, settings.client_id, args.snapshot, args.save_snapshot) == "success" else 1
     if args.command == "harvest":
         try:
-            statuses = {s: run_harvest(ctx, s, resume=not args.no_resume) for s in (args.sources or ALL_SOURCES)}
+            statuses = run_harvests(settings, client, args.sources or ALL_SOURCES, resume=not args.no_resume)
         except NoInventory as error:
             log.error("%s", error)
             return 1
@@ -165,10 +166,8 @@ def main(argv=None) -> int:
         _annotate("error", "Inventory failed; harvesting with the last good inventory if there is one.")
         if db.good_run(con, "inventory") is None:
             return 1
-    for source in ALL_SOURCES:
-        if source in args.skip:
-            continue
-        status = run_harvest(ctx, source, resume=not args.no_resume)
+    sources = [s for s in ALL_SOURCES if s not in args.skip]
+    for source, status in run_harvests(settings, client, sources, resume=not args.no_resume).items():
         if status not in ("success", "skipped"):
             failed.append(source)
             _annotate("error" if source in REQUIRED_SOURCES else "warning",

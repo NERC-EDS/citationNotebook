@@ -33,13 +33,23 @@ Stages can be run separately. Each one reads and writes the store at `data/citat
 | Command | Does |
 | --- | --- |
 | `inventory [--snapshot F] [--save-snapshot F]` | Every DOI of `bl.nerc`, checked against DataCite's total. `--snapshot` rebuilds from a saved download. |
-| `harvest [datacite scholexplorer overton crossref] [--no-resume] [--accept-drop S …]` | Harvests the sources. A harvest that was interrupted or partial, and started in the last 8 days, resumes and retries only what failed, so the next weekly run picks it up. `--accept-drop`: see [Guards](#guards). |
-| `works` | Metadata and a plain-text citation string for each citing work, cached and refreshed every 90 days. |
+| `harvest [datacite scholexplorer overton crossref] [--no-resume] [--accept-drop S …]` | Harvests the sources, all at the same time. A harvest that was interrupted or partial, and started in the last 8 days, resumes and retries only what failed, so the next weekly run picks it up. `--accept-drop`: see [Guards](#guards). |
+| `works` | Metadata and a plain-text citation string for each citing work, cached and refreshed every 90 days, and saved as it is fetched. |
 | `merge` | One link per dataset × citing work from each source's latest good harvest, classified and filtered. |
 | `publish [--force] [--no-v3] [--accept-drop S …]` | Writes `Results/v4` and `Results/v3` if the guards pass. `--force` publishes anyway and records that in the manifest. |
 | `reconcile` | Compares each dataset with DataCite's `citationCount`. |
 
 Exit codes: 0 success, 1 a stage failed, 2 publishing was blocked by a guard.
+
+### Speed and rate limits
+
+The run spends almost all its time waiting on the APIs, within their published rate limits, so it overlaps that waiting rather than using more processes:
+
+- The four sources are harvested at the same time, one thread and one store connection each. Each calls a different API, so the harvest takes as long as the slowest source (usually Crossref's data citations, which allow 3 list requests a second) instead of the sum.
+- Within a source, and for citing-work metadata and citation strings, requests run in parallel (`--workers`, default 4), up to each API's limit.
+- `citations/http.py` paces every request to the API's published limit (requests per second, and requests at once), just under it: Crossref's polite pool, 10/s for single records, 3/s for lists, 3 at once; DataCite, 1,000 requests per 5 minutes, which is also its cap for citation strings from DataCite DOIs; Overton, one a second. Without `CITATIONS_MAILTO` the lower anonymous limits are used. A slow API never holds up requests to the others.
+- Each harvest run and the works run record `throttled_429`, the number of rate-limited responses they got (see `python -m citations status` or the store), so a limit that has changed shows up.
+- Harvested links, citing-work metadata and citation strings are saved as they arrive. A run stopped by the job's time limit keeps what it fetched, and the next run carries on from there.
 
 ### The weekly workflow
 
