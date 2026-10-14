@@ -1,8 +1,8 @@
 {
   "schema": "nerc-eds-citations/v4",
-  "generated_at": "2026-10-08T09:52:59Z",
+  "generated_at": "2026-10-14T09:48:17Z",
   "code_version": "4.0.0",
-  "git_commit": "08e1c487e324e68b0110511c6865a0ee1d379a05",
+  "git_commit": "119fdd25d1e9beca7c68a3d96c7607a414bac402",
   "client_id": "bl.nerc",
   "settings": {
     "predates_tolerance_years": 2,
@@ -14,84 +14,84 @@
     "inventory": {
       "required": true,
       "latest_status": "success",
-      "latest_run_id": 9,
+      "latest_run_id": 13,
       "latest_message": null,
-      "good_run_id": 9,
-      "good_finished_at": "2026-10-08T08:42:53Z",
-      "good_rows": 6366,
-      "age_days": 0.05,
+      "good_run_id": 13,
+      "good_finished_at": "2026-10-14T07:50:39Z",
+      "good_rows": 6383,
+      "age_days": 0.08,
       "stale": false
     },
     "datacite": {
       "required": true,
       "latest_status": "success",
-      "latest_run_id": 10,
+      "latest_run_id": 14,
       "latest_message": null,
-      "good_run_id": 10,
-      "good_finished_at": "2026-10-08T08:54:55Z",
-      "good_rows": 13464,
-      "age_days": 0.04,
+      "good_run_id": 14,
+      "good_finished_at": "2026-10-14T08:09:46Z",
+      "good_rows": 13549,
+      "age_days": 0.07,
       "stale": false
     },
     "scholexplorer": {
       "required": true,
       "latest_status": "success",
-      "latest_run_id": 11,
+      "latest_run_id": 16,
       "latest_message": null,
-      "good_run_id": 11,
-      "good_finished_at": "2026-10-08T09:07:49Z",
+      "good_run_id": 16,
+      "good_finished_at": "2026-10-14T08:03:33Z",
       "good_rows": 20834,
-      "age_days": 0.03,
+      "age_days": 0.07,
       "stale": false
     },
     "overton": {
       "required": false,
       "latest_status": "success",
-      "latest_run_id": 12,
+      "latest_run_id": 17,
       "latest_message": null,
-      "good_run_id": 12,
-      "good_finished_at": "2026-10-08T09:09:06Z",
-      "good_rows": 302,
-      "age_days": 0.03,
+      "good_run_id": 17,
+      "good_finished_at": "2026-10-14T07:51:03Z",
+      "good_rows": 300,
+      "age_days": 0.08,
       "stale": false
     },
     "crossref": {
       "required": false,
       "latest_status": "success",
-      "latest_run_id": 13,
+      "latest_run_id": 15,
       "latest_message": null,
-      "good_run_id": 13,
-      "good_finished_at": "2026-10-08T09:49:22Z",
-      "good_rows": 3502,
-      "age_days": 0.0,
+      "good_run_id": 15,
+      "good_finished_at": "2026-10-14T08:30:18Z",
+      "good_rows": 3508,
+      "age_days": 0.05,
       "stale": false
     }
   },
   "counts": {
-    "datasets": 6366,
+    "datasets": 6383,
     "datasets_by_centre": {
-      "BODC": 878,
-      "CEDA": 1431,
-      "EIDC": 2307,
+      "BODC": 885,
+      "CEDA": 1432,
+      "EIDC": 2315,
       "NGDC": 670,
-      "PDC": 1074,
+      "PDC": 1075,
       "unknown": 6
     },
-    "datasets_cited": 2128,
-    "links": 28099,
-    "counted_links": 8302,
+    "datasets_cited": 2135,
+    "links": 28135,
+    "counted_links": 8330,
     "links_by_class": {
-      "citation": 13191,
+      "citation": 13217,
       "dataset-link": 1883,
-      "documentation": 2284,
+      "documentation": 2291,
       "other": 2,
       "similarity": 8457,
-      "supplement": 177,
-      "version-or-part": 2105
+      "supplement": 179,
+      "version-or-part": 2106
     },
     "links_by_status": {
       "excluded": 5154,
-      "included": 22945
+      "included": 22981
     },
     "exclusions": {
       "comment": 273,
@@ -101,21 +101,21 @@
       "predates-data": 293
     },
     "links_by_source": {
-      "crossref": 2572,
-      "datacite": 11110,
-      "overton": 302,
+      "crossref": 2580,
+      "datacite": 11173,
+      "overton": 300,
       "scholexplorer": 20608
     },
-    "works": 15942
+    "works": 15968
   },
   "reconciliation": {
-    "datacite_cited_datasets": 1654,
-    "datacite_citations": 5959,
-    "datacite_links_harvested": 5917,
-    "incomplete_datasets": 43,
-    "incomplete_share": 0.026,
-    "pipeline_counted_citations": 8302,
-    "pipeline_cited_datasets": 2128
+    "datacite_cited_datasets": 1658,
+    "datacite_citations": 5981,
+    "datacite_links_harvested": 5983,
+    "incomplete_datasets": 27,
+    "incomplete_share": 0.0163,
+    "pipeline_counted_citations": 8330,
+    "pipeline_cited_datasets": 2135
   },
   "guards": {
     "problems": [],
@@ -123,37 +123,37 @@
     "forced": false
   },
   "v3_compat": {
-    "latest_results_rows": 8302,
+    "latest_results_rows": 8330,
     "filtered_out_rows": 5154
   },
   "files": {
     "datasets.csv": {
-      "sha256": "8007210866994118d589471be1d827871cad5a4476753fceacf826949d8c0869",
-      "bytes": 4964168
+      "sha256": "d3f51599fff66cd57fb519cdca1f94b7fba3e7cc7bcffaa72496d6bc6c270c66",
+      "bytes": 4976814
     },
     "datasets.json": {
-      "sha256": "e374ac52bdc009bb8ab3a472f6c2f8fbfdbd0522e31b0485e515680247d2bd8c",
-      "bytes": 6182356
+      "sha256": "a3145ab7eb33297954434652e941cc19cc0ac2f8789ca93627de0e9d04a7a3d0",
+      "bytes": 6198440
     },
     "links.csv": {
-      "sha256": "e6ee9e4e27c0155b97caf08068dc82aa9f8e39fd38e73ae14c84a4879cf7c4ef",
-      "bytes": 8382321
+      "sha256": "548ce0189025cffefd3a3c677233381098304fc6e47afe5da2e66c372647c657",
+      "bytes": 8395502
     },
     "links.jsonl": {
-      "sha256": "e75af6543217aa564bba92bbbebe944c63dff981e12d0a3df52d0fcca3dac8d9",
-      "bytes": 14844842
+      "sha256": "43b4831a7f9c2a5d7c30f05d362db0f100c6fd697b322e8efed747254c52c29b",
+      "bytes": 14866137
     },
     "works.csv": {
-      "sha256": "a9be476376ce0543f1f84cef0d4968991bd2a37b8f18f717086800c69033ef8e",
-      "bytes": 10347503
+      "sha256": "5aa88ed2286690489881ebfa38fc9502281f670bebd7614080395999a1ccf72a",
+      "bytes": 10550317
     },
     "works.json": {
-      "sha256": "28633ba1e08546e5077d0e9d9bea9ba9ce21199a2a09d3e01ef0245ad93df5cf",
-      "bytes": 13128608
+      "sha256": "e9c2f7faf812195fe7c5782b849ff3a18cf69d580fc5a824fbab8791bb42c5bc",
+      "bytes": 13330416
     },
     "reconciliation.csv": {
-      "sha256": "d2b5b95b09ae58cdd1746af97413c646c1496ff93c303e97e249abc6fed039b3",
-      "bytes": 172483
+      "sha256": "7db1ed6ca4b934895d7da1d94c6708c53e01aad5b7329b628fac9d3e0c344380",
+      "bytes": 172683
     }
   }
 }
