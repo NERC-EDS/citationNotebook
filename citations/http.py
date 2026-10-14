@@ -7,7 +7,7 @@ import re
 import threading
 import time
 from collections import Counter
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import Callable, Iterable, TypeVar
@@ -192,8 +192,10 @@ class HttpClient:
     def map(self, fn: Callable[[T], R], items: Iterable[T]):
         """Yield (item, result, error) for each item, running fn in worker threads.
 
-        Results arrive in input order. Errors are returned, not raised, so one bad
-        DOI cannot stop a harvest; the caller decides what an error rate means.
+        Results arrive as they finish, not in input order, so one slow request
+        doesn't hold back saving and reporting the others. Errors are returned,
+        not raised, so one bad DOI cannot stop a harvest; the caller decides what
+        an error rate means.
         """
         items = list(items)
 
@@ -208,4 +210,5 @@ class HttpClient:
                 yield safe(item)
             return
         with ThreadPoolExecutor(max_workers=self.workers) as pool:
-            yield from pool.map(safe, items)
+            for future in as_completed([pool.submit(safe, item) for item in items]):
+                yield future.result()

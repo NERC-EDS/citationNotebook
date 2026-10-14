@@ -195,3 +195,28 @@ def test_works_are_saved_as_they_arrive(harvested, monkeypatch):
     monkeypatch.setattr(works, "format_citations", real)
     assert run_works(con, World().client(), settings) == "success"
     assert con.execute("SELECT COUNT(*) FROM works WHERE citation_text IS NULL").fetchone()[0] == 0
+
+
+# -- progress -----------------------------------------------------------------------
+def test_results_arrive_as_they_finish():
+    client = HttpClient(workers=2, limits={})
+
+    def slow_first(i):
+        time.sleep(0.3 if i == 0 else 0)
+        return i
+
+    order = [item for item, _, _ in client.map(slow_first, range(4))]
+    assert order[0] != 0 and sorted(order) == [0, 1, 2, 3]
+
+
+def test_each_source_logs_its_progress(tmp_path, settings, monkeypatch, caplog):
+    from citations import harvest
+
+    monkeypatch.setattr(harvest, "PROGRESS_SECONDS", 0)
+    s, _ = _store(tmp_path, "p.sqlite", settings)
+    caplog.set_level("INFO", logger="citations")
+    assert set(run_harvests(s, World().client(), SOURCES).values()) == {"success"}
+    lines = [r.getMessage() for r in caplog.records]
+    assert "scholexplorer: 3 to fetch" in lines
+    assert any(line.startswith("scholexplorer: 3/3, ") and "0 rate-limited (429)" in line for line in lines)
+    assert any(line.startswith("crossref: 3/3, ") for line in lines)
