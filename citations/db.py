@@ -161,7 +161,9 @@ def connect(path: Path | str) -> sqlite3.Connection:
     path = Path(path)
     if str(path) != ":memory:":
         path.parent.mkdir(parents=True, exist_ok=True)
-    con = sqlite3.connect(str(path))
+    # Sources are harvested in parallel, one connection per thread; each writes in short
+    # transactions, so a writer waits at most briefly for another (timeout in seconds).
+    con = sqlite3.connect(str(path), timeout=60)
     con.row_factory = sqlite3.Row
     con.executescript(SCHEMA)
     con.execute("INSERT OR IGNORE INTO meta (key, value) VALUES ('schema_version', ?)", (SCHEMA_VERSION,))

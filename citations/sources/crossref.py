@@ -13,6 +13,7 @@ from ..ids import normalise_id
 from ..relations import canonical, dataset_side, relation_class
 
 SOURCE = "crossref"
+BUCKETS = ("api.crossref.org/list",)   # rate-limit buckets it calls (citations.http.bucket_for)
 DATACITATIONS_URL = "https://api.crossref.org/beta/datacitations/"
 
 # Crossref's relation names, read with the article as subject and the dataset as object.

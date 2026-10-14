@@ -16,6 +16,7 @@ from ..ids import normalise_doi, normalise_id
 log = logging.getLogger(__name__)
 
 SOURCE = "overton"
+BUCKETS = ("app.overton.io",)   # rate-limit buckets it calls (citations.http.bucket_for)
 SET_URL = "https://app.overton.io/generate_id_set.php"
 DOCUMENTS_URL = "https://app.overton.io/documents.php"
 

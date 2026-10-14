@@ -1,6 +1,6 @@
 name: Weekly citations
 
-# One job, in order: inventory -> sources -> works -> merge -> publish.
+# One job: inventory -> the four sources, harvested at the same time -> works -> merge -> publish.
 # The SQLite store (data/citations.sqlite) is carried between runs in the Actions
 # cache; if the cache has been evicted the run rebuilds it from scratch, taking
 # first-seen dates from the published Results/v4/links.csv.

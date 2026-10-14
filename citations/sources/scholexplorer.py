@@ -17,6 +17,7 @@ from ..ids import normalise_id
 from ..relations import dataset_side, relation_class
 
 SOURCE = "scholexplorer"
+BUCKETS = ("api.scholexplorer.openaire.eu",)   # rate-limit buckets it calls (citations.http.bucket_for)
 LINKS_URL = "https://api.scholexplorer.openaire.eu/v3/Links"
 PAGE_SIZE = 100
 SCHEME_PREFERENCE = ("doi", "pmid", "pmc", "handle", "url")

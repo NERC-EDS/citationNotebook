@@ -25,6 +25,7 @@ from ..ids import normalise_id
 from ..relations import dataset_side, is_incoming, relation_class
 
 SOURCE = "datacite"
+BUCKETS = ("api.datacite.org",)   # rate-limit buckets it calls (citations.http.bucket_for)
 RECORD_URL = "https://api.datacite.org/dois/{doi}"
 EVENTS_URL = "https://api.datacite.org/events"
 

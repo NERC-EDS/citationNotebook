@@ -12,6 +12,7 @@ from __future__ import annotations
 import csv
 import json
 import logging
+from collections import Counter
 from urllib.parse import quote
 
 from . import db
@@ -27,6 +28,15 @@ DATACITE_WORK = "https://api.datacite.org/dois/{doi}"
 DATACITE_PREFIXES = ("10.5285/", "10.5281/", "10.6084/", "10.5061/", "10.1594/", "10.15468/", "10.17605/",
                      "10.48420/", "10.5880/", "10.4121/", "10.7910/", "10.25739/", "10.17863/", "10.14469/")
 HINT_PRIORITY = ("scholexplorer", "overton", "crossref", "datacite")
+SAVE_EVERY = 500   # works saved per transaction while fetching
+WORKS_BUCKETS = ("api.crossref.org/single", "api.datacite.org", "doi.org/crossref", "doi.org/datacite")
+
+
+def _agency_bucket(work) -> str:
+    """The rate limit a DOI's citation string counts against: doi.org passes it to its registration agency."""
+    if work["metadata_source"] in ("datacite", "inventory") or str(work["citing_id"]).startswith(DATACITE_PREFIXES):
+        return "doi.org/datacite"
+    return "doi.org/crossref"
 
 
 def _date(parts) -> tuple[str | None, str | None]:
@@ -188,8 +198,14 @@ def _previous_strings(settings) -> dict:
     return reuse
 
 
+def _throttled(client) -> int:
+    counts = client.throttled() if hasattr(client, "throttled") else {}
+    return sum(n for bucket, n in counts.items() if bucket in WORKS_BUCKETS)
+
+
 def run_works(con, client, settings) -> str:
     run_id = db.start_run(con, "works")
+    throttled_before = _throttled(client)
     try:
         good = {r["source"]: r["good_run_id"] for r in con.execute("SELECT * FROM source_state WHERE source<>'inventory'")}
         if not good:
@@ -226,40 +242,48 @@ def run_works(con, client, settings) -> str:
                 rows[citing_id] = {"metadata_source": None}
 
         log.info("works: %d known, %d to fetch, %d from inventory or source hints", len(existing), len(due), len(rows))
-        errors = not_found = 0
         retry = set()   # lookups that failed: stored without fetched_at, so the next run tries again
-        for i, (doi, meta, error) in enumerate(client.map(lambda d: fetch_doi(client, d), due), 1):
-            if error is not None:
-                errors += 1
-                if doi in existing:
-                    continue  # keep what we had; retried next run
-                retry.add(doi)  # use the source's hint for now, but don't treat it as fetched
-            if meta is None:
-                not_found += error is None
-                meta = from_hint(hints[doi][2], hints[doi][1]) if doi in hints else {"metadata_source": None}
-            rows[doi] = meta
-            if i % 500 == 0:
-                log.info("works: %d/%d fetched (%d errors)", i, len(due), errors)
 
-        now = db.now_iso()
-        with db.transaction(con):
-            for citing_id, meta in rows.items():
-                old = existing.get(citing_id)
-                con.execute(
-                    "INSERT INTO works (citing_id, citing_id_type, title, work_type, container_title, publisher, issued, "
-                    "issued_precision, authors, citation_text, citation_source, metadata_source, fetched_at, "
-                    "citation_fetched_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
-                    "ON CONFLICT(citing_id) DO UPDATE SET title=excluded.title, work_type=excluded.work_type, "
-                    "container_title=excluded.container_title, publisher=excluded.publisher, issued=excluded.issued, "
-                    "issued_precision=excluded.issued_precision, authors=excluded.authors, "
-                    "metadata_source=excluded.metadata_source, fetched_at=excluded.fetched_at",
-                    (citing_id, kinds.get(citing_id), meta.get("title"), meta.get("work_type"), meta.get("container_title"),
-                     meta.get("publisher"), meta.get("issued"), meta.get("issued_precision"),
-                     json.dumps(meta.get("authors") or [], ensure_ascii=False),
-                     old["citation_text"] if old else None, old["citation_source"] if old else None,
-                     meta.get("metadata_source"), None if citing_id in retry else now,
-                     old["citation_fetched_at"] if old else None),
-                )
+        def save(batch: dict):
+            now = db.now_iso()
+            with db.transaction(con):
+                for citing_id, meta in batch.items():
+                    old = existing.get(citing_id)
+                    con.execute(
+                        "INSERT INTO works (citing_id, citing_id_type, title, work_type, container_title, publisher, "
+                        "issued, issued_precision, authors, citation_text, citation_source, metadata_source, "
+                        "fetched_at, citation_fetched_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+                        "ON CONFLICT(citing_id) DO UPDATE SET title=excluded.title, work_type=excluded.work_type, "
+                        "container_title=excluded.container_title, publisher=excluded.publisher, "
+                        "issued=excluded.issued, issued_precision=excluded.issued_precision, authors=excluded.authors, "
+                        "metadata_source=excluded.metadata_source, fetched_at=excluded.fetched_at",
+                        (citing_id, kinds.get(citing_id), meta.get("title"), meta.get("work_type"),
+                         meta.get("container_title"), meta.get("publisher"), meta.get("issued"),
+                         meta.get("issued_precision"), json.dumps(meta.get("authors") or [], ensure_ascii=False),
+                         old["citation_text"] if old else None, old["citation_source"] if old else None,
+                         meta.get("metadata_source"), None if citing_id in retry else now,
+                         old["citation_fetched_at"] if old else None),
+                    )
+
+        # Saved as they arrive, SAVE_EVERY at a time, so a run stopped by the job's
+        # time limit keeps what it fetched and the next run carries on from there.
+        save(rows)
+        errors = not_found = 0
+        for start in range(0, len(due), SAVE_EVERY):
+            batch = {}
+            for doi, meta, error in client.map(lambda d: fetch_doi(client, d), due[start:start + SAVE_EVERY]):
+                if error is not None:
+                    errors += 1
+                    if doi in existing:
+                        continue  # keep what we had; retried next run
+                    retry.add(doi)  # use the source's hint for now, but don't treat it as fetched
+                if meta is None:
+                    not_found += error is None
+                    meta = from_hint(hints[doi][2], hints[doi][1]) if doi in hints else {"metadata_source": None}
+                batch[doi] = meta
+            save(batch)
+            rows.update(batch)
+            log.info("works: %d/%d fetched (%d errors)", min(start + SAVE_EVERY, len(due)), len(due), errors)
 
         # Citation strings for works that have none yet (every work ends up with at least a link,
         # so this happens once), or only a fallback or link made before metadata arrived.
@@ -272,32 +296,43 @@ def run_works(con, client, settings) -> str:
         reuse = _previous_strings(settings)
         reuse.update({r["citing_id"]: r["citation_text"] for r in con.execute(
             "SELECT citing_id, citation_text FROM works WHERE citation_source IN ('formatter', 'reused')")})
-        cite_rows = [{
-            "data_doi": None,
-            "pub_doi": r["citing_id"] if r["citing_id_type"] == "doi" else None,
-            "pub_title": r["title"],
-            "pub_authors": _authors_for_citation(json.loads(r["authors"] or "[]")),
-            "publicationYear": (r["issued"] or "")[:4] or None,
-            "pub_date": r["issued"],
-            "pub_publisher": r["container_title"] or r["publisher"],
-        } for r in need]
-        strings, origins, stats = format_citations(cite_rows, reuse=reuse,
-                                                   min_success_rate=settings.min_citation_success_rate,
-                                                   pause=0.05)
-        with db.transaction(con):
-            for r, text, origin in zip(need, strings, origins):
-                if not text:
-                    # Nothing to build a citation from (often a web page a data centre linked
-                    # to): the link itself, rather than an empty citation.
-                    text, origin = work_url(r["citing_id"], r["citing_id_type"]), "link"
-                    stats["link"] = stats.get("link", 0) + 1
-                con.execute("UPDATE works SET citation_text=?, citation_source=?, citation_fetched_at=? WHERE citing_id=?",
-                            (text or None, origin or None, now, r["citing_id"]))
+        limiter = client if hasattr(client, "limited") else None
+        stats = Counter()
+        for start in range(0, len(need), SAVE_EVERY):
+            chunk = need[start:start + SAVE_EVERY]
+            cite_rows = [{
+                "data_doi": None,
+                "pub_doi": r["citing_id"] if r["citing_id_type"] == "doi" else None,
+                "pub_title": r["title"],
+                "pub_authors": _authors_for_citation(json.loads(r["authors"] or "[]")),
+                "publicationYear": (r["issued"] or "")[:4] or None,
+                "pub_date": r["issued"],
+                "pub_publisher": r["container_title"] or r["publisher"],
+                "bucket": _agency_bucket(r),
+            } for r in chunk]
+            strings, origins, chunk_stats = format_citations(
+                cite_rows, reuse=reuse, min_success_rate=settings.min_citation_success_rate,
+                pause=0.05, workers=getattr(client, "workers", 1), limiter=limiter)
+            stats.update(chunk_stats)
+            now = db.now_iso()
+            with db.transaction(con):
+                for r, text, origin in zip(chunk, strings, origins):
+                    if not text:
+                        # Nothing to build a citation from (often a web page a data centre linked
+                        # to): the link itself, rather than an empty citation.
+                        text, origin = work_url(r["citing_id"], r["citing_id_type"]), "link"
+                        stats["link"] += 1
+                    con.execute("UPDATE works SET citation_text=?, citation_source=?, citation_fetched_at=? "
+                                "WHERE citing_id=?", (text or None, origin or None, now, r["citing_id"]))
+            if len(need) > SAVE_EVERY:
+                log.info("works: citation strings %d/%d", min(start + SAVE_EVERY, len(need)), len(need))
+        stats = dict(sorted(stats.items()))
 
         total = con.execute("SELECT COUNT(*) FROM works").fetchone()[0]
         status = "success" if not due or errors / len(due) <= 0.2 else "partial"
         db.finish_run(con, run_id, status, rows=total, items=len(due), errors=errors,
-                      details={"fetched": len(due), "not_found": not_found, "citations": stats})
+                      details={"fetched": len(due), "not_found": not_found, "citations": stats,
+                               "throttled_429": _throttled(client) - throttled_before})
         log.info("works: %s; %d works, citation strings %s", status, total, stats)
         return status
     except Exception as error:  # noqa: BLE001

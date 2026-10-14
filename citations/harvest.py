@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 
 from . import db
@@ -96,11 +97,13 @@ def done_keys(con, source: str, run_id: int) -> set:
     return {row["key"] for row in rows}
 
 
-def per_key(ctx: Context, source: str, run_id: int, keys, fetch_one, commit_every: int = 200):
+def per_key(ctx: Context, source: str, run_id: int, keys, fetch_one, log_every: int = 200):
     """Fetch each key in worker threads and store its links as it arrives.
 
     fetch_one(key) -> list[RawLink]. Keys already fetched in this run are skipped,
-    which is what makes a harvest resumable. Returns (items, errors) for this call.
+    which is what makes a harvest resumable. Each key is committed as it arrives:
+    the other sources are being harvested at the same time, so no source holds
+    the store's write lock while it waits on the network. Returns (items, errors).
     """
     keys = [k for k in keys if k not in done_keys(ctx.con, source, run_id)]
     items = errors = 0
@@ -115,13 +118,39 @@ def per_key(ctx: Context, source: str, run_id: int, keys, fetch_one, commit_ever
         else:
             write_links(ctx.con, source, run_id, links)
             log_fetch(ctx.con, source, run_id, key, "ok", n=len(links))
-        if i % commit_every == 0:
-            ctx.con.commit()
+        ctx.con.commit()
+        if i % log_every == 0:
             log.info("%s: %d/%d keys, %d errors", source, i, len(keys), errors)
-    ctx.con.commit()
     for message in first_errors:
         log.warning("%s: %s", source, message)
     return items, errors
+
+
+def _throttled(client, module) -> int:
+    """429 responses so far from the APIs `module` calls (each source calls its own)."""
+    counts = client.throttled() if hasattr(client, "throttled") else {}
+    return sum(counts.get(bucket, 0) for bucket in getattr(module, "BUCKETS", ()))
+
+
+def run_harvests(settings: Settings, client: HttpClient, sources, resume: bool = True) -> dict:
+    """Harvest `sources` at the same time, one thread and one store connection each.
+
+    Each source calls a different API with its own rate limit, so running them
+    together takes as long as the slowest instead of the sum. Returns {source: status}.
+    """
+    def one(source):
+        con = db.connect(settings.db_path)
+        try:
+            return run_harvest(Context(con=con, client=client, settings=settings), source, resume=resume)
+        finally:
+            con.close()
+
+    sources = list(sources)
+    if not sources:
+        return {}
+    with ThreadPoolExecutor(max_workers=len(sources), thread_name_prefix="harvest") as pool:
+        futures = {source: pool.submit(one, source) for source in sources}
+        return {source: future.result() for source, future in futures.items()}
 
 
 def run_harvest(ctx: Context, source: str, resume: bool = True) -> str:
@@ -133,6 +162,7 @@ def run_harvest(ctx: Context, source: str, resume: bool = True) -> str:
     module = MODULES[source]
     con, settings = ctx.con, ctx.settings
     ctx.datasets()  # fail early without an inventory
+    throttled_before = _throttled(ctx.client, module)
 
     previous = db.resumable_run(con, source, settings.resume_window_days) if resume else None
     if previous is not None:
@@ -162,6 +192,7 @@ def run_harvest(ctx: Context, source: str, resume: bool = True) -> str:
         "SELECT COUNT(*) FROM fetch_log WHERE source=? AND run_id=? AND status='error'", (source, run_id)).fetchone()[0]
     rows = con.execute("SELECT COUNT(*) FROM raw_links WHERE source=? AND run_id=?", (source, run_id)).fetchone()[0]
     details = dict(stats.get("details", {}))
+    details["throttled_429"] = _throttled(ctx.client, module) - throttled_before
     error_rate = total_errors / total_items if total_items else 0.0
     good = db.good_run(con, source)
 
