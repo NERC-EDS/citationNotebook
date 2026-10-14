@@ -41339,6 +41339,45 @@
       "data_authors": [
         "GEBCO Bathymetric Compilation Group 2022"
       ],
+      "relation_type_id": "is-referenced-by",
+      "publication_doi": "10.3354/esr01538",
+      "publication_title": "Modelling present and future sperm whale habitat in the southwest Indian Ocean",
+      "publication_date": "2026-10-08",
+      "publication_authors": [
+        "Lomas, Alexander Connor",
+        "Witt, Matthew J",
+        "Webber, Thomas",
+        "Garzon, Franceso",
+        "Dulau-Drouot, Violaine",
+        "Kiszka, Jeremy J.",
+        "Laran, Sophie",
+        "Lewis, Tim P.",
+        "Talma, Sheena",
+        "Sandooyea, Shaama",
+        "Meller, Laura",
+        "Cerchio, Salvatore",
+        "Fajeau, Adrian",
+        "Saloma, Anjara",
+        "Barteneva-Vitry, Svetlana",
+        "Nancy, Ella Vicky",
+        "Young, Kirsten Freja"
+      ],
+      "citation_event_source": "datacite",
+      "pub_publisher": "Endangered Species Research",
+      "publication_type": "journal-article",
+      "publicationYear": "2026",
+      "PubCitationStr": "Lomas, A. C., Witt, M. J., Webber, T., Garzon, F., Dulau-Drouot, V., Kiszka, J. J., Laran, S., Lewis, T. P., Talma, S., Sandooyea, S., Meller, L., Cerchio, S., Fajeau, A., Saloma, A., Barteneva-Vitry, S., Nancy, E. V., & Young, K. F. (2026). Modelling present and future sperm whale habitat in the southwest Indian Ocean. Endangered Species Research, 61, 1–18. CLOCKSS. https://doi.org/10.3354/esr01538",
+      "data_doi_url": "doi.org/10.5285/e0f0bb80-ab44-2739-e053-6c86abc0289c",
+      "publication_doi_url": "doi.org/10.3354/esr01538",
+      "date_added": "2026-10-14"
+    },
+    {
+      "data_doi": "10.5285/e0f0bb80-ab44-2739-e053-6c86abc0289c",
+      "data_title": "The GEBCO_2022 Grid - a continuous terrain model of the global oceans and land.",
+      "data_publication_year": 2022,
+      "data_authors": [
+        "GEBCO Bathymetric Compilation Group 2022"
+      ],
       "relation_type_id": "is-cited-by",
       "publication_doi": "10.3354/meps14714",
       "publication_title": "Ecological niche segregation between sympatrically breeding blue petrels and thin-billed prions",
@@ -99624,7 +99663,7 @@
       "data_authors": [
         "Martineau, Patrick"
       ],
-      "relation_type_id": "is-referenced-by",
+      "relation_type_id": "is-supplement-to",
       "publication_doi": "10.5194/wcd-1-481-2020",
       "publication_title": "On the intermittency of orographic gravity wave hotspots  and its importance for middle atmosphere dynamics",
       "publication_date": "2020-09-29",
