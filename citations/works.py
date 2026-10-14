@@ -16,7 +16,8 @@ from urllib.parse import quote
 
 from . import db
 from .citation_text import format_citations, is_real_citation
-from .ids import normalise_id
+from .ids import normalise_id, work_url
+from .worktypes import crossref_type, datacite_type
 
 log = logging.getLogger(__name__)
 
@@ -77,7 +78,7 @@ def from_crossref(message: dict) -> dict:
                for a in message.get("author") or [] if isinstance(a, dict)]
     return {
         "title": (message.get("title") or [None])[0],
-        "work_type": message.get("type"),
+        "work_type": crossref_type(message.get("type")),
         "container_title": (message.get("container-title") or [None])[0],
         "publisher": message.get("publisher"),
         "issued": issued,
@@ -109,7 +110,7 @@ def from_datacite(attributes: dict) -> dict:
     container = a.get("container") or {}
     return {
         "title": ((a.get("titles") or [{}])[0] or {}).get("title"),
-        "work_type": types.get("citeproc") or (types.get("resourceTypeGeneral") or "").lower() or None,
+        "work_type": datacite_type(types),
         "container_title": container.get("title") if isinstance(container, dict) else None,
         "publisher": publisher.get("name") if isinstance(publisher, dict) else publisher,
         "issued": issued,
@@ -123,7 +124,7 @@ def from_hint(hint: dict, source: str) -> dict:
     issued, precision = iso_date(hint.get("issued"))
     return {
         "title": hint.get("title"),
-        "work_type": hint.get("work_type"),
+        "work_type": crossref_type(hint.get("work_type"), source),
         "container_title": None,
         "publisher": hint.get("publisher"),
         "issued": issued,
@@ -260,12 +261,12 @@ def run_works(con, client, settings) -> str:
                      old["citation_fetched_at"] if old else None),
                 )
 
-        # Citation strings for works that have none yet, or only a fallback built before metadata arrived.
+        # Citation strings for works that have none yet (every work ends up with at least a link,
+        # so this happens once), or only a fallback or link made before metadata arrived.
         def citation_due(r):
             if r["citation_text"]:
-                return r["citation_source"] == "fallback" and r["citing_id"] in rows  # metadata just improved
-            age = db.age_days(r["citation_fetched_at"])
-            return age is None or age >= settings.works_refresh_days
+                return r["citation_source"] in ("fallback", "link") and r["citing_id"] in rows  # metadata just improved
+            return True
 
         need = [r for r in con.execute("SELECT * FROM works") if citation_due(r)]
         reuse = _previous_strings(settings)
@@ -285,6 +286,11 @@ def run_works(con, client, settings) -> str:
                                                    pause=0.05)
         with db.transaction(con):
             for r, text, origin in zip(need, strings, origins):
+                if not text:
+                    # Nothing to build a citation from (often a web page a data centre linked
+                    # to): the link itself, rather than an empty citation.
+                    text, origin = work_url(r["citing_id"], r["citing_id_type"]), "link"
+                    stats["link"] = stats.get("link", 0) + 1
                 con.execute("UPDATE works SET citation_text=?, citation_source=?, citation_fetched_at=? WHERE citing_id=?",
                             (text or None, origin or None, now, r["citing_id"]))
 

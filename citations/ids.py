@@ -124,3 +124,17 @@ def is_nerc_dataset(citing_id: str | None) -> bool:
 
 def doi_url(doi: str) -> str:
     return f"https://doi.org/{doi}"
+
+
+def work_url(citing_id: str, citing_id_type: str | None) -> str:
+    """A resolvable link for a citing work's identifier."""
+    if citing_id_type == "doi":
+        return doi_url(citing_id)
+    bare = citing_id.split(":", 1)[1] if citing_id_type in ("pmid", "pmc", "handle") and ":" in citing_id else citing_id
+    if citing_id_type == "pmid":
+        return f"https://pubmed.ncbi.nlm.nih.gov/{bare}/"
+    if citing_id_type == "pmc":
+        return f"https://www.ncbi.nlm.nih.gov/pmc/articles/{bare}/"
+    if citing_id_type == "handle":
+        return f"https://hdl.handle.net/{bare}"
+    return citing_id   # a URL already

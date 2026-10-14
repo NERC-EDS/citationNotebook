@@ -99,14 +99,14 @@ CREATE TABLE IF NOT EXISTS works (
     citing_id           TEXT PRIMARY KEY,
     citing_id_type      TEXT,
     title               TEXT,
-    work_type           TEXT,           -- CSL type where known
+    work_type           TEXT,           -- Crossref type (citations/worktypes.py)
     container_title     TEXT,
     publisher           TEXT,
     issued              TEXT,           -- ISO 8601: YYYY, YYYY-MM or YYYY-MM-DD
     issued_precision    TEXT,           -- year | month | day
     authors             TEXT,           -- JSON list of {name, given, family, orcid}
     citation_text       TEXT,
-    citation_source     TEXT,           -- formatter | reused | fallback
+    citation_source     TEXT,           -- formatter | reused | fallback | link
     metadata_source     TEXT,           -- crossref | datacite | inventory | scholexplorer | overton | crossref-datacitations
     fetched_at          TEXT,
     citation_fetched_at TEXT
@@ -165,8 +165,21 @@ def connect(path: Path | str) -> sqlite3.Connection:
     con.row_factory = sqlite3.Row
     con.executescript(SCHEMA)
     con.execute("INSERT OR IGNORE INTO meta (key, value) VALUES ('schema_version', ?)", (SCHEMA_VERSION,))
+    _crossref_work_types(con)
     con.commit()
     return con
+
+
+def _crossref_work_types(con):
+    """Once per store: map work types cached before they were normalised to Crossref's vocabulary."""
+    if con.execute("SELECT 1 FROM meta WHERE key='work_type_vocabulary' AND value='crossref'").fetchone():
+        return
+    from .worktypes import crossref_type
+
+    rows = con.execute("SELECT citing_id, work_type, metadata_source FROM works WHERE work_type IS NOT NULL").fetchall()
+    con.executemany("UPDATE works SET work_type=? WHERE citing_id=?",
+                    [(crossref_type(r["work_type"], r["metadata_source"]), r["citing_id"]) for r in rows])
+    con.execute("INSERT OR REPLACE INTO meta (key, value) VALUES ('work_type_vocabulary', 'crossref')")
 
 
 @contextmanager

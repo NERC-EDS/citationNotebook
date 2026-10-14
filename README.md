@@ -99,7 +99,7 @@ A link is **excluded**, but still published, when the first of these applies:
 
 ## Results/v4
 
-Bare lower-case DOIs; ISO 8601 dates; empty means null (no "Info not given"); lists and objects are JSON (a JSON string in CSV cells); JSON files are flat arrays that carry `data_centre`. Files are sorted, so weekly diffs are small.
+Bare lower-case DOIs; ISO 8601 dates; empty means null (no "Info not given"); lists and objects are JSON (a JSON string in CSV cells); JSON files are flat arrays that carry `data_centre`. Rows are sorted, so their order is stable between runs. Every run sets `last_seen` on every link it still finds, so each week every row of `links.csv` and `links.jsonl` changes; the other files change only where the data does.
 
 | File | One row per |
 | --- | --- |
@@ -153,7 +153,7 @@ erDiagram
         string citing_id PK "DOI/URL/pmid/pmc/hdl"
         string citing_id_type
         string title
-        string work_type "CSL type"
+        string work_type "Crossref type"
         string container_title
         date issued
         string issued_precision "year month or day"
@@ -193,7 +193,7 @@ erDiagram
 | `source_relations` | the raw relation each source reported, for audit |
 | `first_seen`, `last_seen` | replace `date_added`; seeded from v3's `date_added` on the first run |
 
-**works**: `citing_id`, `citing_id_type`, `title`, `work_type` (CSL type where known), `container_title`, `publisher`, `issued`, `issued_precision` (`year`, `month`, `day`), `authors` (array of `{given, family, name, orcid}`), `citation_text`, `metadata_source` (`crossref`, `datacite`, `inventory`, or the harvesting source when no DOI metadata exists), `fetched_at` (empty when the Crossref or DataCite lookup failed: the source's own metadata is used until the next run retries it).
+**works**: `citing_id`, `citing_id_type`, `title`, `work_type` (a [Crossref type](https://api.crossref.org/types) such as `journal-article`, `posted-content` or `dataset`; DataCite, Scholexplorer and Overton types are mapped to it, Overton's policy documents are `report`, `other` when no Crossref type fits and empty when nothing is known about the work), `container_title`, `publisher`, `issued`, `issued_precision` (`year`, `month`, `day`), `authors` (array of `{given, family, name, orcid}`), `citation_text` (formatted by the DOI's registration agency, else built from the work's metadata, else a link to the work: its URL, or its doi.org, PubMed, PMC or handle link), `metadata_source` (`crossref`, `datacite`, `inventory`, or the harvesting source when no DOI metadata exists), `fetched_at` (empty when the Crossref or DataCite lookup failed: the source's own metadata is used until the next run retries it).
 
 **datasets**: `doi`, `data_centre`, `data_centre_name`, `publisher`, `title`, `publication_year`, `resource_type_general`, `registered`, `authors`, `counted_citations`, `related_links`, `excluded_links`, `datacite_citation_count`, `first_cited` (issued date of the earliest counted citing work).
 
@@ -208,6 +208,8 @@ Still written each run, from v4: included, counted links only, in the same 18 co
 - `publication_authors` is a list of `"Family, Given"` strings for every source (DataCite rows were a list of `[given, family]` pairs).
 - `data_publication_year` is an integer (`2012`, was `2012.0`).
 - Missing values are empty cells instead of placeholders such as `Info not given` or `not a doi` (`publication_authors` is `[]`).
+- `publication_type` is a Crossref type on every row (`journal-article`, `posted-content` …), as it was for most rows before; Scholexplorer's and Overton's `Publication` become `other` and `report`.
+- `PubCitationStr` is never empty: a work with nothing to build a citation from has a link to it instead.
 - `relation_type_id` is the dataset-side relation in kebab case (`is-cited-by`).
 - `citation_event_source` is one of `datacite`, `scholex`, `overton`, `crossref`.
 - `filtered_out_df.csv` gains an `exclusion_reason` column.
@@ -233,7 +235,9 @@ Overton and Crossref are optional: their failures produce warnings in the manife
 pytest                      # offline: a fake HTTP layer stands in for every API
 ```
 
-The modules are `citations/inventory.py`, `citations/sources/{datacite,scholexplorer,overton,crossref}.py`, `citations/works.py`, `citations/merge.py`, `citations/filters.py`, `citations/relations.py`, `citations/publish.py`, `citations/guards.py` and `citations/reconcile.py`. The store's schema is in `citations/db.py`. Citation strings (`citations/citation_text.py`) are ported unchanged from v3's `getCitationString`.
+`.github/workflows/tests.yml` runs the tests on Python 3.10 and 3.12 for every pull request and every push to `main`.
+
+The modules are `citations/inventory.py`, `citations/sources/{datacite,scholexplorer,overton,crossref}.py`, `citations/works.py`, `citations/merge.py`, `citations/filters.py`, `citations/relations.py`, `citations/publish.py`, `citations/guards.py`, `citations/reconcile.py` and `citations/worktypes.py`. The store's schema is in `citations/db.py`. Citation strings (`citations/citation_text.py`) are ported unchanged from v3's `getCitationString`.
 
 ## Authors
 
