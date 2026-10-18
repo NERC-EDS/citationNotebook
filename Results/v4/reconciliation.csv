@@ -261,7 +261,7 @@ doi,data_centre,datacite_citation_count,datacite_links_harvested,missing_vs_data
 10.5285/1b64b008-8c20-4dd4-bf54-bf1894767a56,EIDC,1,1,0,1,0,0,0,1,0,2,true
 10.5285/1bb90673-ad37-4679-90b9-0126109639a9,EIDC,8,8,0,8,0,0,0,16,8,20,true
 10.5285/1be1912a-916e-42c0-98cc-16460fac00e8,EIDC,4,4,0,4,0,0,0,15,11,30,true
-10.5285/1c44ce99-0a0d-5f4f-e063-7086abc0ea0f,BODC,97,98,0,98,0,0,0,131,33,131,true
+10.5285/1c44ce99-0a0d-5f4f-e063-7086abc0ea0f,BODC,98,98,0,98,0,0,0,131,33,131,true
 10.5285/1c4f835c-d243-4593-a9b4-71410b9b4bf0,EIDC,1,1,0,1,0,0,0,1,0,2,true
 10.5285/1c5cf317-2f03-4fef-b060-9eccbb4d9c21,EIDC,1,1,0,1,0,0,0,1,0,8,true
 10.5285/1c8fb7fb-aa2d-467e-bff4-66b93cc033ac,PDC,1,1,0,0,1,0,0,0,0,2,true
@@ -316,7 +316,7 @@ doi,data_centre,datacite_citation_count,datacite_links_harvested,missing_vs_data
 10.5285/224003cc-8f77-4980-8cac-5574e179e4f8,PDC,1,1,0,1,0,0,0,1,0,1,true
 10.5285/2262690a-b588-4704-b459-39e05527b59a,CEDA,1,1,0,1,0,0,0,4,3,4,true
 10.5285/2282b4aeb9f24bc3a1e0961e4d545427,CEDA,1,1,0,1,0,0,0,4,3,11,true
-10.5285/22b3d41e-7c35-4c51-9e55-0f47bb845202,EIDC,6,6,0,6,0,0,0,12,6,13,true
+10.5285/22b3d41e-7c35-4c51-9e55-0f47bb845202,EIDC,7,7,0,7,0,0,0,12,5,13,true
 10.5285/22b54764-2448-1318-e053-6c86abc01ae1,BODC,19,19,0,19,0,0,0,19,0,19,true
 10.5285/22df6602b5064b1686dda7e9455f86fc,CEDA,0,0,0,0,0,0,0,1,1,2,true
 10.5285/2317515c-05c0-6d14-e053-6c86abc0690e,BODC,0,0,0,0,0,0,0,1,1,4,true
@@ -734,7 +734,7 @@ doi,data_centre,datacite_citation_count,datacite_links_harvested,missing_vs_data
 10.5285/4f377defc2454db9b2a6d032abfd0cbd,CEDA,1,1,0,1,0,0,0,1,0,2,true
 10.5285/4f447446-5461-48b2-b154-ff7094176502,EIDC,0,0,0,0,0,0,0,1,1,2,true
 10.5285/4f569d73-30c5-4b12-bca7-8901fb567594,EIDC,1,1,0,1,0,0,0,1,0,2,true
-10.5285/4f68d5c7-45eb-f999-e063-7086abc036fa,BODC,8,8,0,8,0,0,0,9,1,9,true
+10.5285/4f68d5c7-45eb-f999-e063-7086abc036fa,BODC,9,9,0,9,0,0,0,10,1,10,true
 10.5285/4f7aed48-816a-d8cf-e063-7086abc055b4,BODC,0,0,0,0,0,0,0,1,1,1,true
 10.5285/4fa633d24d104217a4c9d3fb3589f35d,CEDA,1,1,0,1,0,0,0,1,0,5,true
 10.5285/4fc8a62b-c971-433e-acc3-23423bb75022,EIDC,0,0,0,0,0,0,0,1,1,3,true
@@ -844,6 +844,7 @@ doi,data_centre,datacite_citation_count,datacite_links_harvested,missing_vs_data
 10.5285/5aeda581-b4f2-4e51-b1a6-890b6b3403a3,EIDC,7,7,0,6,0,1,0,6,0,39,true
 10.5285/5afbbd36-2c63-4aa1-8177-695bed98d7a9,EIDC,2,2,0,2,0,0,0,2,0,3,true
 10.5285/5afccfe5-142e-4e93-a6cc-55216fa1db06,NGDC,1,1,0,1,0,0,0,1,0,1,true
+10.5285/5b1caf9095d7412282f5ba6b558034e3,CEDA,1,1,0,1,0,0,0,1,0,2,true
 10.5285/5b34d963-d0f0-465e-b395-e955b89e1cd7,EIDC,0,0,0,0,0,0,0,1,1,2,true
 10.5285/5b3fcf9f-19d4-4ad3-a8bb-0a5ea02c857e,EIDC,1,1,0,1,0,0,0,1,0,2,true
 10.5285/5b5a13b6-2304-47e3-9c9d-35237d1232c6,EIDC,1,1,0,1,0,0,0,6,5,7,true
@@ -935,6 +936,7 @@ doi,data_centre,datacite_citation_count,datacite_links_harvested,missing_vs_data
 10.5285/64f5d7be890a4ac08cb2b4e78eb5fcc1,CEDA,0,0,0,0,0,0,0,1,1,24,true
 10.5285/64fa14764534431f805e747249786f88,CEDA,1,1,0,1,0,0,0,1,0,2,true
 10.5285/65140444-b5fa-4a5e-9ab4-e86c106051e2,PDC,6,6,0,1,5,0,0,1,0,10,true
+10.5285/652cea3b8b4446f7bff73be0ce99ba0f,CEDA,0,0,0,0,0,0,0,1,1,9,true
 10.5285/65400133-9cfb-4cf4-bffd-97f1c3752025,EIDC,1,1,0,1,0,0,0,3,2,4,true
 10.5285/6549203d-da8b-4a22-924b-a9e1471ea7f1,PDC,4,6,0,0,6,0,0,1,1,9,true
 10.5285/656204c257144708a641507c78187aaa,CEDA,0,0,0,0,0,0,0,3,3,3,true
@@ -1359,7 +1361,7 @@ doi,data_centre,datacite_citation_count,datacite_links_harvested,missing_vs_data
 10.5285/9555694e-c9f5-4bf8-a556-2ad9d29e55c6,PDC,1,1,0,1,0,0,0,1,0,4,true
 10.5285/957fb0bd-6d51-46fc-b4fa-731d21731eda,PDC,1,1,0,1,0,0,0,1,0,2,true
 10.5285/95913ffb6467447ca72c4e9d8cf30501,CEDA,14,14,0,14,0,0,0,20,6,20,true
-10.5285/95aa41439d564756950f89921b6ef215,CEDA,3,3,0,3,0,0,0,4,1,4,true
+10.5285/95aa41439d564756950f89921b6ef215,CEDA,3,3,0,3,0,0,0,5,2,5,true
 10.5285/95fb2393-954a-4217-86aa-cb10fb3996c5,NGDC,0,0,0,0,0,0,0,1,1,1,true
 10.5285/961f3c2d-04ca-1911-e053-6c86abc0150b,BODC,0,0,0,0,0,0,0,2,2,2,true
 10.5285/96bc980a-31b4-4d1b-87e9-007d4932a56b,EIDC,0,0,0,0,0,0,0,1,1,2,true
@@ -1719,7 +1721,7 @@ doi,data_centre,datacite_citation_count,datacite_links_harvested,missing_vs_data
 10.5285/bf150dd6-7b28-49ca-b66f-8b543a33a5c0,NGDC,2,2,0,2,0,0,0,2,0,4,true
 10.5285/bf189c57-61eb-4339-a7b3-d2e81fdde28d,EIDC,4,4,0,4,0,0,0,5,1,6,true
 10.5285/bf508daa-c33c-4d75-a250-72b94b1855d4,EIDC,0,0,0,0,0,0,0,1,1,2,true
-10.5285/bf535053562141c6bb7ad831f5998d77,CEDA,4,4,0,4,0,0,0,8,4,8,true
+10.5285/bf535053562141c6bb7ad831f5998d77,CEDA,5,5,0,5,0,0,0,9,4,9,true
 10.5285/bf62d713-93e5-487f-acba-1ec2da35c7e1,PDC,6,6,0,0,5,1,0,0,0,6,true
 10.5285/bf6f0cfbd09e47498572f21081376702,BODC,1,1,0,1,0,0,0,1,0,2,true
 10.5285/bf82cec2-5f8a-407c-bf74-f8689ca35e83,EIDC,1,1,0,1,0,0,0,2,1,3,true
@@ -2026,7 +2028,7 @@ doi,data_centre,datacite_citation_count,datacite_links_harvested,missing_vs_data
 10.5285/e0b638d5-8271-4442-97ef-cf46ea220f5d,EIDC,1,1,0,1,0,0,0,2,1,3,true
 10.5285/e0df9db6-09ac-4fa3-a815-1394c1988654,NGDC,0,0,0,0,0,0,0,1,1,1,true
 10.5285/e0ec7462-b731-47c6-93d6-e4613fb44be0,NGDC,0,0,0,0,0,0,0,1,1,1,true
-10.5285/e0f0bb80-ab44-2739-e053-6c86abc0289c,BODC,89,90,0,90,0,0,0,136,46,136,true
+10.5285/e0f0bb80-ab44-2739-e053-6c86abc0289c,BODC,90,90,0,90,0,0,0,136,46,136,true
 10.5285/e0f2b6ea-d11d-3102-e053-6c86abc073ab,BODC,0,0,0,0,0,0,0,1,1,1,true
 10.5285/e115d087-e3e4-4794-b4e0-18262b8e6400,PDC,1,1,0,1,0,0,0,1,0,1,true
 10.5285/e117045d-ab43-4d0d-9e14-5b6d9a03b301,PDC,5,5,0,1,4,0,0,2,1,10,true
@@ -2266,7 +2268,7 @@ doi,data_centre,datacite_citation_count,datacite_links_harvested,missing_vs_data
 10.5285/fa20aaa2060e40cabf5fedce7a9716d0,CEDA,3,3,0,3,0,0,0,11,8,12,true
 10.5285/fa3f4087-528e-4c5d-90d8-6bb4675d6317,EIDC,2,2,0,2,0,0,0,3,1,4,true
 10.5285/fa592594-93e0-4ee1-8268-b031ce21c3ca,PDC,2,2,0,2,0,0,0,3,1,5,true
-10.5285/fa5d606c-dc95-47ee-9016-7a82e446f2f2,PDC,3,3,0,1,2,0,0,2,1,10,true
+10.5285/fa5d606c-dc95-47ee-9016-7a82e446f2f2,PDC,4,4,0,2,2,0,0,3,1,11,true
 10.5285/fa7887ea-5c4e-4d7a-b39f-456792f34b37,PDC,1,1,0,1,0,0,0,1,0,1,true
 10.5285/fa83484e57854d6fbde16ff945ff6dc0,CEDA,1,1,0,1,0,0,0,1,0,23,true
 10.5285/faa526cc-52f5-4468-97bb-295660bcea34,EIDC,0,0,0,0,0,0,0,1,1,3,true
