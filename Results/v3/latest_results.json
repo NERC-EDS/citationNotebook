@@ -6285,6 +6285,33 @@
         "GEBCO Bathymetric Compilation Group 2024"
       ],
       "relation_type_id": "is-referenced-by",
+      "publication_doi": "10.5194/nhess-26-5035-2026",
+      "publication_title": "Seismic and tsunami hazard potential of the Negros–Sulu megathrust, Philippines",
+      "publication_date": "2026-10-14",
+      "publication_authors": [
+        "Nawanao Jr., Lyndon P.",
+        "Ramos, Noelynna T.",
+        "Baba, Toshitaka",
+        "Chikasada, Naotaka",
+        "Satake, Kenji"
+      ],
+      "citation_event_source": "datacite",
+      "pub_publisher": "Natural Hazards and Earth System Sciences",
+      "publication_type": "journal-article",
+      "publicationYear": "2026",
+      "PubCitationStr": "Nawanao Jr., L. P., Ramos, N. T., Baba, T., Chikasada, N., & Satake, K. (2026). Seismic and tsunami hazard potential of the Negros–Sulu megathrust, Philippines. Natural Hazards and Earth System Sciences, 26(10), 5035–5055. https://doi.org/10.5194/nhess-26-5035-2026",
+      "data_doi_url": "doi.org/10.5285/1c44ce99-0a0d-5f4f-e063-7086abc0ea0f",
+      "publication_doi_url": "doi.org/10.5194/nhess-26-5035-2026",
+      "date_added": "2026-10-25"
+    },
+    {
+      "data_doi": "10.5285/1c44ce99-0a0d-5f4f-e063-7086abc0ea0f",
+      "data_title": "The GEBCO_2024 Grid - a continuous terrain model of the global oceans and land.",
+      "data_publication_year": 2024,
+      "data_authors": [
+        "GEBCO Bathymetric Compilation Group 2024"
+      ],
+      "relation_type_id": "is-referenced-by",
       "publication_doi": "10.5194/os-21-1609-2025",
       "publication_title": "Satellite-derived steric height in the Southern Ocean:  trends, variability, and climate drivers",
       "publication_date": "2025-07-30",
@@ -11738,6 +11765,33 @@
         "GEBCO Bathymetric Compilation Group 2025"
       ],
       "relation_type_id": "is-referenced-by",
+      "publication_doi": "10.5194/wes-11-3887-2026",
+      "publication_title": "A multi-stage methodology for wind park inter-array cabling: graph preparation, routing, and sizing",
+      "publication_date": "2026-10-15",
+      "publication_authors": [
+        "Castro Valerio, Bernardo",
+        "Gebraad, Pieter M. O.",
+        "Cheah-Mane, Marc",
+        "A. Lacerda, Vinicius",
+        "Gomis-Bellmunt, Oriol"
+      ],
+      "citation_event_source": "datacite",
+      "pub_publisher": "Wind Energy Science",
+      "publication_type": "journal-article",
+      "publicationYear": "2026",
+      "PubCitationStr": "Castro Valerio, B., Gebraad, P. M. O., Cheah-Mane, M., A. Lacerda, V., & Gomis-Bellmunt, O. (2026). A multi-stage methodology for wind park inter-array cabling: graph preparation, routing, and sizing. Wind Energy Science, 11(10), 3887–3917. https://doi.org/10.5194/wes-11-3887-2026",
+      "data_doi_url": "doi.org/10.5285/37c52e96-24ea-67ce-e063-7086abc05f29",
+      "publication_doi_url": "doi.org/10.5194/wes-11-3887-2026",
+      "date_added": "2026-10-25"
+    },
+    {
+      "data_doi": "10.5285/37c52e96-24ea-67ce-e063-7086abc05f29",
+      "data_title": "The GEBCO_2025 Grid - a continuous terrain model for oceans and land at 15 arc-second intervals",
+      "data_publication_year": 2025,
+      "data_authors": [
+        "GEBCO Bathymetric Compilation Group 2025"
+      ],
+      "relation_type_id": "is-referenced-by",
       "publication_doi": "10.64898/2026.02.19.706424",
       "publication_title": "Geoclimatic oscillations and ancient reciprocal adaptive introgression shape the evolutionary trajectories of threatened\n                  <i>Coilia</i>",
       "publication_date": "2026-02-20",
@@ -15108,6 +15162,33 @@
         "GEBCO Bathymetric Compilation Group 2026"
       ],
       "relation_type_id": "is-referenced-by",
+      "publication_doi": "10.1785/0220260236",
+      "publication_title": "Rapid Rupture Mapping of Potential Tsunamigenic Earthquakes in the Southwest Pacific Using Regional Seismic Arrays",
+      "publication_date": "2026-10-14",
+      "publication_authors": [
+        "Naeini, Amin A.",
+        "Fry, Bill",
+        "Eccles, Jennifer D.",
+        "van Wijk, Kasper",
+        "Liao, Yi-Wun Mika"
+      ],
+      "citation_event_source": "datacite",
+      "pub_publisher": "Seismological Research Letters",
+      "publication_type": "journal-article",
+      "publicationYear": "2026",
+      "PubCitationStr": "Naeini, A. A., Fry, B., Eccles, J. D., van Wijk, K., & Liao, Y.-W. M. (2026). Rapid Rupture Mapping of Potential Tsunamigenic Earthquakes in the Southwest Pacific Using Regional Seismic Arrays. Seismological Research Letters. https://doi.org/10.1785/0220260236",
+      "data_doi_url": "doi.org/10.5285/4f68d5c7-45eb-f999-e063-7086abc036fa",
+      "publication_doi_url": "doi.org/10.1785/0220260236",
+      "date_added": "2026-10-25"
+    },
+    {
+      "data_doi": "10.5285/4f68d5c7-45eb-f999-e063-7086abc036fa",
+      "data_title": "The GEBCO_2026 Grid - a continuous terrain model for oceans and land at 15 arc-second intervals.",
+      "data_publication_year": 2026,
+      "data_authors": [
+        "GEBCO Bathymetric Compilation Group 2026"
+      ],
+      "relation_type_id": "is-referenced-by",
       "publication_doi": "10.3389/fmars.2026.1832052",
       "publication_title": "Cetacean acoustic occurrence in the Southern Ocean from biologged southern elephant seals",
       "publication_date": "2026-10-07",
@@ -15667,6 +15748,39 @@
       "data_doi_url": "doi.org/10.5285/5acfd143-1104-7b58-e053-6c86abc0d94b",
       "publication_doi_url": "doi.org/10.1007/s11600-018-0165-7",
       "date_added": "2026-09-30"
+    },
+    {
+      "data_doi": "10.5285/5acfd143-1104-7b58-e053-6c86abc0d94b",
+      "data_title": "Atlantic meridional overturning circulation observed by the RAPID-MOCHA-WBTS (RAPID-Meridional Overturning Circulation and Heatflux Array-Western Boundary Time Series) array at 26N from 2004 to 2017.",
+      "data_publication_year": 2017,
+      "data_authors": [
+        "Smeed, David",
+        "McCarthy, Gerard",
+        "Rayner, Darren",
+        "Moat, Ben I",
+        "Johns, William E",
+        "Baringer, Molly O",
+        "Meinen, Christopher S"
+      ],
+      "relation_type_id": "is-referenced-by",
+      "publication_doi": "10.1007/s13131-026-2695-1",
+      "publication_title": "Monitoring sea level and sea surface temperature trends along the Montenegrin Adriatic coast based on satellite and in situ observations, comparison with the global situation and the role of oceanic oscillations",
+      "publication_date": "2026-10-14",
+      "publication_authors": [
+        "Burić, Dragan",
+        "Marčev, Angel",
+        "Doderović, Miroslav",
+        "Marčeva, Magdalena",
+        "Penjišević, Ivana"
+      ],
+      "citation_event_source": "datacite",
+      "pub_publisher": "Acta Oceanologica Sinica",
+      "publication_type": "journal-article",
+      "publicationYear": "2026",
+      "PubCitationStr": "Burić, D., Marčev, A., Doderović, M., Marčeva, M., & Penjišević, I. (2026). Monitoring sea level and sea surface temperature trends along the Montenegrin Adriatic coast based on satellite and in situ observations, comparison with the global situation and the role of oceanic oscillations. Acta Oceanologica Sinica. https://doi.org/10.1007/s13131-026-2695-1",
+      "data_doi_url": "doi.org/10.5285/5acfd143-1104-7b58-e053-6c86abc0d94b",
+      "publication_doi_url": "doi.org/10.1007/s13131-026-2695-1",
+      "date_added": "2026-10-25"
     },
     {
       "data_doi": "10.5285/5acfd143-1104-7b58-e053-6c86abc0d94b",
@@ -33096,6 +33210,36 @@
       "data_authors": [
         "GEBCO Bathymetric Compilation Group 2021"
       ],
+      "relation_type_id": "is-referenced-by",
+      "publication_doi": "10.1093/evolut/qpag165",
+      "publication_title": "Evolution of freshwater reproduction in a marine fish: Evidence from genetics and otolith microchemistry",
+      "publication_date": "2026-09-22",
+      "publication_authors": [
+        "Ferreira-Araújo, Thais",
+        "Kemppainen, Petri",
+        "Tanner, Susanne E",
+        "Reis-Santos, Patrick",
+        "Gillanders, Bronwyn M",
+        "Kahilainen, Kimmo K",
+        "Merilä, Juha",
+        "Momigliano, Paolo"
+      ],
+      "citation_event_source": "datacite",
+      "pub_publisher": "Evolution",
+      "publication_type": "journal-article",
+      "publicationYear": "2026",
+      "PubCitationStr": "Ferreira-Araújo, T., Kemppainen, P., Tanner, S. E., Reis-Santos, P., Gillanders, B. M., Kahilainen, K. K., Merilä, J., & Momigliano, P. (2026). Evolution of freshwater reproduction in a marine fish: Evidence from genetics and otolith microchemistry. Evolution. https://doi.org/10.1093/evolut/qpag165",
+      "data_doi_url": "doi.org/10.5285/c6612cbe-50b3-0cff-e053-6c86abc09f8f",
+      "publication_doi_url": "doi.org/10.1093/evolut/qpag165",
+      "date_added": "2026-10-25"
+    },
+    {
+      "data_doi": "10.5285/c6612cbe-50b3-0cff-e053-6c86abc09f8f",
+      "data_title": "The GEBCO_2021 Grid - a continuous terrain model of the global oceans and land.",
+      "data_publication_year": 2021,
+      "data_authors": [
+        "GEBCO Bathymetric Compilation Group 2021"
+      ],
       "relation_type_id": "is-cited-by",
       "publication_doi": "10.1093/gji/ggaf484",
       "publication_title": "Tailored method for optimizing deflection of the vertical model using multidirectional geoid gradients from SWOT/KaRIn observations",
@@ -34471,6 +34615,37 @@
       "data_doi_url": "doi.org/10.5285/c6612cbe-50b3-0cff-e053-6c86abc09f8f",
       "publication_doi_url": "doi.org/10.3389/fmars.2023.1298727",
       "date_added": "2026-09-30"
+    },
+    {
+      "data_doi": "10.5285/c6612cbe-50b3-0cff-e053-6c86abc09f8f",
+      "data_title": "The GEBCO_2021 Grid - a continuous terrain model of the global oceans and land.",
+      "data_publication_year": 2021,
+      "data_authors": [
+        "GEBCO Bathymetric Compilation Group 2021"
+      ],
+      "relation_type_id": "is-referenced-by",
+      "publication_doi": "10.3389/fmars.2026.1975165",
+      "publication_title": "Dynamics of nitrogen in the Qiongdong Upwelling system: insights from a coupled physical-biogeochemical model",
+      "publication_date": "2026-10-14",
+      "publication_authors": [
+        "Zhou, Shulei",
+        "Yu, Jinyang",
+        "Wang, Hao Eric",
+        "Li, Yaodong",
+        "Gao, Feilong",
+        "Lin, Xinxin",
+        "Zhu, Junying",
+        "Kao, Shuh-ji",
+        "Du, Chuanjun"
+      ],
+      "citation_event_source": "datacite",
+      "pub_publisher": "Frontiers in Marine Science",
+      "publication_type": "journal-article",
+      "publicationYear": "2026",
+      "PubCitationStr": "Zhou, S., Yu, J., Wang, H. E., Li, Y., Gao, F., Lin, X., Zhu, J., Kao, S.-j., & Du, C. (2026). Dynamics of nitrogen in the Qiongdong Upwelling system: insights from a coupled physical-biogeochemical model. Frontiers in Marine Science, 13. https://doi.org/10.3389/fmars.2026.1975165",
+      "data_doi_url": "doi.org/10.5285/c6612cbe-50b3-0cff-e053-6c86abc09f8f",
+      "publication_doi_url": "doi.org/10.3389/fmars.2026.1975165",
+      "date_added": "2026-10-25"
     },
     {
       "data_doi": "10.5285/c6612cbe-50b3-0cff-e053-6c86abc09f8f",
@@ -49187,6 +49362,38 @@
       "data_authors": [
         "GEBCO Bathymetric Compilation Group 2023"
       ],
+      "relation_type_id": "is-referenced-by",
+      "publication_doi": "10.5852/cr-palevol2026v25a20",
+      "publication_title": "Swimming in sand: evidence of skink lizard locomotion in Pleistocene aeolianites of Maio Island, Cabo Verde Archipelago",
+      "publication_date": "2026-10-12",
+      "publication_authors": [
+        "UCHMAN, Alfred",
+        "JOHNSON, Markes E.",
+        "ÁVILA, Gonçalo C.",
+        "RAMALHO, Ricardo S.",
+        "MARTÍN-GONZÁLEZ, Esther",
+        "MARTINS, Gustavo M.",
+        "HIPÓLITO, Ana",
+        "MARQUES, Sandra",
+        "MADEIRA, Patrícia",
+        "ÁVILA, Sérgio P."
+      ],
+      "citation_event_source": "datacite",
+      "pub_publisher": "Comptes Rendus Palevol",
+      "publication_type": "journal-article",
+      "publicationYear": "2026",
+      "PubCitationStr": "UCHMAN, A., JOHNSON, M. E., ÁVILA, G. C., RAMALHO, R. S., MARTÍN-GONZÁLEZ, E., MARTINS, G. M., HIPÓLITO, A., MARQUES, S., MADEIRA, P., & ÁVILA, S. P. (2026). Swimming in sand: evidence of skink lizard locomotion in Pleistocene aeolianites of Maio Island, Cabo Verde Archipelago. Comptes Rendus Palevol, 25(20), 375–389. https://doi.org/10.5852/cr-palevol2026v25a20",
+      "data_doi_url": "doi.org/10.5285/f98b053b-0cbc-6c23-e053-6c86abc0af7b",
+      "publication_doi_url": "doi.org/10.5852/cr-palevol2026v25a20",
+      "date_added": "2026-10-25"
+    },
+    {
+      "data_doi": "10.5285/f98b053b-0cbc-6c23-e053-6c86abc0af7b",
+      "data_title": "The GEBCO_2023 Grid - a continuous terrain model of the global oceans and land.",
+      "data_publication_year": 2023,
+      "data_authors": [
+        "GEBCO Bathymetric Compilation Group 2023"
+      ],
       "relation_type_id": "is-cited-by",
       "publication_doi": "10.5880/gfz.1.2.2024.002",
       "publication_title": "GDEMM2024: 30 Arcsec Global Digital Elevation Merged Model 2024, a suite for Earth relief",
@@ -52064,6 +52271,32 @@
       "data_doi_url": "doi.org/10.5285/0b2759059ad6474098e40dad73e0a8ec",
       "publication_doi_url": "doi.org/10.1007/978-3-662-72801-7_3",
       "date_added": "2026-10-07"
+    },
+    {
+      "data_doi": "10.5285/0b2759059ad6474098e40dad73e0a8ec",
+      "data_title": "Summary for Policymakers of the Working Group I Contribution to the IPCC Sixth Assessment Report - data for Figure SPM.1 (v20221116)",
+      "data_publication_year": 2023,
+      "data_authors": [
+        "Gillett, Nathan P.",
+        "Malinina, Elizaveta",
+        "Kaufman, Darrell",
+        "Neukom, Raphael"
+      ],
+      "relation_type_id": "is-referenced-by",
+      "publication_doi": "https://epa.ie/publications/monitoring--assessment/climate-change/GHG_GeneralBulletin_WEB.pdf",
+      "publication_title": "Greenhouse Gases",
+      "publication_date": "2025-04-29",
+      "publication_authors": [
+        "Irish Environmental Protection Agency"
+      ],
+      "citation_event_source": "overton",
+      "pub_publisher": "Irish Environmental Protection Agency",
+      "publication_type": "report",
+      "publicationYear": "2025",
+      "PubCitationStr": "Irish Environmental Protection Agency (2025). Greenhouse Gases.",
+      "data_doi_url": "doi.org/10.5285/0b2759059ad6474098e40dad73e0a8ec",
+      "publication_doi_url": "https://epa.ie/publications/monitoring--assessment/climate-change/GHG_GeneralBulletin_WEB.pdf",
+      "date_added": "2026-10-25"
     },
     {
       "data_doi": "10.5285/0c18a36ee02a4598963c1f7f97acd201",
@@ -72534,6 +72767,53 @@
       "date_added": "2026-09-30"
     },
     {
+      "data_doi": "10.5285/5675b0be944f45a8af0e7ddbeb47a011",
+      "data_title": "ESA Permafrost Climate Change Initiative (Permafrost_cci): Permafrost Ground Temperature for the Northern Hemisphere, v5.0",
+      "data_publication_year": 2025,
+      "data_authors": [
+        "Westermann, Sebastian",
+        "Barboux, Chloé",
+        "Bartsch, Annett",
+        "Delaloye, Reynald",
+        "Grosse, Guido",
+        "Heim, Birgit",
+        "Hugelius, Gustaf",
+        "Irrgang, Anna",
+        "Kääb, Andreas Max",
+        "Matthes, Heidrun",
+        "Miesner, Frederieke",
+        "Nitze, Ingmar",
+        "Pellet, Cécile",
+        "Seifert, Frank Martin",
+        "Strozzi, Tazio",
+        "Wegmüller, Urs",
+        "Wieczorek, Mareike",
+        "Wiesmann, Andreas"
+      ],
+      "relation_type_id": "is-referenced-by",
+      "publication_doi": "10.1007/s40515-026-01068-2",
+      "publication_title": "Regional Screening of Thermal Protection Requirements for Transport Embankments in the Continuous Permafrost Zone of Russia",
+      "publication_date": "2026-10-17",
+      "publication_authors": [
+        "Zhang, Andrei",
+        "Jiang, Xinyue",
+        "Guo, Ziyou",
+        "Dong, Yaqian",
+        "Jin, Doudou",
+        "Ju, Mengyao",
+        "Zhang, Ze",
+        "Zhang, Tatiana"
+      ],
+      "citation_event_source": "datacite",
+      "pub_publisher": "Transportation Infrastructure Geotechnology",
+      "publication_type": "journal-article",
+      "publicationYear": "2026",
+      "PubCitationStr": "Zhang, A., Jiang, X., Guo, Z., Dong, Y., Jin, D., Ju, M., Zhang, Z., & Zhang, T. (2026). Regional Screening of Thermal Protection Requirements for Transport Embankments in the Continuous Permafrost Zone of Russia. Transportation Infrastructure Geotechnology, 13(8). https://doi.org/10.1007/s40515-026-01068-2",
+      "data_doi_url": "doi.org/10.5285/5675b0be944f45a8af0e7ddbeb47a011",
+      "publication_doi_url": "doi.org/10.1007/s40515-026-01068-2",
+      "date_added": "2026-10-25"
+    },
+    {
       "data_doi": "10.5285/56ff07acabab42888afe2d20b488ec49",
       "data_title": "ESA Snow Climate Change Initiative (Snow_cci): Daily global Snow Cover Fraction - snow on ground (SCFG) from AVHRR (1979 - 2022), version 3.0",
       "data_publication_year": 2024,
@@ -90844,7 +91124,7 @@
         "Zhu, Jiang",
         "Lunt, Daniel J."
       ],
-      "citation_event_source": "crossref",
+      "citation_event_source": "datacite",
       "pub_publisher": "Journal of Geophysical Research: Atmospheres",
       "publication_type": "journal-article",
       "publicationYear": "2026",
@@ -97550,6 +97830,33 @@
       "data_doi_url": "doi.org/10.5285/af60720c1e404a9e9d2c145d2b2ead4e",
       "publication_doi_url": "doi.org/10.1038/s43247-026-03480-5",
       "date_added": "2026-10-07"
+    },
+    {
+      "data_doi": "10.5285/af60720c1e404a9e9d2c145d2b2ead4e",
+      "data_title": "ESA Biomass Climate Change Initiative (Biomass_cci): Global datasets of forest above-ground biomass for the years 2010, 2017, 2018, 2019 and 2020, v4",
+      "data_publication_year": 2023,
+      "data_authors": [
+        "Santoro, Maurizio",
+        "Cartus, Oliver"
+      ],
+      "relation_type_id": "is-referenced-by",
+      "publication_doi": "10.1080/01431161.2026.2709712",
+      "publication_title": "An exploratory framework integrating scientometric analysis and SAR-Oriented geospatial modelling for NISAR research prioritization",
+      "publication_date": "2026-08-05",
+      "publication_authors": [
+        "Singh, Dharmendra",
+        "Mohanta, Agradeep",
+        "Tymofyeyeva, Ekaterina",
+        "Singh, Sultan"
+      ],
+      "citation_event_source": "datacite",
+      "pub_publisher": "International Journal of Remote Sensing",
+      "publication_type": "journal-article",
+      "publicationYear": "2026",
+      "PubCitationStr": "Singh, D., Mohanta, A., Tymofyeyeva, E., & Singh, S. (2026). An exploratory framework integrating scientometric analysis and SAR-Oriented geospatial modelling for NISAR research prioritization. International Journal of Remote Sensing, 47(20), 9117–9166. https://doi.org/10.1080/01431161.2026.2709712",
+      "data_doi_url": "doi.org/10.5285/af60720c1e404a9e9d2c145d2b2ead4e",
+      "publication_doi_url": "doi.org/10.1080/01431161.2026.2709712",
+      "date_added": "2026-10-25"
     },
     {
       "data_doi": "10.5285/af60720c1e404a9e9d2c145d2b2ead4e",
@@ -107485,6 +107792,41 @@
       "data_doi_url": "doi.org/10.5285/d4e66299f5054129b8076fb7502949e1",
       "publication_doi_url": "doi.org/10.1029/2026jd046925",
       "date_added": "2026-10-07"
+    },
+    {
+      "data_doi": "10.5285/d4e66299f5054129b8076fb7502949e1",
+      "data_title": "ESA Soil Moisture Climate Change Initiative (Soil_Moisture_cci): COMBINED product, Version 09.2",
+      "data_publication_year": 2025,
+      "data_authors": [
+        "Dorigo, Wouter",
+        "Preimesberger, Wolfgang",
+        "Hahn, S.",
+        "Van der Schalie, R.",
+        "De Jeu, R.",
+        "Kidd, R.",
+        "Rodriguez-Fernandez, N.",
+        "Hirschi, M.",
+        "Stradiotti, P.",
+        "Frederikse, T.",
+        "Gruber, A.",
+        "Duchemin, D."
+      ],
+      "relation_type_id": "is-referenced-by",
+      "publication_doi": "10.1029/2026jd047649",
+      "publication_title": "Spatial Structure and Lifecycle Variability of Compound Dry‐Hot and Heavy Rainfall Events Over the North China Plain",
+      "publication_date": "2026-10-15",
+      "publication_authors": [
+        "Zhao, Xiaohu",
+        "Tian, Chuyin"
+      ],
+      "citation_event_source": "datacite",
+      "pub_publisher": "Journal of Geophysical Research: Atmospheres",
+      "publication_type": "journal-article",
+      "publicationYear": "2026",
+      "PubCitationStr": "Zhao, X., & Tian, C. (2026). Spatial Structure and Lifecycle Variability of Compound Dry‐Hot and Heavy Rainfall Events Over the North China Plain. Journal of Geophysical Research: Atmospheres, 131(20). Portico. https://doi.org/10.1029/2026jd047649",
+      "data_doi_url": "doi.org/10.5285/d4e66299f5054129b8076fb7502949e1",
+      "publication_doi_url": "doi.org/10.1029/2026jd047649",
+      "date_added": "2026-10-25"
     },
     {
       "data_doi": "10.5285/d4e823f0172947c5ae6e6b265656c273",
@@ -213335,6 +213677,46 @@
       "date_added": "2026-09-30"
     },
     {
+      "data_doi": "10.5285/b50e7291-b668-49bb-8226-f6371e707714",
+      "data_title": "Meteorology, soil physics, and eddy covariance measurements of carbon dioxide, energy and water exchange from a distributed network of sites across England and Wales, 2023-2024",
+      "data_publication_year": 2024,
+      "data_authors": [
+        "D’Acunha, B.",
+        "Arnold, S.",
+        "Blake, K.",
+        "Bray, G.",
+        "Bodo, A.",
+        "Cooper, H.",
+        "Crabtree, D.",
+        "Cumming, A.",
+        "Evans, C.D.",
+        "Field, R.H.",
+        "Hudson, M.",
+        "Jovani-Sancho, A.J.",
+        "Rylett, D.",
+        "Morrison, R."
+      ],
+      "relation_type_id": "is-referenced-by",
+      "publication_doi": "10.1080/27658511.2026.2735759",
+      "publication_title": "Monitoring, reporting and verification of peatland water table and greenhouse gas balance using Sentinel 1 radar",
+      "publication_date": "2026-10-15",
+      "publication_authors": [
+        "Williamson, Jennifer",
+        "O’Neil, Aneurin",
+        "Fitch, Alice",
+        "White, Jake",
+        "Evans, Christopher D."
+      ],
+      "citation_event_source": "crossref",
+      "pub_publisher": "Sustainable Environment",
+      "publication_type": "journal-article",
+      "publicationYear": "2026",
+      "PubCitationStr": "Williamson, J., O’Neil, A., Fitch, A., White, J., & Evans, C. D. (2026). Monitoring, reporting and verification of peatland water table and greenhouse gas balance using Sentinel 1 radar. Sustainable Environment, 12(1). https://doi.org/10.1080/27658511.2026.2735759",
+      "data_doi_url": "doi.org/10.5285/b50e7291-b668-49bb-8226-f6371e707714",
+      "publication_doi_url": "doi.org/10.1080/27658511.2026.2735759",
+      "date_added": "2026-10-25"
+    },
+    {
       "data_doi": "10.5285/b57ef444-54d4-47f9-8cbf-3cfef1182b55",
       "data_title": "Sedimentological and organic carbon data from the Kyle of Tongue saltmarsh, Scotland, 2018",
       "data_publication_year": 2021,
@@ -274229,6 +274611,43 @@
         "Skachkova, Aliaksandra"
       ],
       "relation_type_id": "is-referenced-by",
+      "publication_doi": "10.1038/s41598-026-75827-z",
+      "publication_title": "Breeding emperor penguins show interannual recurrence in shelf-break associated foraging areas across contrasting sea ice conditions in the northwestern Weddell Sea",
+      "publication_date": "2026-10-13",
+      "publication_authors": [
+        "Guímaro, Hugo R.",
+        "Fretwell, Peter T.",
+        "Pütz, Klemens",
+        "Xavier, José C.",
+        "Warwick-Evans, Victoria",
+        "Day, George",
+        "Vianna, Juliana A.",
+        "Pizarro, Eduardo J.",
+        "Krüger, Lucas",
+        "Osborne, Neil E.",
+        "Ratcliffe, Norman"
+      ],
+      "citation_event_source": "datacite",
+      "pub_publisher": "Scientific Reports",
+      "publication_type": "journal-article",
+      "publicationYear": "2026",
+      "PubCitationStr": "Guímaro, H. R., Fretwell, P. T., Pütz, K., Xavier, J. C., Warwick-Evans, V., Day, G., Vianna, J. A., Pizarro, E. J., Krüger, L., Osborne, N. E., & Ratcliffe, N. (2026). Breeding emperor penguins show interannual recurrence in shelf-break associated foraging areas across contrasting sea ice conditions in the northwestern Weddell Sea. Scientific Reports, 16(1). https://doi.org/10.1038/s41598-026-75827-z",
+      "data_doi_url": "doi.org/10.5285/13c4d2f1-8903-4d7f-8977-592121975554",
+      "publication_doi_url": "doi.org/10.1038/s41598-026-75827-z",
+      "date_added": "2026-10-25"
+    },
+    {
+      "data_doi": "10.5285/13c4d2f1-8903-4d7f-8977-592121975554",
+      "data_title": "High resolution vector polygons of the Antarctic coastline - VERSION 7.12",
+      "data_publication_year": 2026,
+      "data_authors": [
+        "Gerrish, Laura",
+        "Ireland, Louise",
+        "Fretwell, Peter",
+        "Cooper, Paul",
+        "Skachkova, Aliaksandra"
+      ],
+      "relation_type_id": "is-referenced-by",
       "publication_doi": "https://data.bas.ac.uk/items/e74543c0-4c4e-4b41-aa33-5bb2f67df389",
       "publication_title": null,
       "publication_date": null,
@@ -283308,6 +283727,32 @@
       "date_added": "2026-09-30"
     },
     {
+      "data_doi": "10.5285/5a5ee38c-e296-48a2-85d2-e29db66e5e24",
+      "data_title": "Contemporary (2016 - 2020) land cover classification across West Antarctica and the McMurdo Dry Valleys",
+      "data_publication_year": 2022,
+      "data_authors": [
+        "Stringer, Christopher"
+      ],
+      "relation_type_id": "is-supplement-to",
+      "publication_doi": "10.5194/essd-2022-250",
+      "publication_title": "Contemporary (2016–2020) land cover across West Antarctica and the McMurdo Dry Valleys",
+      "publication_date": "2022-09-09",
+      "publication_authors": [
+        "Stringer, Christopher D.",
+        "Carrivick, Jonathan L.",
+        "Quincey, Duncan J.",
+        "Nývlt, Daniel"
+      ],
+      "citation_event_source": "crossref",
+      "pub_publisher": "Copernicus GmbH",
+      "publication_type": "posted-content",
+      "publicationYear": "2022",
+      "PubCitationStr": "Stringer, C. D., Carrivick, J. L., Quincey, D. J., & Nývlt, D. (2022). Contemporary (2016–2020) land cover across West Antarctica and the McMurdo Dry Valleys. https://doi.org/10.5194/essd-2022-250",
+      "data_doi_url": "doi.org/10.5285/5a5ee38c-e296-48a2-85d2-e29db66e5e24",
+      "publication_doi_url": "doi.org/10.5194/essd-2022-250",
+      "date_added": "2026-10-25"
+    },
+    {
       "data_doi": "10.5285/5a711904-ef42-46a3-9f47-3f0d6b231f65",
       "data_title": "Epipelagic mesozooplankton distribution and abundance in Southern Ocean Atlantic sector and the North Atlantic and Arctic 1996-2013",
       "data_publication_year": 2020,
@@ -289184,6 +289629,42 @@
       "data_doi_url": "doi.org/10.5285/80de87f3-9497-4606-8c7d-3293ab05651f",
       "publication_doi_url": "doi.org/10.33265/polar.v40.7727",
       "date_added": "2025-10-15"
+    },
+    {
+      "data_doi": "10.5285/815525ca-cefe-4fbf-9224-3ee784e7de4e",
+      "data_title": "High resolution vector polygons of Antarctic rock outcrop - VERSION 7.11",
+      "data_publication_year": 2025,
+      "data_authors": [
+        "Skachkova, Aliaksandra",
+        "Gerrish, Laura",
+        "Fretwell, Peter",
+        "Cooper, Paul"
+      ],
+      "relation_type_id": "is-referenced-by",
+      "publication_doi": "10.1038/s41598-026-75827-z",
+      "publication_title": "Breeding emperor penguins show interannual recurrence in shelf-break associated foraging areas across contrasting sea ice conditions in the northwestern Weddell Sea",
+      "publication_date": "2026-10-13",
+      "publication_authors": [
+        "Guímaro, Hugo R.",
+        "Fretwell, Peter T.",
+        "Pütz, Klemens",
+        "Xavier, José C.",
+        "Warwick-Evans, Victoria",
+        "Day, George",
+        "Vianna, Juliana A.",
+        "Pizarro, Eduardo J.",
+        "Krüger, Lucas",
+        "Osborne, Neil E.",
+        "Ratcliffe, Norman"
+      ],
+      "citation_event_source": "datacite",
+      "pub_publisher": "Scientific Reports",
+      "publication_type": "journal-article",
+      "publicationYear": "2026",
+      "PubCitationStr": "Guímaro, H. R., Fretwell, P. T., Pütz, K., Xavier, J. C., Warwick-Evans, V., Day, G., Vianna, J. A., Pizarro, E. J., Krüger, L., Osborne, N. E., & Ratcliffe, N. (2026). Breeding emperor penguins show interannual recurrence in shelf-break associated foraging areas across contrasting sea ice conditions in the northwestern Weddell Sea. Scientific Reports, 16(1). https://doi.org/10.1038/s41598-026-75827-z",
+      "data_doi_url": "doi.org/10.5285/815525ca-cefe-4fbf-9224-3ee784e7de4e",
+      "publication_doi_url": "doi.org/10.1038/s41598-026-75827-z",
+      "date_added": "2026-10-25"
     },
     {
       "data_doi": "10.5285/815525ca-cefe-4fbf-9224-3ee784e7de4e",
@@ -300511,6 +300992,43 @@
       "data_doi_url": "doi.org/10.5285/db8bdbad-6893-4a77-9d12-a9bcb7325b70",
       "publication_doi_url": "doi.org/10.5194/tc-20-2793-2026",
       "date_added": "2026-10-07"
+    },
+    {
+      "data_doi": "10.5285/dbaf29f5-c8dc-4e79-aeb1-1df316e951ec",
+      "data_title": "High resolution vector polylines of the Antarctic coastline - VERSION 7.12",
+      "data_publication_year": 2026,
+      "data_authors": [
+        "Gerrish, Laura",
+        "Ireland, Louise",
+        "Fretwell, Peter",
+        "Cooper, Paul",
+        "Skachkova, Aliaksandra"
+      ],
+      "relation_type_id": "is-referenced-by",
+      "publication_doi": "10.1038/s41598-026-75827-z",
+      "publication_title": "Breeding emperor penguins show interannual recurrence in shelf-break associated foraging areas across contrasting sea ice conditions in the northwestern Weddell Sea",
+      "publication_date": "2026-10-13",
+      "publication_authors": [
+        "Guímaro, Hugo R.",
+        "Fretwell, Peter T.",
+        "Pütz, Klemens",
+        "Xavier, José C.",
+        "Warwick-Evans, Victoria",
+        "Day, George",
+        "Vianna, Juliana A.",
+        "Pizarro, Eduardo J.",
+        "Krüger, Lucas",
+        "Osborne, Neil E.",
+        "Ratcliffe, Norman"
+      ],
+      "citation_event_source": "datacite",
+      "pub_publisher": "Scientific Reports",
+      "publication_type": "journal-article",
+      "publicationYear": "2026",
+      "PubCitationStr": "Guímaro, H. R., Fretwell, P. T., Pütz, K., Xavier, J. C., Warwick-Evans, V., Day, G., Vianna, J. A., Pizarro, E. J., Krüger, L., Osborne, N. E., & Ratcliffe, N. (2026). Breeding emperor penguins show interannual recurrence in shelf-break associated foraging areas across contrasting sea ice conditions in the northwestern Weddell Sea. Scientific Reports, 16(1). https://doi.org/10.1038/s41598-026-75827-z",
+      "data_doi_url": "doi.org/10.5285/dbaf29f5-c8dc-4e79-aeb1-1df316e951ec",
+      "publication_doi_url": "doi.org/10.1038/s41598-026-75827-z",
+      "date_added": "2026-10-25"
     },
     {
       "data_doi": "10.5285/dbaf29f5-c8dc-4e79-aeb1-1df316e951ec",

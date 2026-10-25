@@ -1,8 +1,8 @@
 {
   "schema": "nerc-eds-citations/v4",
-  "generated_at": "2026-10-18T07:16:49Z",
+  "generated_at": "2026-10-25T06:54:20Z",
   "code_version": "4.0.0",
-  "git_commit": "1ef156ff934b5f3885389ac29f647a62e4dc2ca8",
+  "git_commit": "ba805efa85a38fb2ce3dd2e106b7e97d1f383e28",
   "client_id": "bl.nerc",
   "settings": {
     "predates_tolerance_years": 2,
@@ -14,84 +14,84 @@
     "inventory": {
       "required": true,
       "latest_status": "success",
-      "latest_run_id": 29,
+      "latest_run_id": 37,
       "latest_message": null,
-      "good_run_id": 29,
-      "good_finished_at": "2026-10-18T06:01:08Z",
-      "good_rows": 6388,
-      "age_days": 0.05,
+      "good_run_id": 37,
+      "good_finished_at": "2026-10-25T06:14:32Z",
+      "good_rows": 6397,
+      "age_days": 0.03,
       "stale": false
     },
     "datacite": {
       "required": true,
       "latest_status": "success",
-      "latest_run_id": 32,
+      "latest_run_id": 39,
       "latest_message": null,
-      "good_run_id": 32,
-      "good_finished_at": "2026-10-18T06:18:28Z",
-      "good_rows": 13559,
-      "age_days": 0.04,
+      "good_run_id": 39,
+      "good_finished_at": "2026-10-25T06:32:20Z",
+      "good_rows": 13579,
+      "age_days": 0.02,
       "stale": false
     },
     "scholexplorer": {
       "required": true,
       "latest_status": "success",
-      "latest_run_id": 30,
+      "latest_run_id": 38,
       "latest_message": null,
-      "good_run_id": 30,
-      "good_finished_at": "2026-10-18T07:16:38Z",
+      "good_run_id": 38,
+      "good_finished_at": "2026-10-25T06:27:12Z",
       "good_rows": 20834,
-      "age_days": 0.0,
+      "age_days": 0.02,
       "stale": false
     },
     "overton": {
       "required": false,
       "latest_status": "success",
-      "latest_run_id": 31,
+      "latest_run_id": 40,
       "latest_message": null,
-      "good_run_id": 31,
-      "good_finished_at": "2026-10-18T06:01:36Z",
-      "good_rows": 301,
-      "age_days": 0.05,
+      "good_run_id": 40,
+      "good_finished_at": "2026-10-25T06:15:01Z",
+      "good_rows": 302,
+      "age_days": 0.03,
       "stale": false
     },
     "crossref": {
       "required": false,
       "latest_status": "success",
-      "latest_run_id": 33,
+      "latest_run_id": 41,
       "latest_message": null,
-      "good_run_id": 33,
-      "good_finished_at": "2026-10-18T06:40:44Z",
-      "good_rows": 3513,
-      "age_days": 0.03,
+      "good_run_id": 41,
+      "good_finished_at": "2026-10-25T06:54:11Z",
+      "good_rows": 3521,
+      "age_days": 0.0,
       "stale": false
     }
   },
   "counts": {
-    "datasets": 6388,
+    "datasets": 6397,
     "datasets_by_centre": {
-      "BODC": 887,
-      "CEDA": 1432,
-      "EIDC": 2317,
-      "NGDC": 671,
-      "PDC": 1075,
+      "BODC": 888,
+      "CEDA": 1433,
+      "EIDC": 2321,
+      "NGDC": 672,
+      "PDC": 1077,
       "unknown": 6
     },
-    "datasets_cited": 2137,
-    "links": 28144,
-    "counted_links": 8337,
+    "datasets_cited": 2139,
+    "links": 28166,
+    "counted_links": 8353,
     "links_by_class": {
-      "citation": 13225,
+      "citation": 13240,
       "dataset-link": 1883,
-      "documentation": 2293,
+      "documentation": 2297,
       "other": 2,
       "similarity": 8457,
-      "supplement": 178,
-      "version-or-part": 2106
+      "supplement": 179,
+      "version-or-part": 2108
     },
     "links_by_status": {
       "excluded": 5154,
-      "included": 22990
+      "included": 23012
     },
     "exclusions": {
       "comment": 273,
@@ -101,21 +101,21 @@
       "predates-data": 293
     },
     "links_by_source": {
-      "crossref": 2585,
-      "datacite": 11182,
-      "overton": 301,
+      "crossref": 2594,
+      "datacite": 11202,
+      "overton": 302,
       "scholexplorer": 20608
     },
-    "works": 15977
+    "works": 15994
   },
   "reconciliation": {
-    "datacite_cited_datasets": 1659,
-    "datacite_citations": 5988,
-    "datacite_links_harvested": 5989,
+    "datacite_cited_datasets": 1660,
+    "datacite_citations": 6002,
+    "datacite_links_harvested": 6003,
     "incomplete_datasets": 27,
     "incomplete_share": 0.0163,
-    "pipeline_counted_citations": 8337,
-    "pipeline_cited_datasets": 2137
+    "pipeline_counted_citations": 8353,
+    "pipeline_cited_datasets": 2139
   },
   "guards": {
     "problems": [],
@@ -123,37 +123,37 @@
     "forced": false
   },
   "v3_compat": {
-    "latest_results_rows": 8337,
+    "latest_results_rows": 8353,
     "filtered_out_rows": 5154
   },
   "files": {
     "datasets.csv": {
-      "sha256": "11e164f35de0cf9d910a5f02b8a57aff0cd6f7b2d5be2787ae31db14f8e27f4d",
-      "bytes": 4981220
+      "sha256": "998ac506d97c6d8f0b48fcf76fc30bd01385b1c24b5772ed65042017e4c3af1b",
+      "bytes": 4987635
     },
     "datasets.json": {
-      "sha256": "1e32cf965b620222ba9632a6108889310e03099ff2c03b9705a93ea58abff82e",
-      "bytes": 6203750
+      "sha256": "389cda5ef4e1e204a58e8db3969f9ae53eb517de05cee499d2f23965a19123ae",
+      "bytes": 6211981
     },
     "links.csv": {
-      "sha256": "a1b55b8c02c99a27e3bfac263169ca2f3b8e62e0bff3454c38b7a72664149c3c",
-      "bytes": 8398443
+      "sha256": "c7020783dc2b5891fe840f6f1c0951d19a3b3fcbccd26adf35743385da276bc6",
+      "bytes": 8405054
     },
     "links.jsonl": {
-      "sha256": "453d04b7e50dd093b39d384339880dc2b790b892c221a4f831f34354ffe0adcb",
-      "bytes": 14871128
+      "sha256": "c755d5feda6e65b4fb1b08597e7655f66290e21ec01d7838f4fc0d0219f286d1",
+      "bytes": 14882797
     },
     "works.csv": {
-      "sha256": "70459030c246ed4579da784ccf395a773c09fc5fa559ef94cc64e127e1262685",
-      "bytes": 10558877
+      "sha256": "072f4efb261844540260b4df42e4648483e8891d7041b646a9afd5e6676d1f2d",
+      "bytes": 10571547
     },
     "works.json": {
-      "sha256": "ae700c3a92e6a14ec3de4713ed5f2b275a52756bdd589f734b553e98ba13f91e",
-      "bytes": 13340272
+      "sha256": "e95bd2175b8cee770d599804eea6c67c5310b67b62ffad41f0cf0cb35d952d30",
+      "bytes": 13355852
     },
     "reconciliation.csv": {
-      "sha256": "a75360e7f9f547b2886ebc1bb24582a8852c432411b583607ae12d7d04bf0228",
-      "bytes": 172827
+      "sha256": "ff7ffb348271dcd941a3685a1d6209e992423edd103b9a98604b816de69f828a",
+      "bytes": 172976
     }
   }
 }
