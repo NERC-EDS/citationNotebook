@@ -11,6 +11,11 @@ from __future__ import annotations
 COMMENT_PREFIXES = ("comment on", "reply on", "reply to comment by", "final response", "author response")
 REASONS = ("self-link", "comment", "peer-review", "conference-abstract", "gbif-download", "predates-data")
 
+# EGU General Assembly abstracts are published on EGUsphere as 10.5194/egusphere-egu<year>-<n>.
+# Other EGUsphere DOIs (10.5194/egusphere-<year>-<n>) are preprints and are counted like
+# any other preprint. v3 excluded every DOI containing "egusphere" as an abstract.
+EGU_ABSTRACT_PREFIX = "10.5194/egusphere-egu"
+
 
 def _year(value) -> int | None:
     try:
@@ -33,7 +38,7 @@ def exclusion_reason(data_doi: str, citing_id: str, relation_class: str, work: d
         return "comment"
     if (work.get("work_type") or "").lower().startswith("peer-review"):
         return "peer-review"
-    if "egusphere" in citing_id.lower():
+    if citing_id.lower().startswith(EGU_ABSTRACT_PREFIX):
         return "conference-abstract"
     if citing_id.startswith("10.15468/"):
         return "gbif-download"
