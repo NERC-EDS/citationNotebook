@@ -102,3 +102,30 @@ def test_predates_only_applies_to_uses_of_the_data():
 ])
 def test_exclusion_reasons(kw, expected):
     assert reason(**kw) == expected
+
+
+@pytest.mark.parametrize("citing_id", [
+    "10.5194/egusphere-egu21-123",
+    "10.5194/egusphere-egu2020-19204",       # older abstracts use a four-digit year
+    "10.5194/EGUsphere-EGU24-4567",
+])
+def test_egu_general_assembly_abstracts_are_excluded(citing_id):
+    assert reason(citing_id=citing_id) == "conference-abstract"
+
+
+@pytest.mark.parametrize("citing_id", [
+    "10.5194/egusphere-2023-1156",           # an EGUsphere preprint
+    "10.5194/egusphere-2022-1189-v2",
+    "10.5194/egusphere-2022-617-supplement",
+    "10.5194/essd-2025-67",                  # a journal discussion paper
+])
+def test_egusphere_and_discussion_preprints_are_counted(citing_id):
+    assert reason(citing_id=citing_id, work={"title": "A study", "work_type": "posted-content",
+                                             "issued": "2023-06-01"}) is None
+
+
+def test_review_comments_on_egusphere_preprints_stay_excluded():
+    work = {"title": "Comment on egusphere-2023-1156", "work_type": "peer-review", "issued": "2023"}
+    assert reason(citing_id="10.5194/egusphere-2023-1156-rc1", work=work) == "comment"
+    work = {"title": "Referee report", "work_type": "peer-review", "issued": "2023"}
+    assert reason(citing_id="10.5194/egusphere-2023-1156-rc2", work=work) == "peer-review"

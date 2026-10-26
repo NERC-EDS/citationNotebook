@@ -97,6 +97,8 @@ When sources disagree about one pair, the most specific class wins: citation, th
 
 `counted` is true for included `citation` and `supplement` links. The catalogue and widget should show the rest as *related datasets and documents*, never in the citation count.
 
+Preprints are counted like any other citing work, whether or not they have since been published. A preprint and the article it became are not yet merged, so a dataset cited by both is counted twice (see [Known limitations](#known-limitations)).
+
 A link is **excluded**, but still published, when the first of these applies:
 
 | `exclusion_reason` | Rule |
@@ -104,7 +106,7 @@ A link is **excluded**, but still published, when the first of these applies:
 | `self-link` | the citing work is the dataset |
 | `comment` | title starts "Comment on", "Reply on", "Reply to comment by", "Final response" or "Author response" |
 | `peer-review` | the work type is a peer review |
-| `conference-abstract` | an EGUsphere abstract |
+| `conference-abstract` | an EGU General Assembly abstract (`10.5194/egusphere-egu…`). Other EGUsphere DOIs are preprints and are counted |
 | `gbif-download` | a GBIF download DOI (`10.15468/…`) |
 | `predates-data` | the work was issued **two or more years** before the dataset's publication year (citation, supplement, documentation and other links only) |
 
@@ -215,6 +217,7 @@ erDiagram
 Still written each run, from v4: included, counted links only, in the same 18 columns, with `date_added` taken from `first_seen`. Differences consumers may notice:
 
 - **Fewer, more accurate rows.** Similarity, dataset-to-dataset and version links are no longer in it.
+- EGUsphere preprints (`10.5194/egusphere-2023-…`) are in it. v3 excluded every EGUsphere DOI as a conference abstract; only EGU General Assembly abstracts are excluded now.
 - `publication_date` is ISO 8601 at the precision known: `YYYY-MM-DD`, `YYYY-MM` or `YYYY` (was D/M/YYYY).
 - `publication_authors` is a list of `"Family, Given"` strings for every source (DataCite rows were a list of `[given, family]` pairs).
 - `data_publication_year` is an integer (`2012`, was `2012.0`).
@@ -239,6 +242,20 @@ Publishing is refused (exit code 2, previous results kept, an issue opened) when
 Overton and Crossref are optional: their failures produce warnings in the manifest, and their last good harvest is used.
 
 **When a drop is real.** If a source really has lost links (for example Scholexplorer stops serving similarity links), every harvest of it would be rejected and, after 8 days, publishing blocked. Once you have checked the drop, run with `--accept-drop SOURCE` (`python -m citations all --accept-drop scholexplorer`, or the workflow's `accept_drop` input). That harvest becomes the source's good harvest and publishing is not blocked by the drop. Both are recorded: in the harvest run's details and as a warning in `manifest.json`. Unlike `--force`, it only waives the drop check, and only for the sources named.
+
+## Known limitations
+
+**The same work under two identifiers is counted twice.** Links are de-duplicated on normalised identifiers, so different spellings of one DOI or URL become one link. Different identifiers for one work are not merged. Matching titles within each dataset in the October 2026 results found about 520 extra counted links (about 6%). Most are one of three kinds:
+
+- **A preprint and its published article** (about 370 links). Most are Copernicus discussion papers and their final papers, such as `essd-2025-67` and `essd-18-1243-2026`. The rest are on servers such as bioRxiv, Research Square and EarthArXiv.
+- **A DOI and the same work as an OpenAIRE or repository URL** (about 85 links).
+- **Version DOIs of one Zenodo or figshare record** (about 20 links).
+
+The planned fix:
+
+1. Link a preprint to its article using Crossref's `is-preprint-of` relation. Copernicus deposits it, but some preprint servers don't, so where it is missing, fall back to a matching title and first author within one dataset.
+2. Count the published version, and publish the preprint link as excluded with its own `exclusion_reason`.
+3. Keep counting a preprint that has no published version.
 
 ## Development
 
