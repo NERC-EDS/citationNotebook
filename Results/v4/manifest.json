@@ -1,0 +1,159 @@
+{
+  "schema": "nerc-eds-citations/v4",
+  "generated_at": "2026-10-25T06:54:20Z",
+  "code_version": "4.0.0",
+  "git_commit": "ba805efa85a38fb2ce3dd2e106b7e97d1f383e28",
+  "client_id": "bl.nerc",
+  "settings": {
+    "predates_tolerance_years": 2,
+    "max_source_age_days": 8,
+    "max_row_drop": 0.2,
+    "reconcile_threshold": 0.05
+  },
+  "sources": {
+    "inventory": {
+      "required": true,
+      "latest_status": "success",
+      "latest_run_id": 37,
+      "latest_message": null,
+      "good_run_id": 37,
+      "good_finished_at": "2026-10-25T06:14:32Z",
+      "good_rows": 6397,
+      "age_days": 0.03,
+      "stale": false
+    },
+    "datacite": {
+      "required": true,
+      "latest_status": "success",
+      "latest_run_id": 39,
+      "latest_message": null,
+      "good_run_id": 39,
+      "good_finished_at": "2026-10-25T06:32:20Z",
+      "good_rows": 13579,
+      "age_days": 0.02,
+      "stale": false
+    },
+    "scholexplorer": {
+      "required": true,
+      "latest_status": "success",
+      "latest_run_id": 38,
+      "latest_message": null,
+      "good_run_id": 38,
+      "good_finished_at": "2026-10-25T06:27:12Z",
+      "good_rows": 20834,
+      "age_days": 0.02,
+      "stale": false
+    },
+    "overton": {
+      "required": false,
+      "latest_status": "success",
+      "latest_run_id": 40,
+      "latest_message": null,
+      "good_run_id": 40,
+      "good_finished_at": "2026-10-25T06:15:01Z",
+      "good_rows": 302,
+      "age_days": 0.03,
+      "stale": false
+    },
+    "crossref": {
+      "required": false,
+      "latest_status": "success",
+      "latest_run_id": 41,
+      "latest_message": null,
+      "good_run_id": 41,
+      "good_finished_at": "2026-10-25T06:54:11Z",
+      "good_rows": 3521,
+      "age_days": 0.0,
+      "stale": false
+    }
+  },
+  "counts": {
+    "datasets": 6397,
+    "datasets_by_centre": {
+      "BODC": 888,
+      "CEDA": 1433,
+      "EIDC": 2321,
+      "NGDC": 672,
+      "PDC": 1077,
+      "unknown": 6
+    },
+    "datasets_cited": 2139,
+    "links": 28166,
+    "counted_links": 8353,
+    "links_by_class": {
+      "citation": 13240,
+      "dataset-link": 1883,
+      "documentation": 2297,
+      "other": 2,
+      "similarity": 8457,
+      "supplement": 179,
+      "version-or-part": 2108
+    },
+    "links_by_status": {
+      "excluded": 5154,
+      "included": 23012
+    },
+    "exclusions": {
+      "comment": 273,
+      "conference-abstract": 202,
+      "gbif-download": 4379,
+      "peer-review": 7,
+      "predates-data": 293
+    },
+    "links_by_source": {
+      "crossref": 2594,
+      "datacite": 11202,
+      "overton": 302,
+      "scholexplorer": 20608
+    },
+    "works": 15994
+  },
+  "reconciliation": {
+    "datacite_cited_datasets": 1660,
+    "datacite_citations": 6002,
+    "datacite_links_harvested": 6003,
+    "incomplete_datasets": 27,
+    "incomplete_share": 0.0163,
+    "pipeline_counted_citations": 8353,
+    "pipeline_cited_datasets": 2139
+  },
+  "guards": {
+    "problems": [],
+    "warnings": [],
+    "forced": false
+  },
+  "v3_compat": {
+    "latest_results_rows": 8353,
+    "filtered_out_rows": 5154
+  },
+  "files": {
+    "datasets.csv": {
+      "sha256": "998ac506d97c6d8f0b48fcf76fc30bd01385b1c24b5772ed65042017e4c3af1b",
+      "bytes": 4987635
+    },
+    "datasets.json": {
+      "sha256": "389cda5ef4e1e204a58e8db3969f9ae53eb517de05cee499d2f23965a19123ae",
+      "bytes": 6211981
+    },
+    "links.csv": {
+      "sha256": "c7020783dc2b5891fe840f6f1c0951d19a3b3fcbccd26adf35743385da276bc6",
+      "bytes": 8405054
+    },
+    "links.jsonl": {
+      "sha256": "c755d5feda6e65b4fb1b08597e7655f66290e21ec01d7838f4fc0d0219f286d1",
+      "bytes": 14882797
+    },
+    "works.csv": {
+      "sha256": "072f4efb261844540260b4df42e4648483e8891d7041b646a9afd5e6676d1f2d",
+      "bytes": 10571547
+    },
+    "works.json": {
+      "sha256": "e95bd2175b8cee770d599804eea6c67c5310b67b62ffad41f0cf0cb35d952d30",
+      "bytes": 13355852
+    },
+    "reconciliation.csv": {
+      "sha256": "ff7ffb348271dcd941a3685a1d6209e992423edd103b9a98604b816de69f828a",
+      "bytes": 172976
+    }
+  }
+}
