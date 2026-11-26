@@ -1,52 +1,90 @@
-# NERC Data Centre Citations
+# NERC EDS dataset citations
 
-Collects citations of datasets published by the NERC Environmental Data Service (EDS) data centres from open APIs, merges and filters them, and publishes the results in `Results/v3/`, which the EDS citations API ingests.
+Harvests the links between NERC Environmental Data Service datasets (DataCite client `bl.nerc`) and the works that cite or relate to them, classifies each link, and publishes the results in `Results/v4`. The EDS citation API, the citation widget and the data centres' cited-data catalogues read them. A v3-compatible copy is still written to `Results/v3` while consumers move over.
 
-This is not a complete list of every citation, and some of the citations it finds are wrong.
+This is not a census of every citation. It covers what DataCite, Scholexplorer, Overton and Crossref expose openly.
 
-## How it runs
+## Quick start
 
-Each stage is a Jupyter notebook, run weekly by a GitHub Action with [papermill](https://papermill.readthedocs.io/). The Action commits the stage's output files back to `main`. The executed copy of each notebook is saved in `executed_notebooks/`, which is where to look for errors.
+```bash
+pip install -e ".[test]"
+pytest                                       # offline, a few seconds
 
-| Stage (Action) | Notebook | Schedule (Sunday, UTC) | Output |
-|---|---|---|---|
-| NERC dataset DOIs from DataCite | `nerc_dataset_DOIs.ipynb` | 00:00 | `Results/intermediate_data/nerc_datacite_dois.json` |
-| DataCite citation events | `nerc_dataset_citations_dataCite.ipynb` | 02:00 | `Results/intermediate_data/latest_results_dataCite.csv` / `.pkl` |
-| Scholexplorer (Scholix v3) | `nerc_dataset_citations_scholix.ipynb` | 04:00 | `Results/intermediate_data/latest_results_scholex.csv` / `.pkl` |
-| Overton policy documents | `nerc_dataset_citations_overton.ipynb` | 12:00 | `Results/intermediate_data/latest_results_overton.csv` / `.pkl` |
-| Merge, filter, citation strings | `nerc_dataset_citations_merge_results.ipynb` | 23:00 | `Results/v3/latest_results.csv` / `.json`, `Results/v3/filtered_out_df.csv` |
-
-The three source stages each read `nerc_datacite_dois.json`, which also standardises the data centre names. The merge stage reads their `.pkl` files, so it uses whatever the source stages last committed. Each Action can also be run by hand from the Actions tab.
-
-The merge stage:
-- removes duplicate citations (same dataset DOI and publication DOI)
-- filters out comments and replies on preprints, peer reviews, EGUsphere abstracts, GBIF downloads, and publications that pre-date the dataset (see `Results/v3/filtered_out_df.csv`)
-- adds a formatted citation string for each publication
-- keeps the `date_added` of citations already present in the previous results.
-
-## Running locally
-
-```
-pip install -r requirements.txt
-papermill nerc_dataset_citations_scholix.ipynb executed_notebooks/nerc_dataset_citations_scholix_executed.ipynb
+export CITATIONS_MAILTO=you@example.org      # contact email for the Crossref / DataCite polite pools
+export OVERTON_API_KEY=...                   # optional; Overton is skipped without it
+python -m citations all                      # the weekly run
+python -m citations status                   # what ran and what is in use
 ```
 
-Run from the repository root, since the notebooks use paths relative to it. The helper functions are in `citations_fun/`. A full run of all stages takes several hours. `inspect_results.ipynb` is for checking the results by hand.
+Each stage can also be run on its own (`inventory`, `harvest`, `works`, `merge`, `publish`, `reconcile`); see [Setup](docs/5-technical/setup.md). Exit codes: 0 success, 1 a stage failed, 2 publishing was blocked by a guard.
 
-## Output
+## How it works
 
-`Results/v3/latest_results.csv` has one row per citation, with these columns:
+1. **Inventory**: every DOI of `bl.nerc`, checked against DataCite's own total.
+2. **Harvest**: DataCite, Scholexplorer, Overton and Crossref, all at the same time, each within its API's rate limit. A failed or partial harvest never replaces the last good one.
+3. **Works**: metadata and a plain-text citation string for every citing work, cached between runs.
+4. **Merge**: one link per dataset and citing work, with every source that found it, a relation class and, if it breaks a rule, an exclusion reason.
+5. **Publish**: if the guards pass, write `Results/v4` and `Results/v3`. If a required source failed, is stale or lost links, nothing is published and the previous results stay.
 
-`data_doi`, `data_publisher`, `data_title`, `data_publication_year`, `data_authors`, `relation_type_id`, `publication_doi`, `publication_title`, `publication_date`, `publication_authors`, `citation_event_source`, `pub_publisher`, `publication_type`, `publicationYear`, `PubCitationStr`, `data_doi_url`, `publication_doi_url`, `date_added`
+Everything between stages is kept in a SQLite store, `data/citations.sqlite`. See [Architecture](docs/1-vision/architecture.md).
 
-`Results/v3/latest_results.json` holds the same records, grouped under the data centre (`data_publisher`) as the top-level key.
+## What it publishes
 
-`Results/v1/` and `Results/v2/` hold earlier versions of the results. The pipeline no longer updates them.
+| File in `Results/v4` | One row per |
+| --- | --- |
+| `datasets.csv`, `datasets.json` | `bl.nerc` DOI, cited or not |
+| `links.csv`, `links.jsonl` | dataset × citing work, excluded links included |
+| `works.csv`, `works.json` | citing work |
+| `reconciliation.csv` | dataset, compared with DataCite's `citationCount` |
+| `manifest.json` | run: source status, counts, guard results and a hash of every file |
+
+A link is **counted** when it is an included citation or supplement. Other links (documentation, versions, similar or related datasets) are published as related, never counted. Excluded links (comments, peer reviews, works much older than the dataset ...) are published with their reason, never deleted. See [Counting rules](docs/2-specification/counting-rules.md), [Results/v4](docs/2-specification/results-v4.md) and [Results/v3](docs/2-specification/results-v3.md).
+
+`inspect_results.ipynb` validates and summarises the published results, and checks that `Results/v3` keeps the shape and types the EDS citation API needs. See [Inspection notebook](docs/3-features/inspect-notebook.md).
+
+## The weekly run
+
+`.github/workflows/citations.yml` runs every Sunday: tests, then `python -m citations all`, then it commits the results. A failed or blocked run opens an issue labelled `citations-pipeline`. It needs the secret `OVERTON_API_KEY` and the variable `CITATIONS_MAILTO`. See [Workflows](docs/5-technical/ci-cd-workflows.md).
+
+## Project structure
+
+```
+├── citations/              the pipeline
+│   ├── cli.py              the command line
+│   ├── inventory.py        stage 1
+│   ├── harvest.py          running a source harvest
+│   ├── sources/            datacite, scholexplorer, overton, crossref
+│   ├── works.py            stage 3, with citation_text.py and worktypes.py
+│   ├── merge.py            stage 4, with ids.py, relations.py and filters.py
+│   ├── publish.py          stage 5, with guards.py and reconcile.py
+│   ├── http.py             retries and rate limits
+│   └── db.py               the SQLite store
+├── tests/                  offline tests: a fake HTTP layer stands in for every API
+├── Results/v4, v3          the published results (v1 and v2 are no longer updated)
+├── inspect_results.ipynb   validation and overview of the results
+└── docs/                   the documentation
+```
+
+## Development
+
+```bash
+pytest
+```
+
+`.github/workflows/tests.yml` runs the tests on Python 3.10 and 3.12 for every pull request and every push to `main`. Every module, class and function has a Google-style docstring. Read [AGENTS.md](AGENTS.md) before changing the code.
+
+## Documentation
+
+| Section | |
+| --- | --- |
+| [1-vision](docs/1-vision/) | [Principles](docs/1-vision/principles.md), [architecture](docs/1-vision/architecture.md), [use cases](docs/1-vision/use-cases.md) |
+| [2-specification](docs/2-specification/) | [Counting rules](docs/2-specification/counting-rules.md), [Results/v4](docs/2-specification/results-v4.md), [Results/v3](docs/2-specification/results-v3.md) |
+| [3-features](docs/3-features/) | What each stage does: [overview](docs/3-features/README.md) |
+| [4-roadmap](docs/4-roadmap/) | [Changelog](docs/4-roadmap/CHANGELOG.md) (including what changed from v3), [current status](docs/4-roadmap/current.md), [backlog](docs/4-roadmap/backlog.md) |
+| [5-technical](docs/5-technical/) | [Setup](docs/5-technical/setup.md), [workflows](docs/5-technical/ci-cd-workflows.md), [rate limits](docs/5-technical/performance-and-rate-limits.md), [data store](docs/5-technical/data-store.md), [testing](docs/5-technical/testing.md), [conventions](docs/5-technical/documentation.md) |
+
+Start at [docs/README.md](docs/README.md).
 
 ## Authors
 
-Matthew Nichols (UKCEH)
-
-## Acknowledgements
-
-The Crossref functions were adapted from the demo notebooks in the Crossref [rest-api-doc](https://github.com/CrossRef/rest-api-doc) repository.
+Matthew Nichols (UKCEH) wrote the original pipeline. The Crossref functions were adapted from the demo notebooks in the Crossref [rest-api-doc](https://github.com/CrossRef/rest-api-doc) repository.
